@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado do Diagnóstico - GlobalMind</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/resultado.css">
+</head>
+<body class="bg-bege">
+
+    <header class="py-3 mb-4 border-bottom bg-white shadow-sm">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+                <h1 class="display-6 fw-bold" style="color: var(--verde-oliva);">GlobalMind</h1>
+            </a>
+            <button id="export-pdf" class="btn btn-outline-primary">Exportar PDF</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Card da Empresa -->
+        <div class="card mb-4">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 id="empresa-nome" class="card-title" style="font-family: var(--font-display);">Nome da Empresa</h2>
+                    <p id="respondente-nome" class="card-subtitle mb-2 text-muted">Respondido por: Nome do Respondente</p>
+                </div>
+                <div>
+                    <p class="text-muted mb-0">Data do Diagnóstico:</p>
+                    <p id="data-diagnostico" class="fw-bold">DD/MM/AAAA</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Métricas Principais -->
+        <div class="row mb-4">
+            <!-- Métricas serão inseridas aqui -->
+        </div>
+
+        <div class="row">
+            <!-- Coluna da Esquerda: Índices e Alertas -->
+            <div class="col-lg-6">
+                <!-- Índices -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        Índices de Diagnóstico
+                    </div>
+                    <div id="indices-container" class="card-body">
+                        <!-- Barras de progresso dos índices serão inseridas aqui -->
+                    </div>
+                </div>
+                <!-- Alertas -->
+                <div class="card">
+                    <div class="card-header">
+                        Pontos de Atenção
+                    </div>
+                    <div id="alertas-container" class="list-group list-group-flush">
+                        <!-- Alertas serão inseridos aqui -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Coluna da Direita: Gráficos -->
+            <div class="col-lg-6">
+                <!-- Gráfico Radar -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        Distribuição por Dimensão
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="height:300px">
+                            <canvas id="radar-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <!-- Gráfico de Barras -->
+                <div class="card">
+                    <div class="card-header">
+                        Comparativo de Índices
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container" style="height:300px">
+                            <canvas id="bar-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-4 mt-5">
+        <p class="text-muted">&copy; 2026 GlobalMind. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/calculos.js"></script>
+    <script src="js/charts.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Obter dados do localStorage
+            const empresa = localStorage.getItem('globalmind_empresa') || 'N/A';
+            const respondente = localStorage.getItem('globalmind_respondente') || 'N/A';
+            const dataISO = localStorage.getItem('globalmind_data');
+            const data = dataISO ? new Date(dataISO) : new Date();
+            const dataFormatada = data.toLocaleDateString('pt-BR');
+
+            document.getElementById('empresa-nome').textContent = empresa;
+            document.getElementById('respondente-nome').textContent = 'Respondido por: ' + respondente;
+            document.getElementById('data-diagnostico').textContent = dataFormatada;
+
+            // 2. Calcular os resultados
+            const resultados = calcularResultados();
+            if (!resultados) {
+                document.querySelector('main').innerHTML = '<div class="alert alert-danger">Erro ao calcular resultados. Por favor, refaça o questionário.</div>';
+                return;
+            }
+
+            // 3. Renderizar os componentes
+            renderizarIndices(resultados);
+            renderizarAlertas(resultados);
+
+            // 4. Renderizar os gráficos
+            const radarCtx = document.getElementById('radar-chart').getContext('2d');
+            criarGraficoRadar(radarCtx, resultados);
+
+            const barCtx = document.getElementById('bar-chart').getContext('2d');
+            criarGraficoBarras(barCtx, resultados);
+        });
+
+        function getStatus(score) {
+            if (score >= 7) return { classe: 'danger', texto: 'Crítico' };
+            if (score >= 4) return { classe: 'warning', texto: 'Atenção' };
+            return { classe: 'success', texto: 'Bom' };
+        }
+
+        function renderizarIndices(resultados) {
+            const container = document.getElementById('indices-container');
+            const labels = {
+                sobrecarga_lider: 'Sobrecarga do Líder',
+                dependencia_dono: 'Dependência no Dono',
+                maturidade_emocional: 'Maturidade Emocional',
+                risco_psicossocial: 'Risco Psicossocial',
+                conflito_geracional: 'Conflito Geracional',
+                escalabilidade_humana: 'Escalabilidade Humana'
+            };
+
+            let html = '';
+            for (const indice in resultados) {
+                const score = resultados[indice];
+                const status = getStatus(score);
+                html += `
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>${labels[indice]}</span>
+                            <span class="fw-bold text-${status.classe}">${score.toFixed(1)} - ${status.texto}</span>
+                        </div>
+                        <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-${status.classe}" role="progressbar" style="width: ${score * 10}%" aria-valuenow="${score}" aria-valuemin="0" aria-valuemax="10"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function renderizarAlertas(resultados) {
+            const container = document.getElementById('alertas-container');
+            const alertas = {
+                sobrecarga_lider: 'Alta sobrecarga do líder pode levar ao burnout e centralização de decisões.',
+                dependencia_dono: 'A alta dependência na figura do dono representa um risco para a continuidade e o crescimento do negócio.',
+                maturidade_emocional: 'Baixa maturidade emocional na equipe pode gerar conflitos, baixa produtividade e falta de segurança psicológica.',
+                risco_psicossocial: 'Níveis elevados de risco psicossocial indicam um ambiente de trabalho estressante e potencialmente nocivo.',
+                conflito_geracional: 'Conflitos entre gerações podem minar a colaboração e a inovação se não forem bem gerenciados.',
+                escalabilidade_humana: 'Baixa escalabilidade humana significa que a empresa não está preparada para crescer sem sobrecarregar a estrutura atual.'
+            };
+
+            let html = '';
+            let count = 0;
+            for (const indice in resultados) {
+                if (resultados[indice] >= 7) { // Nível crítico
+                    count++;
+                    html += `<div class="list-group-item list-group-item-danger">${alertas[indice]}</div>`;
+                } else if (resultados[indice] >= 4) { // Nível de atenção
+                    count++;
+                    html += `<div class="list-group-item list-group-item-warning">${alertas[indice]}</div>`;
+                }
+            }
+
+            if (count === 0) {
+                html = '<div class="list-group-item">Nenhum ponto crítico ou de atenção imediata foi identificado. Parabéns!</div>';
+            }
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

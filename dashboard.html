@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Diagnóstico | GlobalMind</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1E2C36">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --verde-oliva: #6D7141;
+            --verde-oliva-light: #8a8f5a;
+            --verde-oliva-dark: #565a34;
+            --azul-petroleo: #1E2C36;
+            --azul-petroleo-light: #2d4251;
+            --bege: #F6F3ED;
+            --bege-dark: #E8E4DB;
+            --white: #FFFFFF;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --danger: #dc3545;
+            --warning: #f59e0b;
+            --success: #22c55e;
+            
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Source Sans 3', -apple-system, sans-serif;
+            
+            --shadow-sm: 0 1px 2px rgba(30, 44, 54, 0.05);
+            --shadow-md: 0 4px 12px rgba(30, 44, 54, 0.08);
+            --shadow-lg: 0 8px 30px rgba(30, 44, 54, 0.12);
+            --shadow-xl: 0 20px 50px rgba(30, 44, 54, 0.15);
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bege);
+            color: var(--azul-petroleo);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Layout */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--azul-petroleo);
+            color: var(--white);
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--verde-oliva);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--white);
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .nav-section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.4);
+            padding: 0 1.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 0.875rem 1.5rem;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--white);
+        }
+
+        .nav-item.active {
+            background: rgba(109, 113, 65, 0.3);
+            color: var(--white);
+            border-left: 3px solid var(--verde-oliva);
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            opacity: 0.8;
+        }
+
+        .nav-item.active svg {
+            opacity: 1;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem 2.5rem;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--bege-dark);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--gray-600);
+            font-size: 1rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--verde-oliva);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--verde-oliva-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--azul-petroleo);
+            border: 1px solid var(--gray-300);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-400);
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Company Info Card */
+        .company-card {
+            background: linear-gradient(135deg, var(--azul-petroleo) 0%, var(--azul-petroleo-light) 100%);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            color: var(--white);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .company-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(109, 113, 65, 0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .company-card-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .company-info h2 {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .company-meta {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .company-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .company-meta-item svg {
+            width: 16px;
+            height: 16px;
+            opacity: 0.7;
+        }
+
+        .diagnosis-badge {
+            background: var(--verde-oliva);
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+        }
+
+        .diagnosis-badge-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            margin-bottom: 0.25rem;
+        }
+
+        .diagnosis-badge-date {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--verde-oliva);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .metric-card:hover::after {
+            opacity: 1;
+        }
+
+        .metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .metric-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .metric-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .metric-icon.verde {
+            background: rgba(109, 113, 65, 0.1);
+            color: var(--verde-oliva);
+        }
+
+        .metric-icon.azul {
+            background: rgba(30, 44, 54, 0.1);
+            color: var(--azul-petroleo);
+        }
+
+        .metric-icon.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .metric-icon.danger {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+
+        .metric-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .metric-trend.up {
+            color: var(--success);
+        }
+
+        .metric-trend.down {
+            color: var(--danger);
+        }
+
+        .metric-value {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--azul-petroleo);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+        }
+
+        /* Index Cards */
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--verde-oliva);
+            border-radius: 2px;
+        }
+
+        .index-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .index-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .index-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .index-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .index-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--azul-petroleo);
+        }
+
+        .index-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .index-status.critical {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+
+        .index-status.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .index-status.good {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+
+        .index-score {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .index-score-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--azul-petroleo);
+        }
+
+        .index-score-max {
+            font-size: 1rem;
+            color: var(--gray-500);
+        }
+
+        .index-bar {
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+        }
+
+        .index-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .index-bar-fill.critical {
+            background: linear-gradient(90deg, var(--danger), #ef4444);
+        }
+
+        .index-bar-fill.warning {
+            background: linear-gradient(90deg, var(--warning), #fbbf24);
+        }
+
+        .index-bar-fill.good {
+            background: linear-gradient(90deg, var(--success), #4ade80);
+        }
+
+        .index-description {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--azul-petroleo);
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--gray-600);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+        }
+
+        /* Team Overview */
+        .team-section {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+
+        .team-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .team-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .team-stat {
+            text-align: center;
+        }
+
+        .team-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--azul-petroleo);
+        }
+
+        .team-stat-label {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+        }
+
+        .team-profiles {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+
+        .profile-card {
+            background: var(--bege);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .profile-card:hover {
+            background: var(--bege-dark);
+        }
+
+        .profile-letter {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--white);
+            margin: 0 auto 0.75rem;
+        }
+
+        .profile-letter.D { background: #e74c3c; }
+        .profile-letter.I { background: #f1c40f; color: var(--azul-petroleo); }
+        .profile-letter.S { background: #27ae60; }
+        .profile-letter.C { background: #3498db; }
+
+        .profile-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--azul-petroleo);
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-count {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--azul-petroleo);
+        }
+
+        .profile-percent {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+        }
+
+        /* Alerts Section */
+        .alerts-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .alert-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .alert-item:hover {
+            transform: translateX(4px);
+        }
+
+        .alert-item.critical {
+            background: rgba(220, 53, 69, 0.05);
+            border-left: 3px solid var(--danger);
+        }
+
+        .alert-item.warning {
+            background: rgba(245, 158, 11, 0.05);
+            border-left: 3px solid var(--warning);
+        }
+
+        .alert-item.info {
+            background: rgba(109, 113, 65, 0.05);
+            border-left: 3px solid var(--verde-oliva);
+        }
+
+        .alert-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .alert-item.critical .alert-icon {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+
+        .alert-item.warning .alert-icon {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .alert-item.info .alert-icon {
+            background: rgba(109, 113, 65, 0.1);
+            color: var(--verde-oliva);
+        }
+
+        .alert-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--azul-petroleo);
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-description {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .index-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            .team-profiles {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            .page-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .metrics-grid,
+            .index-grid {
+                grid-template-columns: 1fr;
+            }
+            .company-card-content {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+            .company-meta {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">GLOBALMIND</span>
+                </div>
+            </div>
+
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="#" class="nav-item active">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                        </svg>
+                        Dashboard
+                    </a>
+                    <a href="#" class="nav-item">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                        </svg>
+                        Diagnósticos
+                    </a>
+                    <a href="#" class="nav-item">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        Colaboradores
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Relatórios</div>
+                    <a href="#" class="nav-item">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        Análises
+                    </a>
+                    <a href="#" class="nav-item">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Exportar PDF
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Configurações</div>
+                    <a href="#" class="nav-item">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        Configurações
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="page-header animate-in">
+                <div>
+                    <h1 class="page-title">Dashboard Diagnóstico</h1>
+                    <p class="page-subtitle">Visão executiva da saúde organizacional</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        Exportar
+                    </button>
+                    <button class="btn btn-primary">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                        </svg>
+                        Novo Diagnóstico
+                    </button>
+                </div>
+            </header>
+
+            <!-- Company Card -->
+            <div class="company-card animate-in delay-1">
+                <div class="company-card-content">
+                    <div class="company-info">
+                        <h2>Tech Solutions Ltda</h2>
+                        <p style="opacity: 0.8;">Diagnóstico Organizacional Completo</p>
+                        <div class="company-meta">
+                            <div class="company-meta-item">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                48 colaboradores
+                            </div>
+                            <div class="company-meta-item">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                </svg>
+                                Tecnologia
+                            </div>
+                            <div class="company-meta-item">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                Vila Velha, ES
+                            </div>
+                        </div>
+                    </div>
+                    <div class="diagnosis-badge">
+                        <div class="diagnosis-badge-label">Diagnóstico Realizado</div>
+                        <div class="diagnosis-badge-date">08 Jan 2026</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metrics Grid -->
+            <div class="metrics-grid">
+                <div class="metric-card animate-in delay-1">
+                    <div class="metric-header">
+                        <div class="metric-icon verde">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="metric-trend up">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                            </svg>
+                            12%
+                        </div>
+                    </div>
+                    <div class="metric-value">72%</div>
+                    <div class="metric-label">Saúde Organizacional</div>
+                </div>
+
+                <div class="metric-card animate-in delay-2">
+                    <div class="metric-header">
+                        <div class="metric-icon azul">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="metric-value">48</div>
+                    <div class="metric-label">Colaboradores Avaliados</div>
+                </div>
+
+                <div class="metric-card animate-in delay-3">
+                    <div class="metric-header">
+                        <div class="metric-icon warning">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                        </div>
+                        <div class="metric-trend down">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                            </svg>
+                            8%
+                        </div>
+                    </div>
+                    <div class="metric-value">7</div>
+                    <div class="metric-label">Alertas Identificados</div>
+                </div>
+
+                <div class="metric-card animate-in delay-4">
+                    <div class="metric-header">
+                        <div class="metric-icon danger">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="metric-value">3</div>
+                    <div class="metric-label">Riscos Críticos</div>
+                </div>
+            </div>
+
+            <!-- Index Cards -->
+            <h2 class="section-title">Índices de Diagnóstico</h2>
+            <div class="index-grid">
+                <div class="index-card animate-in">
+                    <div class="index-card-header">
+                        <span class="index-name">Sobrecarga do Líder</span>
+                        <span class="index-status critical">Crítico</span>
+                    </div>
+                    <div class="index-score">
+                        <span class="index-score-value">8.2</span>
+                        <span class="index-score-max">/ 10</span>
+                    </div>
+                    <div class="index-bar">
+                        <div class="index-bar-fill critical" style="width: 82%;"></div>
+                    </div>
+                    <p class="index-description">O líder está assumindo responsabilidades excessivas, comprometendo sua saúde e a autonomia da equipe.</p>
+                </div>
+
+                <div class="index-card animate-in">
+                    <div class="index-card-header">
+                        <span class="index-name">Dependência do Dono</span>
+                        <span class="index-status warning">Atenção</span>
+                    </div>
+                    <div class="index-score">
+                        <span class="index-score-value">6.5</span>
+                        <span class="index-score-max">/ 10</span>
+                    </div>
+                    <div class="index-bar">
+                        <div class="index-bar-fill warning" style="width: 65%;"></div>
+                    </div>
+                    <p class="index-description">A empresa demonstra dependência moderada das decisões do proprietário para operações diárias.</p>
+                </div>
+
+                <div class="index-card animate-in">
+                    <div class="index-card-header">
+                        <span class="index-name">Maturidade Emocional</span>
+                        <span class="index-status good">Adequado</span>
+                    </div>
+                    <div class="index-score">
+                        <span class="index-score-value">7.1</span>
+                        <span class="index-score-max">/ 10</span>
+                    </div>
+                    <div class="index-bar">
+                        <div class="index-bar-fill good" style="width: 71%;"></div>
+                    </div>
+                    <p class="index-description">A equipe apresenta boa capacidade de gestão emocional e resolução de conflitos.</p>
+                </div>
+
+                <div class="index-card animate-in">
+                    <div class="index-card-header">
+                        <span class="index-name">Risco Psicossocial (NR-1)</span>
+                        <span class="index-status warning">Atenção</span>
+                    </div>
+                    <div class="index-score">
+                        <span class="index-score-value">5.8</span>
+                        <span class="index-score-max">/ 10</span>
+                    </div>
+                    <div class="index-bar">
+                        <div class="index-bar-fill warning" style="width: 58%;"></div>
+                    </div>
+                    <p class="index-description">Identificados fatores de risco psicossocial que requerem atenção conforme NR-1.</p>
+                </div>
+
+                <div class="index-card animate-in">
+                    <div class="index-card-header">
+                        <span class="index-name">Conflito Geracional</span>
+                        <span class="index-status good">Baixo</span>
+                    </div>
+                    <div class="index-score">
+                        <span class="index-score-value">3.2</span>
+                        <span class="index-score-max">/ 10</span>
+                    </div>
+                    <div class="index-bar">
+                        <div class="index-bar-fill good" style="width: 32%;"></div>
+                    </div>
+                    <p class="index-description">Baixo nível de conflito entre diferentes gerações. Boa integração entre colaboradores.</p>
+                </div>
+
+                <div class="index-card animate-in">
+                    <div class="index-card-header">
+                        <span class="index-name">Escalabilidade Humana</span>
+                        <span class="index-status warning">Atenção</span>
+                    </div>
+                    <div class="index-score">
+                        <span class="index-score-value">5.4</span>
+                        <span class="index-score-max">/ 10</span>
+                    </div>
+                    <div class="index-bar">
+                        <div class="index-bar-fill warning" style="width: 54%;"></div>
+                    </div>
+                    <p class="index-description">Capacidade moderada de crescimento sem perda de qualidade nas relações internas.</p>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-card animate-in">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Distribuição por Dimensão</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card animate-in">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Evolução dos Índices</h3>
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: var(--verde-oliva);"></div>
+                                Atual
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: var(--gray-400);"></div>
+                                Anterior
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team DISC Profile -->
+            <div class="team-section animate-in">
+                <div class="team-header">
+                    <h2 class="section-title" style="margin-bottom: 0;">Perfil DISC da Equipe</h2>
+                    <div class="team-stats">
+                        <div class="team-stat">
+                            <div class="team-stat-value">48</div>
+                            <div class="team-stat-label">Avaliados</div>
+                        </div>
+                        <div class="team-stat">
+                            <div class="team-stat-value">92%</div>
+                            <div class="team-stat-label">Participação</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="team-profiles">
+                    <div class="profile-card">
+                        <div class="profile-letter D">D</div>
+                        <div class="profile-name">Dominância</div>
+                        <div class="profile-count">12</div>
+                        <div class="profile-percent">25% da equipe</div>
+                    </div>
+                    <div class="profile-card">
+                        <div class="profile-letter I">I</div>
+                        <div class="profile-name">Influência</div>
+                        <div class="profile-count">15</div>
+                        <div class="profile-percent">31% da equipe</div>
+                    </div>
+                    <div class="profile-card">
+                        <div class="profile-letter S">S</div>
+                        <div class="profile-name">Estabilidade</div>
+                        <div class="profile-count">14</div>
+                        <div class="profile-percent">29% da equipe</div>
+                    </div>
+                    <div class="profile-card">
+                        <div class="profile-letter C">C</div>
+                        <div class="profile-name">Conformidade</div>
+                        <div class="profile-count">7</div>
+                        <div class="profile-percent">15% da equipe</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts -->
+            <div class="alerts-card animate-in">
+                <h2 class="section-title">Pontos de Atenção</h2>
+                
+                <div class="alert-item critical">
+                    <div class="alert-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <div class="alert-content">
+                        <h4 class="alert-title">Sobrecarga de Liderança Detectada</h4>
+                        <p class="alert-description">O índice de sobrecarga do líder está em nível crítico (8.2/10). Recomenda-se delegação de tarefas e revisão da estrutura de responsabilidades.</p>
+                    </div>
+                </div>
+
+                <div class="alert-item warning">
+                    <div class="alert-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="alert-content">
+                        <h4 class="alert-title">Riscos Psicossociais Identificados</h4>
+                        <p class="alert-description">Conforme NR-1, foram identificados fatores de risco que precisam ser incluídos no PGR da empresa. Ação preventiva recomendada.</p>
+                    </div>
+                </div>
+
+                <div class="alert-item info">
+                    <div class="alert-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                    </div>
+                    <div class="alert-content">
+                        <h4 class="alert-title">Oportunidade de Desenvolvimento</h4>
+                        <p class="alert-description">A equipe apresenta alto potencial de Influência (31%). Considere programas de desenvolvimento de liderança colaborativa.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Chart.js Configuration
+        Chart.defaults.font.family = "'Source Sans 3', sans-serif";
+        Chart.defaults.color = '#6c757d';
+
+        // Radar Chart - Distribuição por Dimensão
+        const radarCtx = document.getElementById('radarChart').getContext('2d');
+        new Chart(radarCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Neuroemocional', 'Organizacional', 'Liderança', 'Cultura', 'Riscos PSS'],
+                datasets: [{
+                    label: 'Pontuação',
+                    data: [7.2, 6.8, 5.5, 7.8, 5.8],
+                    backgroundColor: 'rgba(109, 113, 65, 0.2)',
+                    borderColor: '#6D7141',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#6D7141',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#6D7141'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 10,
+                        ticks: {
+                            stepSize: 2,
+                            font: { size: 11 }
+                        },
+                        pointLabels: {
+                            font: { size: 12, weight: '500' },
+                            color: '#1E2C36'
+                        },
+                        grid: {
+                            color: 'rgba(30, 44, 54, 0.1)'
+                        },
+                        angleLines: {
+                            color: 'rgba(30, 44, 54, 0.1)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Bar Chart - Evolução dos Índices
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Sobrecarga', 'Dependência', 'Maturidade', 'Risco PSS', 'Conflito', 'Escalabil.'],
+                datasets: [
+                    {
+                        label: 'Atual',
+                        data: [8.2, 6.5, 7.1, 5.8, 3.2, 5.4],
+                        backgroundColor: '#6D7141',
+                        borderRadius: 6,
+                        barThickness: 20
+                    },
+                    {
+                        label: 'Anterior',
+                        data: [7.5, 7.2, 6.5, 6.2, 4.1, 4.8],
+                        backgroundColor: '#ced4da',
+                        borderRadius: 6,
+                        barThickness: 20
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: { size: 11 }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        grid: {
+                            color: 'rgba(30, 44, 54, 0.08)'
+                        },
+                        ticks: {
+                            stepSize: 2,
+                            font: { size: 11 }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-in').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

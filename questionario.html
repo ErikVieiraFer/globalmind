@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionário de Diagnóstico - GlobalMind</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/pages/questionario.css">
+</head>
+<body class="bg-bege">
+
+    <header class="py-3 mb-4 border-bottom bg-white shadow-sm">
+        <div class="container d-flex justify-content-center">
+            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+                <!-- <img src="assets/logo.svg" alt="GlobalMind Logo" width="150"> -->
+                 <h1 class="display-6 fw-bold" style="color: var(--verde-oliva);">GlobalMind</h1>
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="progress mb-4" style="height: 10px;">
+            <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+
+        <div id="questionario-container" style="display: none;">
+            <!-- As perguntas serão renderizadas aqui pelo JavaScript -->
+        </div>
+
+        <div id="welcome-screen" class="text-center">
+            <div class="card mx-auto" style="max-width: 600px;">
+                <div class="card-body p-5">
+                    <h2 class="card-title display-5" style="font-family: var(--font-display);">Diagnóstico Comportamental</h2>
+                    <p class="lead text-muted">Bem-vindo ao diagnóstico da GlobalMind. Por favor, preencha os campos abaixo para iniciar.</p>
+                    
+                    <div class="form-floating mb-3 mt-4">
+                        <input type="text" class="form-control" id="empresa-nome" placeholder="Nome da Empresa">
+                        <label for="empresa-nome">Nome da Empresa</label>
+                    </div>
+                    <div class="form-floating mb-4">
+                        <input type="text" class="form-control" id="respondente-nome" placeholder="Seu Nome">
+                        <label for="respondente-nome">Seu Nome</label>
+                    </div>
+
+                    <button id="start-button" class="btn btn-primary btn-lg">Iniciar Diagnóstico</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="text-center py-4 mt-5">
+        <p class="text-muted">&copy; 2026 GlobalMind. Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="js/questionario.js"></script>
+</body>
+</html>
