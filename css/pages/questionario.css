@@ -6,13 +6,20 @@ body {
 }
 
 .btn-primary {
-    background-color: var(--verde-oliva);
-    border-color: var(--verde-oliva);
+    background-color: var(--verde-oliva, #6D7141);
+    border-color: var(--verde-oliva, #6D7141);
+    color: #fff;
 }
 
 .btn-primary:hover {
     background-color: #5a5d36; /* Um tom mais escuro de verde oliva */
     border-color: #5a5d36;
+}
+
+.btn-primary:disabled {
+    background-color: var(--verde-oliva, #6D7141);
+    border-color: var(--verde-oliva, #6D7141);
+    opacity: 0.65;
 }
 
 .progress-bar {

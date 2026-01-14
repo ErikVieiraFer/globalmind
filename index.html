@@ -15,29 +15,225 @@
 <body class="bg-bege">
 
     <header class="py-3 mb-4 border-bottom bg-white shadow-sm">
-        <div class="container d-flex justify-content-center">
-            <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
-                <h1 class="display-6 fw-bold" style="color: var(--verde-oliva);">GlobalMind</h1>
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="index.html" class="d-flex align-items-center text-decoration-none">
+                <h1 class="h3 fw-bold mb-0" style="color: var(--verde-oliva, #6D7141);">GlobalMind</h1>
             </a>
+            <nav class="d-none d-md-flex align-items-center gap-4">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="#" class="nav-link">Sobre</a>
+                <a href="#contato" class="nav-link">Contato</a>
+                <a href="questionario.html" class="btn btn-outline-primary btn-sm">Área do Cliente</a>
+            </nav>
         </div>
     </header>
 
-    <main class="container mt-5">
-        <div class="row align-items-center">
+    <main>
+        <!-- HERO SECTION -->
+        <section class="container mt-5 mb-5">
+            <div class="row align-items-center">
             <div class="col-md-6">
                 <h1 class="display-3" style="font-family: var(--font-display); color: var(--azul-petroleo);">Revele o Potencial Oculto da Sua Liderança.</h1>
                 <p class="lead my-4">Nosso diagnóstico comportamental oferece uma análise profunda dos padrões da sua liderança e do impacto na sua equipe. Entenda os pontos de sobrecarga, a dependência da sua presença e os riscos psicossociais para desbloquear um crescimento escalável e sustentável.</p>
                 <a href="questionario.html" class="btn btn-primary btn-lg">Começar Diagnóstico Gratuito</a>
             </div>
-            <div class="col-md-6 text-center">
-                <!-- Placeholder para uma imagem ou ilustração -->
-                <img src="https://via.placeholder.com/500x400.png?text=Visão+Estratégica" class="img-fluid rounded" alt="Ilustração de visão estratégica">
+            <div class="col-md-6 text-center hero-illustration">
+                <!-- Ilustração SVG Inline -->
+                <svg viewBox="0 0 500 400" fill="none" xmlns="http://www.w3.org/2000/svg" class="img-fluid">
+                    <rect width="500" height="400" rx="20" fill="#F6F3ED"/>
+                    <path d="M0 320 C 150 320, 150 180, 300 180 C 450 180, 450 260, 500 220 L 500 400 L 0 400 Z" fill="#E8E4DB" fill-opacity="0.5"/>
+                    <path d="M80 280 L 180 180 L 260 220 L 420 60" stroke="#6D7141" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="80" cy="280" r="6" fill="#1E2C36"/>
+                    <circle cx="180" cy="180" r="6" fill="#1E2C36"/>
+                    <circle cx="260" cy="220" r="6" fill="#1E2C36"/>
+                    <circle cx="420" cy="60" r="8" fill="#6D7141" stroke="#fff" stroke-width="2"/>
+                    <rect x="350" y="30" width="120" height="60" rx="8" fill="white"/>
+                    <text x="370" y="65" font-family="sans-serif" font-size="12" font-weight="bold" fill="#1E2C36">Performance</text>
+                    <text x="370" y="80" font-family="sans-serif" font-size="10" fill="#22c55e" font-weight="bold">+125%</text>
+                </svg>
             </div>
         </div>
+        </section>
+
+        <!-- SEÇÃO O PROBLEMA -->
+        <section class="section-padding">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h2 class="section-title">Sua empresa está preparada para a <span class="text-verde-oliva">NR-1</span>?</h2>
+                    <p class="lead text-muted mx-auto" style="max-width: 700px;">Os riscos psicossociais no trabalho não são apenas um problema de saúde, mas um risco financeiro e legal para o seu negócio.</p>
+                </div>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card-stat text-center">
+                            <div class="stat-number">72%</div>
+                            <p class="mb-0">dos trabalhadores brasileiros sofrem de estresse relacionado ao trabalho.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-stat text-center">
+                            <div class="stat-number">30%</div>
+                            <p class="mb-0">de aumento nos afastamentos por saúde mental no último ano.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-stat text-center">
+                            <div class="stat-number">R$ 300bi</div>
+                            <p class="mb-0">perdidos anualmente por empresas devido a problemas emocionais.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO NOSSA SOLUÇÃO -->
+        <section class="section-padding bg-white">
+            <div class="container">
+                <div class="text-center mb-5">
+                    <h2 class="section-title">Diagnóstico Comportamental Completo</h2>
+                    <p class="lead text-muted">Medimos 6 índices essenciais para a saúde e escalabilidade da sua empresa.</p>
+                </div>
+                <div class="row g-4">
+                    <!-- Card 1 -->
+                    <div class="col-md-4 col-sm-6">
+                        <div class="card-solution">
+                            <div class="icon-box">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 16v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-4"/><path d="M12 12V3"/><path d="M8 7l4-4 4 4"/><rect x="8" y="12" width="8" height="8" rx="1"/></svg>
+                            </div>
+                            <h5 class="fw-bold mb-2">Sobrecarga do Líder</h5>
+                            <p class="small text-muted mb-0">Identifique gargalos de decisão e centralização excessiva.</p>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="col-md-4 col-sm-6">
+                        <div class="card-solution">
+                            <div class="icon-box">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                            </div>
+                            <h5 class="fw-bold mb-2">Dependência do Dono</h5>
+                            <p class="small text-muted mb-0">Avalie se a empresa opera sem a sua presença constante.</p>
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="col-md-4 col-sm-6">
+                        <div class="card-solution">
+                            <div class="icon-box">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 2a10 10 0 0 1 10 10h-10z" opacity="0.5"/></svg>
+                            </div>
+                            <h5 class="fw-bold mb-2">Maturidade Emocional</h5>
+                            <p class="small text-muted mb-0">Nível de inteligência emocional e resiliência da equipe.</p>
+                        </div>
+                    </div>
+                    <!-- Card 4 -->
+                    <div class="col-md-4 col-sm-6">
+                        <div class="card-solution">
+                            <div class="icon-box">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            </div>
+                            <h5 class="fw-bold mb-2">Risco Psicossocial (NR-1)</h5>
+                            <p class="small text-muted mb-0">Mapeamento de riscos obrigatório pela nova legislação.</p>
+                        </div>
+                    </div>
+                    <!-- Card 5 -->
+                    <div class="col-md-4 col-sm-6">
+                        <div class="card-solution">
+                            <div class="icon-box">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                            </div>
+                            <h5 class="fw-bold mb-2">Conflito Geracional</h5>
+                            <p class="small text-muted mb-0">Alinhamento entre diferentes gerações no ambiente de trabalho.</p>
+                        </div>
+                    </div>
+                    <!-- Card 6 -->
+                    <div class="col-md-4 col-sm-6">
+                        <div class="card-solution">
+                            <div class="icon-box">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+                            </div>
+                            <h5 class="fw-bold mb-2">Escalabilidade Humana</h5>
+                            <p class="small text-muted mb-0">Capacidade do time de crescer sem perder a cultura.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO COMO FUNCIONA -->
+        <section class="section-padding">
+            <div class="container">
+                <h2 class="section-title text-center">Como Funciona</h2>
+                <div class="row text-center mt-5">
+                    <div class="col-md-4 mb-4">
+                        <div class="step-number">1</div>
+                        <h4 class="fw-bold">Responda</h4>
+                        <p class="text-muted">Um questionário rápido e intuitivo de 10 minutos.</p>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="step-number">2</div>
+                        <h4 class="fw-bold">Analise</h4>
+                        <p class="text-muted">Receba seu diagnóstico instantâneo com gráficos detalhados.</p>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="step-number">3</div>
+                        <h4 class="fw-bold">Transforme</h4>
+                        <p class="text-muted">Visualize os pontos de atenção e crie seu plano de ação.</p>
+                    </div>
+                </div>
+                
+                <!-- SEÇÃO NR-1 -->
+                <div class="nr1-box mt-5">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h4 class="fw-bold text-azul-petroleo">Atenção à Norma Regulamentadora 01 (NR-1)</h4>
+                            <p class="mb-0 text-muted">Desde maio de 2025, é <strong>obrigatório</strong> que as empresas incluam riscos psicossociais em seu Gerenciamento de Riscos Ocupacionais (GRO). O não cumprimento pode acarretar em multas severas e passivos trabalhistas.</p>
+                        </div>
+                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                            <span class="badge bg-danger p-2">Obrigatório</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA FINAL -->
+        <section class="section-padding bg-azul-petroleo text-center">
+            <div class="container">
+                <h2 class="display-5 fw-bold mb-4" style="font-family: var(--font-display);">Descubra o potencial da sua equipe</h2>
+                <p class="lead mb-5 opacity-75">Não deixe para depois. O diagnóstico é o primeiro passo para uma liderança mais saudável e eficiente.</p>
+                <a href="questionario.html" class="btn btn-primary btn-lg px-5 py-3">Fazer Diagnóstico Gratuito</a>
+            </div>
+        </section>
     </main>
 
-    <footer class="text-center py-4 mt-5">
-        <p class="text-muted">&copy; 2026 GlobalMind. Todos os direitos reservados.</p>
+    <footer id="contato" class="bg-azul-petroleo text-white py-5">
+        <div class="container">
+            <div class="row gy-4">
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-3">GlobalMind</h5>
+                    <p class="small opacity-75">Transformando ambientes corporativos através de dados e inteligência comportamental.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-3">Links Rápidos</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="index.html" class="text-decoration-none text-white-50">Home</a></li>
+                        <li class="mb-2"><a href="questionario.html" class="text-decoration-none text-white-50">Diagnóstico</a></li>
+                        <li class="mb-2"><a href="#contato" class="text-decoration-none text-white-50">Contato</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="fw-bold mb-3">Contato</h5>
+                    <p class="small opacity-75 mb-1">contato@globalmind.com.br</p>
+                    <p class="small opacity-75">
+                        <a href="https://wa.me/5527999833488?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20o%20diagn%C3%B3stico%20GlobalMind." target="_blank" class="text-white text-decoration-none d-flex align-items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-whatsapp" viewBox="0 0 16 16"><path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/></svg>
+                            27 99983-3488
+                        </a>
+                    </p>
+                </div>
+            </div>
+            <div class="border-top border-secondary mt-4 pt-4 text-center">
+                <p class="small opacity-50 mb-0">&copy; 2026 GlobalMind. Todos os direitos reservados.</p>
+            </div>
+        </div>
     </footer>
 
 </body>
