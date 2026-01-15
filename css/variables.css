@@ -1,0 +1,16 @@
+:root {
+    /* Cores */
+    --verde-oliva: #6D7141;
+    --azul-petroleo: #1E2C36;
+    --bege: #F6F3ED;
+    --bege-dark: #E8E4DB;
+    --branco: #FFFFFF;
+    --cinza-claro: #e9ecef;
+    --danger: #dc3545;
+    --warning: #f59e0b;
+    --success: #22c55e;
+
+    /* Tipografia */
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'Source Sans 3', sans-serif;
+}

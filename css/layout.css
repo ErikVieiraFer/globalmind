@@ -1,0 +1,24 @@
+/* Layout Containers */
+.container {
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+/* Header */
+header {
+    background-color: var(--branco);
+}
+
+/* Footer */
+footer {
+    background-color: var(--azul-petroleo);
+    color: var(--branco);
+}
+
+/* Espaçamento Padrão */
+main {
+    min-height: 80vh;
+}

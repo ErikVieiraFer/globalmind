@@ -101,6 +101,7 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="js/calculos.js"></script>
     <script src="js/charts.js"></script>
     <script>
@@ -133,6 +134,30 @@
 
             const barCtx = document.getElementById('bar-chart').getContext('2d');
             criarGraficoBarras(barCtx, resultados);
+
+            // Configuração do botão Exportar PDF
+            document.getElementById('export-pdf').addEventListener('click', () => {
+                const element = document.querySelector('main');
+                const btn = document.getElementById('export-pdf');
+                
+                // Feedback visual
+                const originalText = btn.innerText;
+                btn.innerText = 'Gerando...';
+                btn.disabled = true;
+
+                const opt = {
+                    margin:       10,
+                    filename:     `Diagnostico_GlobalMind_${empresa.replace(/[^a-z0-9]/gi, '_')}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2 },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                html2pdf().set(opt).from(element).save().then(() => {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                });
+            });
         });
 
         function getStatus(score) {
