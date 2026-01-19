@@ -21,6 +21,10 @@
             <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
                 <h1 class="display-6 fw-bold" style="color: var(--verde-oliva);">GlobalMind</h1>
             </a>
+            <div class="d-flex gap-2">
+                <span id="user-display" class="d-none d-md-block align-self-center me-2"></span>
+                <button id="logout-btn" class="btn btn-sm btn-outline-secondary">Sair</button>
+            </div>
             <button id="export-pdf" class="btn btn-outline-primary">Exportar PDF</button>
         </div>
     </header>
@@ -94,6 +98,18 @@
                 </div>
             </div>
         </div>
+
+        <!-- Próximos Passos -->
+        <div class="card mt-4 bg-azul-petroleo text-white border-0">
+            <div class="card-body p-5 text-center">
+                <h3 class="mb-3">Próximos Passos</h3>
+                <p class="lead mb-4 opacity-75">Agora que você conhece seus índices, vamos traçar um plano de ação.</p>
+                <a id="whatsapp-btn" href="#" target="_blank" class="btn btn-success btn-lg px-4">
+                    Agendar Devolutiva Gratuita
+                </a>
+            </div>
+        </div>
+
     </main>
 
     <footer class="text-center py-4 mt-5">
@@ -134,32 +150,33 @@
 
             const barCtx = document.getElementById('bar-chart').getContext('2d');
             criarGraficoBarras(barCtx, resultados);
+        }
 
-            // Configuração do botão Exportar PDF
-            document.getElementById('export-pdf').addEventListener('click', () => {
-                const element = document.querySelector('main');
-                const btn = document.getElementById('export-pdf');
-                
-                // Feedback visual
-                const originalText = btn.innerText;
-                btn.innerText = 'Gerando...';
-                btn.disabled = true;
+        function getStatus(score) {
+            if (score >= 7) return { classe: 'danger', texto: 'Crítico' };
+            if (score >= 4) return { classe: 'warning', texto: 'Atenção' };
+            return { classe: 'success', texto: 'Bom' };
+        }
 
-                const opt = {
-                    margin:       10,
-                    filename:     `Diagnostico_GlobalMind_${empresa.replace(/[^a-z0-9]/gi, '_')}.pdf`,
-                    image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2 },
-                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
+        function renderizarIndices(resultados) {
+            const container = document.getElementById('indices-container');
+            const labels = {
+                sobrecarga_lider: 'Sobrecarga do Líder',
+                dependencia_dono: 'Dependência no Dono',
+                maturidade_emocional: 'Maturidade Emocional',
+                risco_psicossocial: 'Risco Psicossocial',
+                conflito_geracional: 'Conflito Geracional',
+                escalabilidade_humana: 'Escalabilidade Humana'
+            };
 
-                html2pdf().set(opt).from(element).save().then(() => {
-                    btn.innerText = originalText;
-                    btn.disabled = false;
-                });
-            });
-        });
-
+            let html = '';
+            for (const indice in resultados) {
+                const score = resultados[indice];
+                const status = getStatus(score);
+                html += `
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>${labels[indice]}</span>
         function getStatus(score) {
             if (score >= 7) return { classe: 'danger', texto: 'Crítico' };
             if (score >= 4) return { classe: 'warning', texto: 'Atenção' };

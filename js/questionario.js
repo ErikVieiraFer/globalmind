@@ -1,3 +1,6 @@
+import { db } from './firebase-config.js';
+import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
 document.addEventListener('DOMContentLoaded', () => {
     const questionarioContainer = document.getElementById('questionario-container');
     const progressBar = document.getElementById('progress-bar');
@@ -102,6 +105,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const respondente = respondenteInput.value.trim();
 
             if (empresa && respondente) {
+                // Gerar Visitor ID se não existir
+                let visitorId = localStorage.getItem('globalmind_visitorId');
+                if (!visitorId) {
+                    visitorId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+                    localStorage.setItem('globalmind_visitorId', visitorId);
+                }
+
                 localStorage.setItem('globalmind_empresa', empresa);
                 localStorage.setItem('globalmind_respondente', respondente);
                 localStorage.setItem('globalmind_data', new Date().toISOString());
@@ -153,6 +163,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const nextButton = document.getElementById('next-button');
         const inputs = questionarioContainer.querySelectorAll('input[name="resposta"]');
+        const listItems = questionarioContainer.querySelectorAll('.list-group-item');
+
+        // Permitir seleção clicando em qualquer lugar do item da lista
+        listItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                const input = item.querySelector('input[type="radio"]');
+                if (e.target !== input && e.target.tagName !== 'LABEL') {
+                    input.checked = true;
+                    nextButton.disabled = false;
+                }
+            });
+        });
 
         inputs.forEach(input => {
             input.addEventListener('change', () => {
@@ -192,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBar.setAttribute('aria-valuenow', progresso);
     }
 
-    function finalizarQuestionario() {
+    async function finalizarQuestionario() {
         questionarioContainer.innerHTML = `
             <div class="card text-center fade-in">
                 <div class="card-body">
@@ -208,9 +230,30 @@ document.addEventListener('DOMContentLoaded', () => {
         progressBar.classList.remove('bg-primary');
         progressBar.classList.add('bg-success');
 
-        setTimeout(() => {
-            window.location.href = 'resultado.html';
-        }, 2000);
+        // Calcular resultados para salvar no Firestore
+        // A função calcularResultados() deve estar disponível globalmente via calculos.js
+        const resultados = window.calcularResultados ? window.calcularResultados() : {};
+
+        try {
+            await addDoc(collection(db, "diagnosticos"), {
+                visitorId: localStorage.getItem('globalmind_visitorId'),
+                empresa: localStorage.getItem('globalmind_empresa'),
+                respondente: localStorage.getItem('globalmind_respondente'),
+                respostas: JSON.parse(localStorage.getItem('globalmind_respostas')),
+                resultados: resultados,
+                criadoEm: serverTimestamp(),
+                convertido: false,
+                visualizadoAdmin: false
+            });
+
+            setTimeout(() => {
+                window.location.href = 'preview.html';
+            }, 1500);
+
+        } catch (e) {
+            console.error("Erro ao salvar diagnóstico: ", e);
+            // Fallback: redireciona mesmo com erro no firestore
+            window.location.href = 'preview.html';
+        }
     }
 });
-
