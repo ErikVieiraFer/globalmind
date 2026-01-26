@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - GlobalMind</title>
+</head>
+<body>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif;">
+        <p>Verificando autenticação...</p>
+    </div>
+
+    <script type="module">
+        import { auth, db } from '../js/firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                // Não está logado, redireciona para login do admin
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Está logado, verificar se é admin
+            try {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+
+                if (userDoc.exists() && userDoc.data().role === "admin") {
+                    // É admin, redireciona para dashboard
+                    window.location.href = 'dashboard.html';
+                } else {
+                    // Não é admin, redireciona para login
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error("Erro ao verificar role:", error);
+                window.location.href = 'login.html';
+            }
+        });
+    </script>
+</body>
+</html>

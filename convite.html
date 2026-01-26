@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliação de Riscos Psicossociais - GlobalMind</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --verde-oliva: #6D7141;
+            --verde-oliva-dark: #565a34;
+            --azul-petroleo: #1E2C36;
+            --bege: #F6F3ED;
+            --white: #FFFFFF;
+            --gray-600: #6c757d;
+            --gray-300: #dee2e6;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Source Sans 3', -apple-system, sans-serif;
+            --shadow-lg: 0 8px 30px rgba(30, 44, 54, 0.12);
+            --radius-lg: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(135deg, #f5f7fa 0%, var(--bege) 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--verde-oliva);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 30px;
+            height: 30px;
+            fill: var(--white);
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+        }
+
+        .title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--gray-600);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            margin-bottom: 1rem;
+        }
+
+        .section-text {
+            color: var(--gray-600);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .highlight-box {
+            background: rgba(109, 113, 65, 0.1);
+            border-left: 4px solid var(--verde-oliva);
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .highlight-box strong {
+            color: var(--azul-petroleo);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight-box p {
+            color: var(--gray-600);
+            margin: 0;
+        }
+
+        ul {
+            color: var(--gray-600);
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--verde-oliva);
+            box-shadow: 0 0 0 3px rgba(109, 113, 65, 0.1);
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: var(--verde-oliva);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: var(--verde-oliva-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(109, 113, 65, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .info-item {
+            text-align: center;
+            padding: 1rem;
+            background: var(--bege);
+            border-radius: 8px;
+        }
+
+        .info-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--verde-oliva);
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-top: 0.25rem;
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .title {
+                font-size: 1.5rem;
+            }
+            .card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">GLOBALMIND</span>
+            </div>
+            <h1 class="title">Avaliação de Riscos Psicossociais</h1>
+            <p class="subtitle">Conforme NR-1 - Norma Regulamentadora de Segurança e Saúde no Trabalho</p>
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">Sobre esta Avaliação</h2>
+            <p class="section-text">
+                Esta avaliação tem como objetivo identificar fatores de risco psicossocial no ambiente de trabalho,
+                conforme previsto na NR-1. Suas respostas são fundamentais para promover um ambiente mais saudável
+                e seguro para todos os colaboradores.
+            </p>
+
+            <div class="highlight-box">
+                <strong>🔒 Garantia de Anonimato e Confidencialidade</strong>
+                <p>
+                    Suas respostas são completamente anônimas. Nenhuma informação pessoal identificável será coletada.
+                    Os resultados serão apresentados de forma agregada à empresa, impossibilitando a identificação individual.
+                </p>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-number">90</div>
+                    <div class="info-label">Questões</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">9</div>
+                    <div class="info-label">Tópicos</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">15-20</div>
+                    <div class="info-label">Minutos</div>
+                </div>
+            </div>
+
+            <h3 class="section-title">O que será avaliado:</h3>
+            <ul>
+                <li>Assédio moral e sexual</li>
+                <li>Carga excessiva de trabalho</li>
+                <li>Reconhecimento e recompensas</li>
+                <li>Clima organizacional</li>
+                <li>Autonomia e controle sobre o trabalho</li>
+                <li>Pressão e metas</li>
+                <li>Insegurança e ameaças</li>
+                <li>Conflitos interpessoais e comunicação</li>
+                <li>Equilíbrio vida pessoal e profissional</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2 class="section-title">Informações Iniciais</h2>
+            <p class="section-text">
+                Para contextualizar sua avaliação, por favor, informe seu setor e função.
+                Essas informações nos ajudam a entender os diferentes contextos de trabalho,
+                mas não permitem sua identificação individual.
+            </p>
+
+            <form id="convite-form">
+                <div class="form-group">
+                    <label class="form-label" for="setor">Setor / Departamento</label>
+                    <select id="setor" class="form-control" required>
+                        <option value="">Selecione...</option>
+                        <option value="Administrativo">Administrativo</option>
+                        <option value="Comercial">Comercial / Vendas</option>
+                        <option value="Financeiro">Financeiro</option>
+                        <option value="RH">Recursos Humanos</option>
+                        <option value="TI">Tecnologia da Informação</option>
+                        <option value="Operacional">Operacional / Produção</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Atendimento">Atendimento ao Cliente</option>
+                        <option value="Logística">Logística</option>
+                        <option value="Qualidade">Qualidade</option>
+                        <option value="Outro">Outro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="funcao">Função / Cargo</label>
+                    <input
+                        type="text"
+                        id="funcao"
+                        class="form-control"
+                        placeholder="Ex: Analista, Assistente, Coordenador..."
+                        required
+                    >
+                </div>
+
+                <div class="error-message" id="error-message">
+                    Por favor, preencha todos os campos obrigatórios.
+                </div>
+
+                <button type="submit" class="btn" id="submit-btn">
+                    Iniciar Avaliação
+                </button>
+            </form>
+        </div>
+
+        <div class="card" style="background: rgba(109, 113, 65, 0.05); text-align: center;">
+            <p style="color: var(--gray-600); margin: 0;">
+                <strong>Importante:</strong> Responda com sinceridade. Não existem respostas certas ou erradas.
+                O objetivo é mapear a realidade do ambiente de trabalho para promover melhorias.
+            </p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { v4 as uuidv4 } from 'https://cdn.jsdelivr.net/npm/uuid@9.0.0/+esm';
+
+        // Pegar ID da empresa da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const empresaId = urlParams.get('empresa');
+
+        if (!empresaId) {
+            alert('Link inválido. Por favor, use o link fornecido pela empresa.');
+            // Redirecionar para home ou mostrar mensagem de erro
+        }
+
+        const form = document.getElementById('convite-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const errorMessage = document.getElementById('error-message');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const setor = document.getElementById('setor').value;
+            const funcao = document.getElementById('funcao').value.trim();
+
+            if (!setor || !funcao) {
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            errorMessage.classList.remove('show');
+
+            // Gerar ou recuperar visitorId para anonimato
+            let visitorId = localStorage.getItem('globalmind_nr1_visitorId');
+            if (!visitorId) {
+                visitorId = uuidv4();
+                localStorage.setItem('globalmind_nr1_visitorId', visitorId);
+            }
+
+            // Salvar dados iniciais no localStorage
+            const dadosIniciais = {
+                empresaId,
+                visitorId,
+                setor,
+                funcao,
+                iniciadoEm: new Date().toISOString()
+            };
+
+            localStorage.setItem('globalmind_nr1_dados', JSON.stringify(dadosIniciais));
+
+            // Redirecionar para o questionário
+            window.location.href = `questionario-nr1.html?empresa=${empresaId}`;
+        });
+    </script>
+</body>
+</html>

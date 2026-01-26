@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados NR-1 - Admin GlobalMind</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="dashboard.html" type="text/css">
+    <style>
+        /* Reutilizar estilos do dashboard.html */
+        :root {--verde-oliva:#6D7141;--azul-petroleo:#1E2C36;--bege:#F6F3ED;--white:#FFFFFF;--gray-200:#e9ecef;--gray-600:#6c757d;--success:#22c55e;--warning:#f59e0b;--danger:#dc3545;--font-display:'Playfair Display',Georgia,serif;--font-body:'Source Sans 3',-apple-system,sans-serif;--shadow-sm:0 1px 2px rgba(30,44,54,0.05);--shadow-md:0 4px 12px rgba(30,44,54,0.08);--radius-lg:20px;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:var(--font-body);background:var(--bege);color:var(--azul-petroleo);min-height:100vh;line-height:1.6;}
+        .app-container{display:flex;min-height:100vh;}
+        .sidebar{width:280px;background:var(--azul-petroleo);color:var(--white);padding:2rem 0;position:fixed;height:100vh;overflow-y:auto;z-index:100;}
+        .main-content{flex:1;margin-left:280px;padding:2rem 2.5rem;}
+        .page-title{font-family:var(--font-display);font-size:2rem;font-weight:600;margin-bottom:2rem;}
+        .card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:1.5rem;margin-bottom:2rem;}
+        .form-group{margin-bottom:1.5rem;}
+        .form-label{display:block;font-weight:600;margin-bottom:0.5rem;}
+        .form-control{width:100%;padding:0.75rem;border:1px solid var(--gray-200);border-radius:8px;}
+        .btn{padding:0.75rem 1.5rem;background:var(--verde-oliva);color:var(--white);border:none;border-radius:8px;cursor:pointer;font-weight:600;}
+        .btn:hover{opacity:0.9;}
+        .chart-container{height:300px;margin:2rem 0;}
+        .table{width:100%;border-collapse:collapse;}
+        .table th,.table td{padding:1rem;text-align:left;border-bottom:1px solid var(--gray-200);}
+        .badge{padding:0.25rem 0.75rem;border-radius:20px;font-size:0.75rem;font-weight:600;}
+        .badge-baixo{background:rgba(34,197,94,0.1);color:var(--success);}
+        .badge-moderado{background:rgba(245,158,11,0.1);color:var(--warning);}
+        .badge-alto{background:rgba(251,146,60,0.1);color:#fb923c;}
+        .badge-critico{background:rgba(220,53,69,0.1);color:var(--danger);}
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div style="padding:0 1.5rem 2rem;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:1.5rem;">
+                <div style="font-family:var(--font-display);font-size:1.25rem;font-weight:600;">GLOBALMIND</div>
+            </div>
+            <nav>
+                <a href="dashboard.html" style="display:flex;align-items:center;gap:0.875rem;padding:0.875rem 1.5rem;color:rgba(255,255,255,0.7);text-decoration:none;">Dashboard</a>
+                <a href="diagnosticos.html" style="display:flex;align-items:center;gap:0.875rem;padding:0.875rem 1.5rem;color:rgba(255,255,255,0.7);text-decoration:none;">Diagnósticos</a>
+                <a href="nr1-resultados.html" style="display:flex;align-items:center;gap:0.875rem;padding:0.875rem 1.5rem;color:var(--white);background:rgba(109,113,65,0.3);border-left:3px solid var(--verde-oliva);text-decoration:none;">Avaliações NR-1</a>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <h1 class="page-title">Resultados NR-1</h1>
+            <div class="card">
+                <div class="form-group">
+                    <label class="form-label">Selecionar Empresa</label>
+                    <select id="empresa-select" class="form-control">
+                        <option value="">Carregando...</option>
+                    </select>
+                </div>
+                <button id="btn-copiar-link" class="btn">Copiar Link do Questionário</button>
+            </div>
+            <div id="resultados-container" style="display:none;">
+                <div class="card">
+                    <h3>Risco Geral: <span id="risco-geral">-</span></h3>
+                    <p>Total de Respostas: <span id="total-respostas">0</span></p>
+                </div>
+                <div class="card">
+                    <canvas id="radarChart"></canvas>
+                </div>
+                <div class="card">
+                    <canvas id="barChart"></canvas>
+                </div>
+                <div class="card">
+                    <table class="table" id="tabela-resultados"></table>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script type="module">
+        import{checkAdminAuth}from'./js/admin.js';
+        import{getDiagnosticos}from'./js/admin.js';
+        import{buscarQuestionariosEmpresa,agregarResultadosEmpresa,classificarRisco,getRecomendacoes,NOMES_TOPICOS}from'../js/nr1-calculos.js';
+        import{gerarLinkQuestionario}from'../js/questionario-nr1.js';
+        await checkAdminAuth();
+        const empresaSelect=document.getElementById('empresa-select');
+        const btnCopiarLink=document.getElementById('btn-copiar-link');
+        const resultadosContainer=document.getElementById('resultados-container');
+        let empresaSelecionada=null;
+        async function carregarEmpresas(){
+            const diagnosticos=await getDiagnosticos();
+            const empresas=new Map();
+            diagnosticos.forEach(d=>{if(d.id&&d.nomeEmpresa){empresas.set(d.id,d.nomeEmpresa);}});
+            empresaSelect.innerHTML='<option value="">Selecione uma empresa...</option>';
+            empresas.forEach((nome,id)=>{
+                const option=document.createElement('option');
+                option.value=id;
+                option.textContent=nome;
+                empresaSelect.appendChild(option);
+            });
+        }
+        empresaSelect.addEventListener('change',async(e)=>{
+            empresaSelecionada=e.target.value;
+            if(!empresaSelecionada){
+                resultadosContainer.style.display='none';
+                return;
+            }
+            await carregarResultados(empresaSelecionada);
+        });
+        btnCopiarLink.addEventListener('click',()=>{
+            if(!empresaSelecionada){alert('Selecione uma empresa primeiro');return;}
+            const link=gerarLinkQuestionario(empresaSelecionada);
+            navigator.clipboard.writeText(link);
+            alert('Link copiado!');
+        });
+        async function carregarResultados(empresaId){
+            const questionarios=await buscarQuestionariosEmpresa(empresaId);
+            if(questionarios.length===0){alert('Nenhuma avaliação encontrada');resultadosContainer.style.display='none';return;}
+            const agregado=agregarResultadosEmpresa(questionarios);
+            document.getElementById('total-respostas').textContent=agregado.totalRespostas;
+            const classificacaoGeral=classificarRisco(agregado.resultadosMedios.risco_geral);
+            document.getElementById('risco-geral').innerHTML=`<span class="badge badge-${classificacaoGeral.nivel}">${agregado.resultadosMedios.risco_geral.toFixed(1)}/10 - ${classificacaoGeral.label}</span>`;
+            renderizarGraficos(agregado);
+            renderizarTabela(agregado);
+            resultadosContainer.style.display='block';
+        }
+        function renderizarGraficos(agregado){
+            const ctx1=document.getElementById('radarChart').getContext('2d');
+            new Chart(ctx1,{type:'radar',data:{labels:Object.values(NOMES_TOPICOS),datasets:[{label:'Pontuação',data:Object.keys(NOMES_TOPICOS).map(k=>agregado.resultadosMedios[k]),backgroundColor:'rgba(109,113,65,0.2)',borderColor:'#6D7141',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:10}}}});
+            const ctx2=document.getElementById('barChart').getContext('2d');
+            new Chart(ctx2,{type:'bar',data:{labels:Object.values(NOMES_TOPICOS),datasets:[{label:'Pontuação',data:Object.keys(NOMES_TOPICOS).map(k=>agregado.resultadosMedios[k]),backgroundColor:'#6D7141'}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,max:10}}}});
+        }
+        function renderizarTabela(agregado){
+            let html='<thead><tr><th>Dimensão</th><th>Pontuação</th><th>Classificação</th></tr></thead><tbody>';
+            Object.entries(NOMES_TOPICOS).forEach(([key,nome])=>{
+                const pontuacao=agregado.resultadosMedios[key];
+                const classificacao=classificarRisco(pontuacao);
+                html+=`<tr><td>${nome}</td><td>${pontuacao.toFixed(1)}/10</td><td><span class="badge badge-${classificacao.nivel}">${classificacao.label}</span></td></tr>`;
+            });
+            html+='</tbody>';
+            document.getElementById('tabela-resultados').innerHTML=html;
+        }
+        carregarEmpresas();
+    </script>
+</body>
+</html>

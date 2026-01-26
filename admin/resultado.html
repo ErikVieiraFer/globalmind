@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultado do Diagnóstico - Admin GlobalMind</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --verde-oliva: #6D7141;
+            --azul-petroleo: #1E2C36;
+            --azul-petroleo-light: #2d4251;
+            --bege: #F6F3ED;
+            --bege-dark: #E8E4DB;
+            --white: #FFFFFF;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --success: #22c55e;
+            --info: #3b82f6;
+            --warning: #f59e0b;
+            --danger: #dc3545;
+
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Source Sans 3', -apple-system, sans-serif;
+
+            --shadow-sm: 0 1px 2px rgba(30, 44, 54, 0.05);
+            --shadow-md: 0 4px 12px rgba(30, 44, 54, 0.08);
+            --shadow-lg: 0 8px 30px rgba(30, 44, 54, 0.12);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bege);
+            color: var(--azul-petroleo);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--azul-petroleo);
+            color: var(--white);
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--verde-oliva);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--white);
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.4);
+            padding: 0 1.5rem;
+            margin-bottom: 0.75rem;
+            margin-top: 1.5rem;
+            font-weight: 600;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 0.875rem 1.5rem;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--white);
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            opacity: 0.8;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem 2.5rem;
+            max-width: 1600px;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--bege-dark);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .back-link {
+            color: var(--verde-oliva);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-primary {
+            background: var(--verde-oliva);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: #565a34;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--white);
+        }
+
+        .btn-success:hover {
+            background: #16a34a;
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--azul-petroleo);
+            border: 1px solid var(--gray-300);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-100);
+        }
+
+        /* Company Info Card */
+        .company-card {
+            background: linear-gradient(135deg, var(--azul-petroleo) 0%, var(--azul-petroleo-light) 100%);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            color: var(--white);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .company-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-item value {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Index Cards */
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--verde-oliva);
+            border-radius: 2px;
+        }
+
+        .index-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .index-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .index-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .index-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--azul-petroleo);
+        }
+
+        .index-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .index-status.critical {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+
+        .index-status.warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .index-status.good {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+
+        .index-score {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .index-score-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--azul-petroleo);
+        }
+
+        .index-score-max {
+            font-size: 1rem;
+            color: var(--gray-500);
+        }
+
+        .index-bar {
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .index-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .index-bar-fill.critical {
+            background: linear-gradient(90deg, var(--danger), #ef4444);
+        }
+
+        .index-bar-fill.warning {
+            background: linear-gradient(90deg, var(--warning), #fbbf24);
+        }
+
+        .index-bar-fill.good {
+            background: linear-gradient(90deg, var(--success), #4ade80);
+        }
+
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chart-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--azul-petroleo);
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Alerts */
+        .alerts-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 0.75rem;
+        }
+
+        .alert-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .alert-item.critical {
+            background: rgba(220, 53, 69, 0.05);
+            border-left: 3px solid var(--danger);
+        }
+
+        .alert-item.warning {
+            background: rgba(245, 158, 11, 0.05);
+            border-left: 3px solid var(--warning);
+        }
+
+        .alert-item.info {
+            background: rgba(109, 113, 65, 0.05);
+            border-left: 3px solid var(--verde-oliva);
+        }
+
+        .alert-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .alert-item.critical .alert-icon {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+
+        .alert-item.warning .alert-icon {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .alert-item.info .alert-icon {
+            background: rgba(109, 113, 65, 0.1);
+            color: var(--verde-oliva);
+        }
+
+        .alert-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--azul-petroleo);
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-description {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            line-height: 1.5;
+        }
+
+        @media (max-width: 1400px) {
+            .index-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .index-grid {
+                grid-template-columns: 1fr;
+            }
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">GLOBALMIND</span>
+                </div>
+            </div>
+
+            <nav>
+                <div class="nav-section-title">Menu</div>
+                <a href="dashboard.html" class="nav-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="diagnosticos.html" class="nav-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    Diagnósticos
+                </a>
+
+                <div class="nav-section-title">Configurações</div>
+                <a href="#" class="nav-item" id="logout-link">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Sair
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="page-header">
+                <a href="diagnosticos.html" class="back-link">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    Voltar para Diagnósticos
+                </a>
+                <div class="header-top">
+                    <div>
+                        <h1 class="page-title" id="page-title">Carregando...</h1>
+                        <p class="page-subtitle" id="page-subtitle">Diagnóstico realizado em: --/--/----</p>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" id="btn-export-pdf">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            Exportar PDF
+                        </button>
+                        <button class="btn btn-success" id="btn-whatsapp">
+                            <svg fill="currentColor" viewBox="0 0 24 24" width="18" height="18">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                            </svg>
+                            Abrir WhatsApp
+                        </button>
+                        <button class="btn btn-primary" id="btn-marcar-contatado">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Marcar como Contatado
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Company Info -->
+            <div class="company-card">
+                <div class="company-info">
+                    <div class="info-item">
+                        <label>Empresa</label>
+                        <value id="info-empresa">--</value>
+                    </div>
+                    <div class="info-item">
+                        <label>Respondente</label>
+                        <value id="info-respondente">--</value>
+                    </div>
+                    <div class="info-item">
+                        <label>Email</label>
+                        <value id="info-email">--</value>
+                    </div>
+                    <div class="info-item">
+                        <label>Telefone</label>
+                        <value id="info-telefone">--</value>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Índices -->
+            <h2 class="section-title">Índices de Diagnóstico</h2>
+            <div class="index-grid" id="indices-container">
+                <!-- Será preenchido dinamicamente -->
+            </div>
+
+            <!-- Gráficos -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3 class="chart-title">Distribuição por Dimensão</h3>
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3 class="chart-title">Comparativo de Índices</h3>
+                    <div class="chart-container">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pontos de Atenção -->
+            <div class="alerts-card">
+                <h2 class="section-title">Pontos de Atenção</h2>
+                <div id="alertas-container">
+                    <!-- Será preenchido dinamicamente -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script type="module">
+        import { checkAdminAuth, getDiagnosticoById, logout, marcarComoVisualizado, updateDiagnosticoStatus, gerarMensagemWhatsApp, formatarData } from './js/admin.js';
+
+        // Verificar autenticação
+        try {
+            await checkAdminAuth();
+        } catch (error) {
+            console.error('Erro na autenticação:', error);
+        }
+
+        // Pegar ID da URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const diagnosticoId = urlParams.get('id');
+
+        if (!diagnosticoId) {
+            alert('ID do diagnóstico não fornecido');
+            window.location.href = 'diagnosticos.html';
+        }
+
+        let diagnostico;
+
+        // Carregar diagnóstico
+        async function loadDiagnostico() {
+            try {
+                diagnostico = await getDiagnosticoById(diagnosticoId);
+
+                // Marcar como visualizado
+                if (!diagnostico.visualizadoAdmin) {
+                    await marcarComoVisualizado(diagnosticoId);
+                }
+
+                // Preencher dados da empresa
+                document.getElementById('page-title').textContent = diagnostico.nomeEmpresa || 'Empresa não informada';
+                document.getElementById('page-subtitle').textContent = `Diagnóstico realizado em: ${formatarData(diagnostico.criadoEm)}`;
+                document.getElementById('info-empresa').textContent = diagnostico.nomeEmpresa || 'N/A';
+                document.getElementById('info-respondente').textContent = diagnostico.nomeRespondente || 'N/A';
+                document.getElementById('info-email').textContent = diagnostico.email || 'N/A';
+                document.getElementById('info-telefone').textContent = diagnostico.telefone || 'N/A';
+
+                // Renderizar índices
+                renderIndices(diagnostico.resultados);
+
+                // Renderizar gráficos
+                renderCharts(diagnostico.resultados);
+
+                // Renderizar alertas
+                renderAlertas(diagnostico.resultados);
+
+            } catch (error) {
+                console.error('Erro ao carregar diagnóstico:', error);
+                alert('Erro ao carregar diagnóstico');
+                window.location.href = 'diagnosticos.html';
+            }
+        }
+
+        // Renderizar índices
+        function renderIndices(resultados) {
+            const indices = [
+                { key: 'sobrecarga_lider', label: 'Sobrecarga do Líder', desc: 'Nível de responsabilidades excessivas do líder' },
+                { key: 'dependencia_dono', label: 'Dependência do Dono', desc: 'Grau de dependência das decisões do proprietário' },
+                { key: 'maturidade_emocional', label: 'Maturidade Emocional', desc: 'Capacidade de gestão emocional e resolução de conflitos' },
+                { key: 'risco_psicossocial', label: 'Risco Psicossocial (NR-1)', desc: 'Fatores de risco psicossocial conforme NR-1' },
+                { key: 'conflito_geracional', label: 'Conflito Geracional', desc: 'Nível de conflito entre diferentes gerações' },
+                { key: 'escalabilidade_humana', label: 'Escalabilidade Humana', desc: 'Capacidade de crescimento sem perda de qualidade' }
+            ];
+
+            const container = document.getElementById('indices-container');
+            container.innerHTML = indices.map(indice => {
+                const valor = resultados[indice.key] || 0;
+                const porcentagem = (valor / 10) * 100;
+
+                let status, statusClass, barClass;
+                if (valor >= 7) {
+                    status = 'Crítico';
+                    statusClass = 'critical';
+                    barClass = 'critical';
+                } else if (valor >= 4) {
+                    status = 'Atenção';
+                    statusClass = 'warning';
+                    barClass = 'warning';
+                } else {
+                    status = 'Adequado';
+                    statusClass = 'good';
+                    barClass = 'good';
+                }
+
+                return `
+                    <div class="index-card">
+                        <div class="index-card-header">
+                            <span class="index-name">${indice.label}</span>
+                            <span class="index-status ${statusClass}">${status}</span>
+                        </div>
+                        <div class="index-score">
+                            <span class="index-score-value">${valor.toFixed(1)}</span>
+                            <span class="index-score-max">/ 10</span>
+                        </div>
+                        <div class="index-bar">
+                            <div class="index-bar-fill ${barClass}" style="width: ${porcentagem}%;"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Renderizar gráficos
+        function renderCharts(resultados) {
+            Chart.defaults.font.family = "'Source Sans 3', sans-serif";
+            Chart.defaults.color = '#6c757d';
+
+            // Radar Chart
+            const radarCtx = document.getElementById('radarChart').getContext('2d');
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Sobrecarga Líder', 'Depend. Dono', 'Maturidade Emoc.', 'Risco PSS', 'Conflito Ger.', 'Escalabilidade'],
+                    datasets: [{
+                        label: 'Pontuação',
+                        data: [
+                            resultados.sobrecarga_lider || 0,
+                            resultados.dependencia_dono || 0,
+                            resultados.maturidade_emocional || 0,
+                            resultados.risco_psicossocial || 0,
+                            resultados.conflito_geracional || 0,
+                            resultados.escalabilidade_humana || 0
+                        ],
+                        backgroundColor: 'rgba(109, 113, 65, 0.2)',
+                        borderColor: '#6D7141',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#6D7141',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#6D7141'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 10,
+                            ticks: {
+                                stepSize: 2,
+                                font: { size: 11 }
+                            },
+                            pointLabels: {
+                                font: { size: 11, weight: '500' },
+                                color: '#1E2C36'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Bar Chart
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Sobrecarga', 'Dependência', 'Maturidade', 'Risco PSS', 'Conflito', 'Escalabilidade'],
+                    datasets: [{
+                        label: 'Pontuação',
+                        data: [
+                            resultados.sobrecarga_lider || 0,
+                            resultados.dependencia_dono || 0,
+                            resultados.maturidade_emocional || 0,
+                            resultados.risco_psicossocial || 0,
+                            resultados.conflito_geracional || 0,
+                            resultados.escalabilidade_humana || 0
+                        ],
+                        backgroundColor: '#6D7141',
+                        borderRadius: 6,
+                        barThickness: 30
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: { display: false }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 10,
+                            ticks: { stepSize: 2 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        // Renderizar alertas
+        function renderAlertas(resultados) {
+            const alertas = [];
+
+            if (resultados.sobrecarga_lider >= 7) {
+                alertas.push({
+                    type: 'critical',
+                    title: 'Sobrecarga de Liderança Detectada',
+                    description: `O índice de sobrecarga do líder está em nível crítico (${resultados.sobrecarga_lider.toFixed(1)}/10). Recomenda-se delegação de tarefas e revisão da estrutura de responsabilidades.`
+                });
+            }
+
+            if (resultados.risco_psicossocial >= 5) {
+                alertas.push({
+                    type: 'warning',
+                    title: 'Riscos Psicossociais Identificados',
+                    description: 'Conforme NR-1, foram identificados fatores de risco que precisam ser incluídos no PGR da empresa. Ação preventiva recomendada.'
+                });
+            }
+
+            if (resultados.dependencia_dono >= 7) {
+                alertas.push({
+                    type: 'warning',
+                    title: 'Alta Dependência do Proprietário',
+                    description: 'A empresa demonstra alta dependência das decisões do proprietário. Considere desenvolver autonomia na equipe.'
+                });
+            }
+
+            if (resultados.maturidade_emocional >= 7) {
+                alertas.push({
+                    type: 'info',
+                    title: 'Excelente Maturidade Emocional',
+                    description: 'A equipe apresenta alta capacidade de gestão emocional. Aproveite isso para programas de mentoria interna.'
+                });
+            }
+
+            const container = document.getElementById('alertas-container');
+
+            if (alertas.length === 0) {
+                container.innerHTML = '<p style="color: #6c757d; text-align: center; padding: 2rem;">Nenhum ponto de atenção crítico identificado.</p>';
+                return;
+            }
+
+            container.innerHTML = alertas.map(alerta => `
+                <div class="alert-item ${alerta.type}">
+                    <div class="alert-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <div class="alert-content">
+                        <h4 class="alert-title">${alerta.title}</h4>
+                        <p class="alert-description">${alerta.description}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Botão WhatsApp
+        document.getElementById('btn-whatsapp').addEventListener('click', () => {
+            const url = gerarMensagemWhatsApp(diagnostico);
+            window.open(url, '_blank');
+        });
+
+        // Botão Marcar como Contatado
+        document.getElementById('btn-marcar-contatado').addEventListener('click', async () => {
+            try {
+                await updateDiagnosticoStatus(diagnosticoId, 'contatado');
+                alert('Diagnóstico marcado como contatado!');
+            } catch (error) {
+                console.error('Erro ao marcar como contatado:', error);
+                alert('Erro ao atualizar status');
+            }
+        });
+
+        // Botão Exportar PDF
+        document.getElementById('btn-export-pdf').addEventListener('click', () => {
+            alert('Funcionalidade de exportação PDF em desenvolvimento');
+        });
+
+        // Logout
+        document.getElementById('logout-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
+        });
+
+        // Carregar dados
+        loadDiagnostico();
+    </script>
+</body>
+</html>

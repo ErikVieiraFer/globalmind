@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - GlobalMind</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --verde-oliva: #6D7141;
+            --verde-oliva-dark: #565a34;
+            --azul-petroleo: #1E2C36;
+            --bege: #F6F3ED;
+            --white: #FFFFFF;
+            --danger: #dc3545;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Source Sans 3', -apple-system, sans-serif;
+            --shadow-lg: 0 8px 30px rgba(30, 44, 54, 0.12);
+            --radius-lg: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(135deg, var(--azul-petroleo) 0%, #2d4251 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .login-container {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 420px;
+            padding: 2.5rem;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--verde-oliva);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .logo-icon svg {
+            width: 36px;
+            height: 36px;
+            fill: var(--white);
+        }
+
+        .login-title {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            color: #6c757d;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--verde-oliva);
+            box-shadow: 0 0 0 3px rgba(109, 113, 65, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--verde-oliva);
+            color: var(--white);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--verde-oliva-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(109, 113, 65, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .alert {
+            padding: 0.875rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-danger {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .back-link a {
+            color: var(--verde-oliva);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+            </div>
+            <h1 class="login-title">Painel Administrativo</h1>
+            <p class="login-subtitle">GlobalMind</p>
+        </div>
+
+        <div id="error-alert" class="alert alert-danger"></div>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label class="form-label" for="email">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    class="form-control"
+                    placeholder="seu@email.com"
+                    required
+                    autocomplete="email"
+                >
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Senha</label>
+                <input
+                    type="password"
+                    id="password"
+                    class="form-control"
+                    placeholder="••••••••"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="login-btn">
+                Entrar
+            </button>
+        </form>
+
+        <div class="back-link">
+            <a href="/">← Voltar ao site</a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db } from '../js/firebase-config.js';
+        import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const loginForm = document.getElementById('login-form');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('login-btn');
+        const errorAlert = document.getElementById('error-alert');
+
+        function showError(message) {
+            errorAlert.textContent = message;
+            errorAlert.classList.add('show');
+        }
+
+        function hideError() {
+            errorAlert.classList.remove('show');
+        }
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideError();
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                showError('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Entrando...';
+
+            try {
+                // Fazer login
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Verificar se é admin
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+
+                if (!userDoc.exists()) {
+                    showError('Usuário não encontrado no sistema.');
+                    await auth.signOut();
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Entrar';
+                    return;
+                }
+
+                const userData = userDoc.data();
+
+                if (userData.role !== "admin") {
+                    showError('Acesso não autorizado. Apenas administradores podem acessar este painel.');
+                    await auth.signOut();
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Entrar';
+                    return;
+                }
+
+                // É admin, redirecionar para dashboard
+                window.location.href = 'dashboard.html';
+
+            } catch (error) {
+                console.error('Erro no login:', error);
+
+                let message = 'Erro ao fazer login. Tente novamente.';
+
+                if (error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                    message = 'Email ou senha incorretos.';
+                } else if (error.code === 'auth/invalid-email') {
+                    message = 'Email inválido.';
+                } else if (error.code === 'auth/too-many-requests') {
+                    message = 'Muitas tentativas. Tente novamente mais tarde.';
+                } else if (error.code === 'auth/invalid-credential') {
+                    message = 'Credenciais inválidas. Verifique email e senha.';
+                }
+
+                showError(message);
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Entrar';
+            }
+        });
+    </script>
+</body>
+</html>

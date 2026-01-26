@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionário NR-1 - GlobalMind</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --verde-oliva: #6D7141;
+            --verde-oliva-dark: #565a34;
+            --azul-petroleo: #1E2C36;
+            --bege: #F6F3ED;
+            --white: #FFFFFF;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-600: #6c757d;
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Source Sans 3', -apple-system, sans-serif;
+            --shadow-sm: 0 1px 2px rgba(30, 44, 54, 0.05);
+            --shadow-md: 0 4px 12px rgba(30, 44, 54, 0.08);
+            --radius-md: 12px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bege);
+            color: var(--azul-petroleo);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo-small {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--verde-oliva);
+            margin-bottom: 0.5rem;
+        }
+
+        .header-title {
+            font-size: 1.1rem;
+            color: var(--azul-petroleo);
+            font-weight: 600;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .progress-text {
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            font-size: 0.95rem;
+        }
+
+        .progress-percentage {
+            color: var(--verde-oliva);
+            font-weight: 700;
+        }
+
+        .progress-bar-bg {
+            height: 12px;
+            background: var(--gray-200);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--verde-oliva), #8a8f5a);
+            border-radius: 6px;
+            transition: width 0.4s ease;
+        }
+
+        /* Topic Card */
+        .topic-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .topic-header {
+            border-bottom: 2px solid var(--bege);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .topic-badge {
+            display: inline-block;
+            background: rgba(109, 113, 65, 0.1);
+            color: var(--verde-oliva);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .topic-title {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            margin-bottom: 0.5rem;
+        }
+
+        .topic-description {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+
+        /* Questions */
+        .question {
+            margin-bottom: 2.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .question:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .question-number {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background: var(--verde-oliva);
+            color: var(--white);
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 0.75rem;
+        }
+
+        .question-text {
+            display: inline;
+            font-size: 1rem;
+            color: var(--azul-petroleo);
+            line-height: 1.6;
+        }
+
+        .question-options {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .option-label {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .option-input {
+            display: none;
+        }
+
+        .option-button {
+            display: block;
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--gray-300);
+            background: var(--white);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+        }
+
+        .option-button:hover {
+            border-color: var(--verde-oliva);
+            background: rgba(109, 113, 65, 0.05);
+        }
+
+        .option-input:checked + .option-button {
+            border-color: var(--verde-oliva);
+            background: var(--verde-oliva);
+            color: var(--white);
+        }
+
+        .option-value {
+            display: block;
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .option-label-text {
+            display: block;
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .navigation {
+            display: flex;
+            gap: 1rem;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--verde-oliva);
+            color: var(--white);
+            flex: 1;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--verde-oliva-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--white);
+            color: var(--azul-petroleo);
+            border: 2px solid var(--gray-300);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--gray-100);
+            border-color: var(--gray-600);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Success Screen */
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .success-screen.show {
+            display: block;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--verde-oliva);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+        }
+
+        .success-icon svg {
+            width: 48px;
+            height: 48px;
+            fill: var(--white);
+        }
+
+        .success-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            margin-bottom: 1rem;
+        }
+
+        .success-text {
+            color: var(--gray-600);
+            font-size: 1.1rem;
+            line-height: 1.7;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .warning-message {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid #f59e0b;
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            color: #92400e;
+        }
+
+        @media (max-width: 768px) {
+            .header, .progress-container, .topic-card {
+                padding: 1.25rem;
+            }
+
+            .topic-title {
+                font-size: 1.35rem;
+            }
+
+            .question-options {
+                flex-direction: column;
+            }
+
+            .option-label {
+                min-width: 100%;
+            }
+
+            .navigation {
+                flex-direction: column-reverse;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-small">GLOBALMIND</div>
+            <div class="header-title">Avaliação de Riscos Psicossociais NR-1</div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-info">
+                <span class="progress-text" id="progress-text">Tópico 1 de 9</span>
+                <span class="progress-percentage" id="progress-percentage">11%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-bar-fill" style="width: 11%;"></div>
+            </div>
+        </div>
+
+        <!-- Topic Card -->
+        <div class="topic-card" id="topic-card">
+            <!-- Será preenchido dinamicamente -->
+        </div>
+
+        <!-- Success Screen -->
+        <div class="topic-card success-screen" id="success-screen">
+            <div class="success-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+            </div>
+            <h1 class="success-title">Avaliação Concluída!</h1>
+            <p class="success-text">
+                Muito obrigado por dedicar seu tempo para responder esta avaliação.
+                Suas respostas foram registradas de forma anônima e contribuirão significativamente
+                para a melhoria do ambiente de trabalho.
+            </p>
+            <p class="success-text" style="margin-top: 1.5rem;">
+                Os resultados serão analisados pela empresa e utilizados exclusivamente para
+                identificar oportunidades de melhoria nas condições de trabalho.
+            </p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db } from './js/firebase-config.js';
+        import { collection, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import {
+            TOPICOS,
+            QUESTOES,
+            OPCOES_RESPOSTA,
+            getQuestoesTopico,
+            validarTopicoCompleto,
+            validarQuestionarioCompleto,
+            calcularResultados,
+            organizarRespostasPorTopico
+        } from './js/questionario-nr1.js';
+
+        // Estado
+        let topicoAtual = 1;
+        let respostas = {};
+        let dadosIniciais = null;
+        let inicioTimestamp = Date.now();
+
+        // Verificar dados iniciais
+        const dadosStr = localStorage.getItem('globalmind_nr1_dados');
+        if (!dadosStr) {
+            alert('Sessão inválida. Por favor, inicie a avaliação novamente.');
+            window.location.href = 'index.html';
+        } else {
+            dadosIniciais = JSON.parse(dadosStr);
+            inicioTimestamp = new Date(dadosIniciais.iniciadoEm).getTime();
+        }
+
+        // Carregar respostas salvas (se existirem)
+        const respostasSalvas = localStorage.getItem('globalmind_nr1_respostas');
+        if (respostasSalvas) {
+            respostas = JSON.parse(respostasSalvas);
+        }
+
+        // Elementos
+        const topicCard = document.getElementById('topic-card');
+        const successScreen = document.getElementById('success-screen');
+        const progressText = document.getElementById('progress-text');
+        const progressPercentage = document.getElementById('progress-percentage');
+        const progressBarFill = document.getElementById('progress-bar-fill');
+
+        // Renderizar tópico
+        function renderizarTopico(topicoId) {
+            const topico = TOPICOS.find(t => t.id === topicoId);
+            const questoes = getQuestoesTopico(topicoId);
+
+            const html = `
+                <div class="topic-header">
+                    <div class="topic-badge">Tópico ${topicoId} de 9</div>
+                    <h2 class="topic-title">${topico.nome}</h2>
+                    <p class="topic-description">${topico.descricao}</p>
+                </div>
+
+                <div class="questions-container">
+                    ${questoes.map((questao, index) => `
+                        <div class="question">
+                            <div>
+                                <span class="question-number">${index + 1}</span>
+                                <span class="question-text">${questao.texto}</span>
+                            </div>
+                            <div class="question-options">
+                                ${OPCOES_RESPOSTA.map(opcao => `
+                                    <label class="option-label">
+                                        <input
+                                            type="radio"
+                                            name="q${questao.id}"
+                                            value="${opcao.valor}"
+                                            class="option-input"
+                                            ${respostas[questao.id] === opcao.valor ? 'checked' : ''}
+                                            onchange="window.salvarResposta(${questao.id}, ${opcao.valor})"
+                                        >
+                                        <div class="option-button">
+                                            <span class="option-value">${opcao.valor}</span>
+                                            <span class="option-label-text">${opcao.label}</span>
+                                        </div>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                ${renderizarNavegacao(topicoId)}
+            `;
+
+            topicCard.innerHTML = html;
+            atualizarProgresso();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Renderizar navegação
+        function renderizarNavegacao(topicoId) {
+            const isFirstTopic = topicoId === 1;
+            const isLastTopic = topicoId === 9;
+            const topicoCompleto = validarTopicoCompleto(respostas, topicoId);
+
+            return `
+                <div class="navigation">
+                    ${!isFirstTopic ? `
+                        <button class="btn btn-secondary" onclick="window.voltarTopico()">
+                            ← Tópico Anterior
+                        </button>
+                    ` : '<div></div>'}
+
+                    ${!isLastTopic ? `
+                        <button
+                            class="btn btn-primary"
+                            onclick="window.proximoTopico()"
+                            ${!topicoCompleto ? 'disabled' : ''}
+                        >
+                            Próximo Tópico →
+                        </button>
+                    ` : `
+                        <button
+                            class="btn btn-primary"
+                            onclick="window.finalizarQuestionario()"
+                            ${!topicoCompleto ? 'disabled' : ''}
+                        >
+                            Finalizar Avaliação ✓
+                        </button>
+                    `}
+                </div>
+
+                ${!topicoCompleto ? `
+                    <div class="warning-message">
+                        ⚠ Por favor, responda todas as questões antes de prosseguir.
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        // Salvar resposta
+        window.salvarResposta = function(questaoId, valor) {
+            respostas[questaoId] = valor;
+            localStorage.setItem('globalmind_nr1_respostas', JSON.stringify(respostas));
+
+            // Re-renderizar navegação para atualizar estado do botão
+            const navContainer = topicCard.querySelector('.navigation').parentElement;
+            navContainer.outerHTML = renderizarNavegacao(topicoAtual);
+        };
+
+        // Próximo tópico
+        window.proximoTopico = function() {
+            if (topicoAtual < 9) {
+                topicoAtual++;
+                renderizarTopico(topicoAtual);
+            }
+        };
+
+        // Voltar tópico
+        window.voltarTopico = function() {
+            if (topicoAtual > 1) {
+                topicoAtual--;
+                renderizarTopico(topicoAtual);
+            }
+        };
+
+        // Atualizar progresso
+        function atualizarProgresso() {
+            const porcentagem = Math.round((topicoAtual / 9) * 100);
+            progressText.textContent = `Tópico ${topicoAtual} de 9`;
+            progressPercentage.textContent = `${porcentagem}%`;
+            progressBarFill.style.width = `${porcentagem}%`;
+        }
+
+        // Finalizar questionário
+        window.finalizarQuestionario = async function() {
+            if (!validarQuestionarioCompleto(respostas)) {
+                alert('Por favor, responda todas as questões antes de finalizar.');
+                return;
+            }
+
+            try {
+                // Calcular tempo de resposta
+                const fimTimestamp = Date.now();
+                const tempoResposta = Math.round((fimTimestamp - inicioTimestamp) / 60000); // minutos
+
+                // Calcular resultados
+                const resultados = calcularResultados(respostas);
+
+                // Organizar respostas por tópico
+                const respostasPorTopico = organizarRespostasPorTopico(respostas);
+
+                // Salvar no Firestore
+                const questionarioData = {
+                    empresaId: dadosIniciais.empresaId,
+                    visitorId: dadosIniciais.visitorId,
+                    setor: dadosIniciais.setor,
+                    funcao: dadosIniciais.funcao,
+                    respostas: respostasPorTopico,
+                    resultados: resultados,
+                    criadoEm: Timestamp.now(),
+                    tempoResposta: tempoResposta
+                };
+
+                await addDoc(collection(db, "questionarios_nr1"), questionarioData);
+
+                // Limpar localStorage
+                localStorage.removeItem('globalmind_nr1_dados');
+                localStorage.removeItem('globalmind_nr1_respostas');
+
+                // Mostrar tela de sucesso
+                topicCard.style.display = 'none';
+                document.querySelector('.progress-container').style.display = 'none';
+                successScreen.classList.add('show');
+
+            } catch (error) {
+                console.error('Erro ao salvar questionário:', error);
+                alert('Erro ao salvar suas respostas. Por favor, tente novamente.');
+            }
+        };
+
+        // Inicializar
+        renderizarTopico(topicoAtual);
+    </script>
+</body>
+</html>

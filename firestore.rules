@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function: verifica se o usuário é admin
+    function isAdmin() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+    }
+
+    // Helper function: verifica se o usuário está autenticado
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Helper function: verifica se é o próprio usuário
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // Diagnósticos
+    match /diagnosticos/{docId} {
+      // Qualquer pessoa pode criar (para leads anônimos)
+      allow create: if true;
+
+      // Apenas admin pode ler
+      allow read: if isAdmin();
+
+      // Apenas admin pode atualizar (status, visualizado, etc)
+      allow update: if isAdmin();
+
+      // Ninguém pode deletar
+      allow delete: if false;
+    }
+
+    // Users
+    match /users/{userId} {
+      // Próprio usuário pode ler seus dados
+      // Admin pode ler dados de todos
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+
+      // Apenas o próprio usuário pode criar seu documento
+      // Ou durante o cadastro
+      allow create: if isAuthenticated() && isOwner(userId);
+
+      // Apenas o próprio usuário pode atualizar seus dados
+      allow update: if isAuthenticated() && isOwner(userId);
+
+      // Ninguém pode deletar
+      allow delete: if false;
+    }
+  }
+}
