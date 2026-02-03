@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avaliação Concluída - GlobalMind</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/layout.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, var(--bege) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .success-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--verde-oliva);
+            margin-bottom: 2rem;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--verde-oliva);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            animation: scaleIn 0.5s ease;
+        }
+
+        .success-icon svg {
+            width: 48px;
+            height: 48px;
+            fill: var(--white);
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .success-title {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            margin-bottom: 1rem;
+        }
+
+        .success-text {
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .info-box {
+            background: rgba(109, 113, 65, 0.1);
+            border-left: 4px solid var(--verde-oliva);
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .info-box-title {
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            margin-bottom: 0.5rem;
+        }
+
+        .info-box-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: var(--verde-oliva);
+            color: var(--white);
+            border-radius: var(--radius-md);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--verde-oliva-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(109, 113, 65, 0.3);
+        }
+
+        @media (max-width: 640px) {
+            .success-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .success-title {
+                font-size: 1.5rem;
+            }
+
+            .btn-primary {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-card">
+            <div class="logo">GLOBALMIND</div>
+
+            <div class="success-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+            </div>
+
+            <h1 class="success-title">Avaliação Concluída!</h1>
+
+            <p class="success-text">
+                Obrigado por participar da avaliação de riscos psicossociais NR-1.
+                Suas respostas são anônimas e contribuirão para melhorar o ambiente
+                de trabalho da sua empresa.
+            </p>
+
+            <div class="info-box">
+                <div class="info-box-title">🔒 Garantia de Anonimato</div>
+                <div class="info-box-text">
+                    Suas respostas foram registradas de forma completamente anônima.
+                    Os resultados serão apresentados à empresa de forma agregada,
+                    impossibilitando qualquer identificação individual.
+                </div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-box-title">📊 Próximos Passos</div>
+                <div class="info-box-text">
+                    A empresa receberá um relatório com as análises agregadas de todos
+                    os colaboradores, identificando oportunidades de melhoria no
+                    ambiente de trabalho e nas condições psicossociais.
+                </div>
+            </div>
+
+            <a href="index.html" class="btn-primary">Voltar ao Início</a>
+        </div>
+    </div>
+
+    <script>
+        console.log('✅ Página de sucesso NR-1 carregada');
+
+        // Garantir que o localStorage foi limpo
+        const dadosRestantes = localStorage.getItem('globalmind_nr1_dados');
+        if (dadosRestantes) {
+            console.warn('⚠️ Dados ainda presentes no localStorage, limpando...');
+            localStorage.removeItem('globalmind_nr1_dados');
+            localStorage.removeItem('globalmind_nr1_respostas');
+        }
+    </script>
+</body>
+</html>

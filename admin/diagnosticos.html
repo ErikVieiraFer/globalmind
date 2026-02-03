@@ -366,6 +366,78 @@
             opacity: 0.3;
         }
 
+        /* Action Buttons */
+        .action-btn {
+            padding: 0.5rem 0.875rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .action-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .action-btn-nr1 {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info);
+        }
+
+        .action-btn-nr1:hover {
+            background: var(--info);
+            color: var(--white);
+        }
+
+        .action-btn-view {
+            background: rgba(109, 113, 65, 0.1);
+            color: var(--verde-oliva);
+        }
+
+        .action-btn-view:hover {
+            background: var(--verde-oliva);
+            color: var(--white);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--azul-petroleo);
+            color: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        .toast svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
+        .toast-message {
+            font-size: 0.95rem;
+        }
+
         @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -404,6 +476,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
                     Diagnósticos
+                </a>
+                <a href="nr1-resultados.html" class="nav-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Avaliações NR-1
                 </a>
 
                 <div class="nav-section-title">Configurações</div>
@@ -459,11 +537,12 @@
                                     <th>Telefone</th>
                                     <th>Data</th>
                                     <th>Status</th>
+                                    <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="diagnosticos-table">
                                 <tr>
-                                    <td colspan="6">
+                                    <td colspan="7">
                                         <div class="empty-state">
                                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -478,6 +557,14 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div class="toast-message" id="toast-message">Link copiado!</div>
     </div>
 
     <script type="module">
@@ -503,7 +590,7 @@
             if (diagnosticos.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6">
+                        <td colspan="7">
                             <div class="empty-state">
                                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -522,13 +609,32 @@
                 const statusText = getStatusText(status);
 
                 return `
-                    <tr onclick="window.location.href='resultado.html?id=${d.id}'">
+                    <tr>
                         <td><strong>${d.nomeEmpresa || 'N/A'}</strong></td>
                         <td>${d.nomeRespondente || 'N/A'}</td>
                         <td>${d.email || 'N/A'}</td>
                         <td>${d.telefone || 'N/A'}</td>
                         <td>${formatarDataCurta(d.criadoEm)}</td>
                         <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                        <td>
+                            <button
+                                class="action-btn action-btn-nr1"
+                                onclick="event.stopPropagation(); gerarLinkNR1('${d.id}', '${(d.nomeEmpresa || '').replace(/'/g, "\\'")}')">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                                </svg>
+                                Link NR-1
+                            </button>
+                            <button
+                                class="action-btn action-btn-view"
+                                onclick="window.location.href='resultado.html?id=${d.id}'">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                </svg>
+                                Ver
+                            </button>
+                        </td>
                     </tr>
                 `;
             }).join('');
@@ -569,6 +675,35 @@
             e.preventDefault();
             logout();
         });
+
+        // Função para gerar e copiar link NR-1
+        window.gerarLinkNR1 = async function(diagnosticoId, nomeEmpresa) {
+            const baseUrl = window.location.origin.replace('/admin', '');
+            const linkNR1 = `${baseUrl}/convite.html?empresa=${diagnosticoId}`;
+
+            try {
+                await navigator.clipboard.writeText(linkNR1);
+                showToast(`Link NR-1 copiado! Envie para os colaboradores de ${nomeEmpresa}`);
+                console.log('✅ Link NR-1 gerado:', linkNR1);
+            } catch (error) {
+                console.error('❌ Erro ao copiar link:', error);
+                // Fallback: mostrar prompt com o link
+                prompt('Link NR-1 gerado (copie manualmente):', linkNR1);
+            }
+        };
+
+        // Função para mostrar toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
 
         // Carregar dados iniciais
         loadDiagnosticos();

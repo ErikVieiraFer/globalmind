@@ -20,33 +20,38 @@ service cloud.firestore {
 
     // Diagnósticos
     match /diagnosticos/{docId} {
-      // Qualquer pessoa pode criar (para leads anônimos)
       allow create: if true;
 
-      // Apenas admin pode ler
-      allow read: if isAdmin();
+      allow get: if true;
 
-      // Apenas admin pode atualizar (status, visualizado, etc)
+      allow list: if isAdmin();
+
       allow update: if isAdmin();
 
-      // Ninguém pode deletar
+      allow delete: if false;
+    }
+
+    // Questionários NR-1
+    match /questionarios_nr1/{docId} {
+      allow create: if true;
+
+      allow get: if isAdmin();
+
+      allow list: if isAdmin();
+
+      allow update: if isAdmin();
+
       allow delete: if false;
     }
 
     // Users
     match /users/{userId} {
-      // Próprio usuário pode ler seus dados
-      // Admin pode ler dados de todos
       allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
 
-      // Apenas o próprio usuário pode criar seu documento
-      // Ou durante o cadastro
       allow create: if isAuthenticated() && isOwner(userId);
 
-      // Apenas o próprio usuário pode atualizar seus dados
       allow update: if isAuthenticated() && isOwner(userId);
 
-      // Ninguém pode deletar
       allow delete: if false;
     }
   }

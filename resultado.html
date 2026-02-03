@@ -118,65 +118,58 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="js/calculos.js"></script>
     <script src="js/charts.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // 1. Obter dados do localStorage
-            const empresa = localStorage.getItem('globalmind_empresa') || 'N/A';
-            const respondente = localStorage.getItem('globalmind_respondente') || 'N/A';
-            const dataISO = localStorage.getItem('globalmind_data');
-            const data = dataISO ? new Date(dataISO) : new Date();
-            const dataFormatada = data.toLocaleDateString('pt-BR');
+    <script type="module">
+        import { db } from './js/firebase-config.js';
+        import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-            document.getElementById('empresa-nome').textContent = empresa;
-            document.getElementById('respondente-nome').textContent = 'Respondido por: ' + respondente;
-            document.getElementById('data-diagnostico').textContent = dataFormatada;
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const diagnosticoId = urlParams.get('id');
 
-            // 2. Calcular os resultados
-            const resultados = calcularResultados();
-            if (!resultados) {
-                document.querySelector('main').innerHTML = '<div class="alert alert-danger">Erro ao calcular resultados. Por favor, refaça o questionário.</div>';
+            if (!diagnosticoId) {
+                document.querySelector('main').innerHTML = '<div class="alert alert-danger">ID do diagnóstico não fornecido. Acesse através do questionário.</div>';
                 return;
             }
 
-            // 3. Renderizar os componentes
-            renderizarIndices(resultados);
-            renderizarAlertas(resultados);
+            try {
+                const docRef = doc(db, "diagnosticos", diagnosticoId);
+                const docSnap = await getDoc(docRef);
 
-            // 4. Renderizar os gráficos
-            const radarCtx = document.getElementById('radar-chart').getContext('2d');
-            criarGraficoRadar(radarCtx, resultados);
+                if (!docSnap.exists()) {
+                    document.querySelector('main').innerHTML = '<div class="alert alert-danger">Diagnóstico não encontrado.</div>';
+                    return;
+                }
 
-            const barCtx = document.getElementById('bar-chart').getContext('2d');
-            criarGraficoBarras(barCtx, resultados);
-        }
+                const dados = docSnap.data();
+                const { nomeEmpresa, nomeRespondente, criadoEm, resultados } = dados;
 
-        function getStatus(score) {
-            if (score >= 7) return { classe: 'danger', texto: 'Crítico' };
-            if (score >= 4) return { classe: 'warning', texto: 'Atenção' };
-            return { classe: 'success', texto: 'Bom' };
-        }
+                document.getElementById('empresa-nome').textContent = nomeEmpresa || 'N/A';
+                document.getElementById('respondente-nome').textContent = 'Respondido por: ' + (nomeRespondente || 'N/A');
 
-        function renderizarIndices(resultados) {
-            const container = document.getElementById('indices-container');
-            const labels = {
-                sobrecarga_lider: 'Sobrecarga do Líder',
-                dependencia_dono: 'Dependência no Dono',
-                maturidade_emocional: 'Maturidade Emocional',
-                risco_psicossocial: 'Risco Psicossocial',
-                conflito_geracional: 'Conflito Geracional',
-                escalabilidade_humana: 'Escalabilidade Humana'
-            };
+                const data = criadoEm?.toDate() || new Date();
+                document.getElementById('data-diagnostico').textContent = data.toLocaleDateString('pt-BR');
 
-            let html = '';
-            for (const indice in resultados) {
-                const score = resultados[indice];
-                const status = getStatus(score);
-                html += `
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between">
-                            <span>${labels[indice]}</span>
+                if (!resultados) {
+                    document.querySelector('main').innerHTML = '<div class="alert alert-danger">Resultados não disponíveis.</div>';
+                    return;
+                }
+
+                renderizarIndices(resultados);
+                renderizarAlertas(resultados);
+
+                const radarCtx = document.getElementById('radar-chart').getContext('2d');
+                window.criarGraficoRadar(radarCtx, resultados);
+
+                const barCtx = document.getElementById('bar-chart').getContext('2d');
+                window.criarGraficoBarras(barCtx, resultados);
+
+            } catch (error) {
+                console.error('Erro ao buscar diagnóstico:', error);
+                document.querySelector('main').innerHTML = '<div class="alert alert-danger">Erro ao carregar diagnóstico. Tente novamente.</div>';
+            }
+        });
+
         function getStatus(score) {
             if (score >= 7) return { classe: 'danger', texto: 'Crítico' };
             if (score >= 4) return { classe: 'warning', texto: 'Atenção' };

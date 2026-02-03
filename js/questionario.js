@@ -237,8 +237,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             await addDoc(collection(db, "diagnosticos"), {
                 visitorId: localStorage.getItem('globalmind_visitorId'),
-                empresa: localStorage.getItem('globalmind_empresa'),
-                respondente: localStorage.getItem('globalmind_respondente'),
+                nomeEmpresa: localStorage.getItem('globalmind_empresa'),
+                nomeRespondente: localStorage.getItem('globalmind_respondente'),
+                email: localStorage.getItem('globalmind_email') || '',
+                telefone: localStorage.getItem('globalmind_telefone') || '',
                 respostas: JSON.parse(localStorage.getItem('globalmind_respostas')),
                 resultados: resultados,
                 criadoEm: serverTimestamp(),
@@ -247,13 +249,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             setTimeout(() => {
-                window.location.href = 'preview.html';
+                window.location.href = 'obrigado.html';
             }, 1500);
 
         } catch (e) {
             console.error("Erro ao salvar diagnóstico: ", e);
-            // Fallback: redireciona mesmo com erro no firestore
-            window.location.href = 'preview.html';
+            alert('Erro ao salvar diagnóstico. Por favor, tente novamente.');
         }
     }
 });

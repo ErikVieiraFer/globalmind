@@ -362,16 +362,48 @@
     </div>
 
     <script type="module">
-        import { v4 as uuidv4 } from 'https://cdn.jsdelivr.net/npm/uuid@9.0.0/+esm';
+        // Função simples para gerar UUID v4
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        console.log('📋 Página de convite NR-1 carregada');
 
         // Pegar ID da empresa da URL
         const urlParams = new URLSearchParams(window.location.search);
         const empresaId = urlParams.get('empresa');
 
+        console.log('🔍 Verificando parâmetro empresa na URL...');
+        console.log('📌 Empresa ID:', empresaId || 'NÃO ENCONTRADO');
+
         if (!empresaId) {
-            alert('Link inválido. Por favor, use o link fornecido pela empresa.');
-            // Redirecionar para home ou mostrar mensagem de erro
+            console.error('❌ Link inválido: parâmetro empresa não encontrado na URL');
+            document.querySelector('.container').innerHTML = `
+                <div style="background: white; border-radius: 20px; padding: 3rem; text-align: center; box-shadow: 0 8px 30px rgba(30,44,54,0.12);">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#dc3545" style="margin: 0 auto 1.5rem;">
+                        <circle cx="12" cy="12" r="10" stroke-width="2"/>
+                        <line x1="12" y1="8" x2="12" y2="12" stroke-width="2"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16" stroke-width="2"/>
+                    </svg>
+                    <h2 style="color: #1E2C36; margin-bottom: 1rem;">Link Inválido</h2>
+                    <p style="color: #6c757d; margin-bottom: 2rem;">
+                        Este questionário deve ser acessado através do link fornecido pela sua empresa.
+                        Entre em contato com o RH ou gestor responsável.
+                    </p>
+                    <a href="index.html" style="display: inline-block; padding: 0.75rem 1.5rem; background: #6D7141; color: white; text-decoration: none; border-radius: 8px; font-weight: 600;">
+                        Voltar ao Site
+                    </a>
+                </div>
+            `;
+            return;
         }
+
+        console.log('✅ Link válido - Empresa ID encontrado');
+        console.log('✅ Configurando formulário...');
 
         const form = document.getElementById('convite-form');
         const submitBtn = document.getElementById('submit-btn');
@@ -379,11 +411,16 @@
 
         form.addEventListener('submit', (e) => {
             e.preventDefault();
+            console.log('📋 Formulário enviado');
 
             const setor = document.getElementById('setor').value;
             const funcao = document.getElementById('funcao').value.trim();
 
+            console.log('📌 Setor:', setor);
+            console.log('📌 Função:', funcao);
+
             if (!setor || !funcao) {
+                console.warn('⚠️ Validação falhou: campos obrigatórios não preenchidos');
                 errorMessage.classList.add('show');
                 return;
             }
@@ -393,8 +430,11 @@
             // Gerar ou recuperar visitorId para anonimato
             let visitorId = localStorage.getItem('globalmind_nr1_visitorId');
             if (!visitorId) {
-                visitorId = uuidv4();
+                visitorId = generateUUID();
                 localStorage.setItem('globalmind_nr1_visitorId', visitorId);
+                console.log('✅ Novo visitorId gerado:', visitorId);
+            } else {
+                console.log('✅ VisitorId existente:', visitorId);
             }
 
             // Salvar dados iniciais no localStorage
@@ -406,10 +446,21 @@
                 iniciadoEm: new Date().toISOString()
             };
 
+            console.log('💾 Salvando dados no localStorage:', dadosIniciais);
             localStorage.setItem('globalmind_nr1_dados', JSON.stringify(dadosIniciais));
 
+            // Verificar se foi salvo
+            const verificacao = localStorage.getItem('globalmind_nr1_dados');
+            if (verificacao) {
+                console.log('✅ Dados salvos com sucesso no localStorage');
+            } else {
+                console.error('❌ Erro ao salvar dados no localStorage');
+            }
+
             // Redirecionar para o questionário
-            window.location.href = `questionario-nr1.html?empresa=${empresaId}`;
+            const urlRedirect = `questionario-nr1.html?empresa=${empresaId}`;
+            console.log('🔄 Redirecionando para:', urlRedirect);
+            window.location.href = urlRedirect;
         });
     </script>
 </body>
