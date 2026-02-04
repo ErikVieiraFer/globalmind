@@ -4,138 +4,1109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resultados NR-1 - Admin GlobalMind</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="dashboard.html" type="text/css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
     <style>
-        /* Reutilizar estilos do dashboard.html */
-        :root {--verde-oliva:#6D7141;--azul-petroleo:#1E2C36;--bege:#F6F3ED;--white:#FFFFFF;--gray-200:#e9ecef;--gray-600:#6c757d;--success:#22c55e;--warning:#f59e0b;--danger:#dc3545;--font-display:'Playfair Display',Georgia,serif;--font-body:'Source Sans 3',-apple-system,sans-serif;--shadow-sm:0 1px 2px rgba(30,44,54,0.05);--shadow-md:0 4px 12px rgba(30,44,54,0.08);--radius-lg:20px;}
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:var(--font-body);background:var(--bege);color:var(--azul-petroleo);min-height:100vh;line-height:1.6;}
-        .app-container{display:flex;min-height:100vh;}
-        .sidebar{width:280px;background:var(--azul-petroleo);color:var(--white);padding:2rem 0;position:fixed;height:100vh;overflow-y:auto;z-index:100;}
-        .main-content{flex:1;margin-left:280px;padding:2rem 2.5rem;}
-        .page-title{font-family:var(--font-display);font-size:2rem;font-weight:600;margin-bottom:2rem;}
-        .card{background:var(--white);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:1.5rem;margin-bottom:2rem;}
-        .form-group{margin-bottom:1.5rem;}
-        .form-label{display:block;font-weight:600;margin-bottom:0.5rem;}
-        .form-control{width:100%;padding:0.75rem;border:1px solid var(--gray-200);border-radius:8px;}
-        .btn{padding:0.75rem 1.5rem;background:var(--verde-oliva);color:var(--white);border:none;border-radius:8px;cursor:pointer;font-weight:600;}
-        .btn:hover{opacity:0.9;}
-        .chart-container{height:300px;margin:2rem 0;}
-        .table{width:100%;border-collapse:collapse;}
-        .table th,.table td{padding:1rem;text-align:left;border-bottom:1px solid var(--gray-200);}
-        .badge{padding:0.25rem 0.75rem;border-radius:20px;font-size:0.75rem;font-weight:600;}
-        .badge-baixo{background:rgba(34,197,94,0.1);color:var(--success);}
-        .badge-moderado{background:rgba(245,158,11,0.1);color:var(--warning);}
-        .badge-alto{background:rgba(251,146,60,0.1);color:#fb923c;}
-        .badge-critico{background:rgba(220,53,69,0.1);color:var(--danger);}
+        :root {
+            --verde-oliva: #6D7141;
+            --verde-oliva-light: #8a8f5a;
+            --verde-oliva-dark: #565a34;
+            --azul-petroleo: #1E2C36;
+            --azul-petroleo-light: #2d4251;
+            --bege: #F6F3ED;
+            --bege-dark: #E8E4DB;
+            --white: #FFFFFF;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --success: #4CAF50;
+            --warning: #FFC107;
+            --orange: #FF9800;
+            --danger: #F44336;
+            --info: #3b82f6;
+
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Source Sans 3', -apple-system, sans-serif;
+
+            --shadow-sm: 0 1px 2px rgba(30, 44, 54, 0.05);
+            --shadow-md: 0 4px 12px rgba(30, 44, 54, 0.08);
+            --shadow-lg: 0 8px 30px rgba(30, 44, 54, 0.12);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bege);
+            color: var(--azul-petroleo);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--azul-petroleo);
+            color: var(--white);
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--verde-oliva);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--white);
+        }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.4);
+            padding: 0 1.5rem;
+            margin-bottom: 0.75rem;
+            margin-top: 1.5rem;
+            font-weight: 600;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 0.875rem 1.5rem;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--white);
+        }
+
+        .nav-item.active {
+            background: rgba(109, 113, 65, 0.3);
+            color: var(--white);
+            border-left: 3px solid var(--verde-oliva);
+        }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            opacity: 0.8;
+        }
+
+        .nav-item.active svg {
+            opacity: 1;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem 2.5rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--bege-dark);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--gray-600);
+            font-size: 1rem;
+        }
+
+        /* Select Empresa */
+        .select-container {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+        }
+
+        .select-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--azul-petroleo);
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            background: var(--white);
+            cursor: pointer;
+            appearance: none;
+        }
+
+        .select-wrapper::after {
+            content: '▼';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--gray-500);
+            font-size: 0.75rem;
+        }
+
+        .select-wrapper select:focus {
+            outline: none;
+            border-color: var(--verde-oliva);
+        }
+
+        /* Cards Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--white);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--azul-petroleo);
+        }
+
+        .metric-secondary {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin-top: 0.25rem;
+        }
+
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chart-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+        }
+
+        .chart-subtitle {
+            font-size: 0.875rem;
+            color: var(--gray-600);
+            margin-top: 0.25rem;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 350px;
+        }
+
+        /* Table */
+        .table-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .table-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead th {
+            text-align: left;
+            padding: 1rem 1.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--gray-100);
+        }
+
+        .table tbody td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Risk Badge */
+        .risk-badge {
+            display: inline-block;
+            padding: 0.375rem 0.875rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .risk-baixo {
+            background: rgba(76, 175, 80, 0.15);
+            color: var(--success);
+        }
+
+        .risk-moderado {
+            background: rgba(255, 193, 7, 0.15);
+            color: #F57C00;
+        }
+
+        .risk-alto {
+            background: rgba(255, 152, 0, 0.15);
+            color: var(--orange);
+        }
+
+        .risk-critico {
+            background: rgba(244, 67, 54, 0.15);
+            color: var(--danger);
+        }
+
+        /* Action Buttons */
+        .actions-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-primary {
+            background: var(--verde-oliva);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--verde-oliva-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--azul-petroleo);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-500);
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1.5rem;
+            opacity: 0.3;
+        }
+
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-600);
+        }
+
+        .empty-state-text {
+            font-size: 1rem;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--azul-petroleo);
+            color: var(--white);
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(120%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        .toast svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Loading Spinner */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            border: 3px solid var(--gray-200);
+            border-top: 3px solid var(--verde-oliva);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
+        <!-- Sidebar -->
         <aside class="sidebar">
-            <div style="padding:0 1.5rem 2rem;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:1.5rem;">
-                <div style="font-family:var(--font-display);font-size:1.25rem;font-weight:600;">GLOBALMIND</div>
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">GLOBALMIND</span>
+                </div>
             </div>
+
             <nav>
-                <a href="dashboard.html" style="display:flex;align-items:center;gap:0.875rem;padding:0.875rem 1.5rem;color:rgba(255,255,255,0.7);text-decoration:none;">Dashboard</a>
-                <a href="diagnosticos.html" style="display:flex;align-items:center;gap:0.875rem;padding:0.875rem 1.5rem;color:rgba(255,255,255,0.7);text-decoration:none;">Diagnósticos</a>
-                <a href="nr1-resultados.html" style="display:flex;align-items:center;gap:0.875rem;padding:0.875rem 1.5rem;color:var(--white);background:rgba(109,113,65,0.3);border-left:3px solid var(--verde-oliva);text-decoration:none;">Avaliações NR-1</a>
+                <div class="nav-section-title">Menu</div>
+                <a href="dashboard.html" class="nav-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="diagnosticos.html" class="nav-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    Diagnósticos
+                </a>
+                <a href="nr1-resultados.html" class="nav-item active">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Avaliações NR-1
+                </a>
+
+                <div class="nav-section-title">Configurações</div>
+                <a href="#" class="nav-item" id="logout-link">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    Sair
+                </a>
             </nav>
         </aside>
+
+        <!-- Main Content -->
         <main class="main-content">
-            <h1 class="page-title">Resultados NR-1</h1>
-            <div class="card">
-                <div class="form-group">
-                    <label class="form-label">Selecionar Empresa</label>
-                    <select id="empresa-select" class="form-control">
-                        <option value="">Carregando...</option>
+            <!-- Header -->
+            <header class="page-header">
+                <div>
+                    <h1 class="page-title">Avaliações NR-1</h1>
+                    <p class="page-subtitle">Resultados agregados das avaliações de riscos psicossociais</p>
+                </div>
+            </header>
+
+            <!-- Select Empresa -->
+            <div class="select-container">
+                <label class="select-label">Selecione uma empresa:</label>
+                <div class="select-wrapper">
+                    <select id="empresa-select">
+                        <option value="">Carregando empresas...</option>
                     </select>
                 </div>
-                <button id="btn-copiar-link" class="btn">Copiar Link do Questionário</button>
             </div>
-            <div id="resultados-container" style="display:none;">
-                <div class="card">
-                    <h3>Risco Geral: <span id="risco-geral">-</span></h3>
-                    <p>Total de Respostas: <span id="total-respostas">0</span></p>
-                </div>
-                <div class="card">
-                    <canvas id="radarChart"></canvas>
-                </div>
-                <div class="card">
-                    <canvas id="barChart"></canvas>
-                </div>
-                <div class="card">
-                    <table class="table" id="tabela-resultados"></table>
+
+            <!-- Content Area -->
+            <div id="content-area">
+                <div class="empty-state">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    <div class="empty-state-title">Selecione uma empresa</div>
+                    <div class="empty-state-text">Escolha uma empresa no menu acima para visualizar os resultados das avaliações NR-1</div>
                 </div>
             </div>
         </main>
     </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div id="toast-message">Link copiado!</div>
+    </div>
+
     <script type="module">
-        import{checkAdminAuth}from'./js/admin.js';
-        import{getDiagnosticos}from'./js/admin.js';
-        import{buscarQuestionariosEmpresa,agregarResultadosEmpresa,classificarRisco,getRecomendacoes,NOMES_TOPICOS}from'../js/nr1-calculos.js';
-        import{gerarLinkQuestionario}from'../js/questionario-nr1.js';
-        await checkAdminAuth();
-        const empresaSelect=document.getElementById('empresa-select');
-        const btnCopiarLink=document.getElementById('btn-copiar-link');
-        const resultadosContainer=document.getElementById('resultados-container');
-        let empresaSelecionada=null;
-        async function carregarEmpresas(){
-            const diagnosticos=await getDiagnosticos();
-            const empresas=new Map();
-            diagnosticos.forEach(d=>{if(d.id&&d.nomeEmpresa){empresas.set(d.id,d.nomeEmpresa);}});
-            empresaSelect.innerHTML='<option value="">Selecione uma empresa...</option>';
-            empresas.forEach((nome,id)=>{
-                const option=document.createElement('option');
-                option.value=id;
-                option.textContent=nome;
-                empresaSelect.appendChild(option);
-            });
+        import { checkAdminAuth, logout } from './js/admin.js';
+        import { db } from './js/firebase-config.js';
+        import { collection, getDocs, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+        // Verificar autenticação
+        try {
+            await checkAdminAuth();
+        } catch (error) {
+            console.error('Erro na autenticação:', error);
         }
-        empresaSelect.addEventListener('change',async(e)=>{
-            empresaSelecionada=e.target.value;
-            if(!empresaSelecionada){
-                resultadosContainer.style.display='none';
-                return;
+
+        let radarChart = null;
+        let barChart = null;
+
+        const TOPICOS = [
+            'Assédio',
+            'Carga de Trabalho',
+            'Reconhecimento',
+            'Clima Organizacional',
+            'Autonomia',
+            'Pressão e Metas',
+            'Insegurança',
+            'Conflitos',
+            'Vida Pessoal'
+        ];
+
+        // Carregar empresas (diagnósticos)
+        async function loadEmpresas() {
+            try {
+                console.log('🔍 Carregando empresas...');
+                const diagnosticosRef = collection(db, 'diagnosticos');
+                const snapshot = await getDocs(diagnosticosRef);
+
+                const empresas = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    empresas.push({
+                        id: doc.id,
+                        nome: data.nomeEmpresa || 'Sem nome'
+                    });
+                });
+
+                console.log(`✅ ${empresas.length} empresas encontradas`);
+
+                const select = document.getElementById('empresa-select');
+
+                if (empresas.length === 0) {
+                    select.innerHTML = '<option value="">Nenhuma empresa encontrada</option>';
+                    return;
+                }
+
+                select.innerHTML = '<option value="">Selecione uma empresa...</option>' +
+                    empresas.map(e => `<option value="${e.id}">${e.nome}</option>`).join('');
+
+            } catch (error) {
+                console.error('❌ Erro ao carregar empresas:', error);
+                document.getElementById('empresa-select').innerHTML =
+                    '<option value="">Erro ao carregar empresas</option>';
             }
-            await carregarResultados(empresaSelecionada);
-        });
-        btnCopiarLink.addEventListener('click',()=>{
-            if(!empresaSelecionada){alert('Selecione uma empresa primeiro');return;}
-            const link=gerarLinkQuestionario(empresaSelecionada);
-            navigator.clipboard.writeText(link);
-            alert('Link copiado!');
-        });
-        async function carregarResultados(empresaId){
-            const questionarios=await buscarQuestionariosEmpresa(empresaId);
-            if(questionarios.length===0){alert('Nenhuma avaliação encontrada');resultadosContainer.style.display='none';return;}
-            const agregado=agregarResultadosEmpresa(questionarios);
-            document.getElementById('total-respostas').textContent=agregado.totalRespostas;
-            const classificacaoGeral=classificarRisco(agregado.resultadosMedios.risco_geral);
-            document.getElementById('risco-geral').innerHTML=`<span class="badge badge-${classificacaoGeral.nivel}">${agregado.resultadosMedios.risco_geral.toFixed(1)}/10 - ${classificacaoGeral.label}</span>`;
-            renderizarGraficos(agregado);
-            renderizarTabela(agregado);
-            resultadosContainer.style.display='block';
         }
-        function renderizarGraficos(agregado){
-            const ctx1=document.getElementById('radarChart').getContext('2d');
-            new Chart(ctx1,{type:'radar',data:{labels:Object.values(NOMES_TOPICOS),datasets:[{label:'Pontuação',data:Object.keys(NOMES_TOPICOS).map(k=>agregado.resultadosMedios[k]),backgroundColor:'rgba(109,113,65,0.2)',borderColor:'#6D7141',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:10}}}});
-            const ctx2=document.getElementById('barChart').getContext('2d');
-            new Chart(ctx2,{type:'bar',data:{labels:Object.values(NOMES_TOPICOS),datasets:[{label:'Pontuação',data:Object.keys(NOMES_TOPICOS).map(k=>agregado.resultadosMedios[k]),backgroundColor:'#6D7141'}]},options:{responsive:true,maintainAspectRatio:false,scales:{y:{beginAtZero:true,max:10}}}});
+
+        // Carregar resultados da empresa
+        async function loadResultados(empresaId) {
+            if (!empresaId) return;
+
+            const contentArea = document.getElementById('content-area');
+            contentArea.innerHTML = '<div class="loading"><div class="spinner"></div><p>Carregando resultados...</p></div>';
+
+            try {
+                console.log('📊 Carregando resultados para empresa:', empresaId);
+
+                // Buscar questionários NR-1
+                const q = query(
+                    collection(db, 'questionarios_nr1'),
+                    where('empresaId', '==', empresaId),
+                    orderBy('criadoEm', 'desc')
+                );
+
+                const snapshot = await getDocs(q);
+                const questionarios = [];
+                snapshot.forEach(doc => {
+                    questionarios.push({ id: doc.id, ...doc.data() });
+                });
+
+                console.log(`✅ ${questionarios.length} questionários encontrados`);
+
+                if (questionarios.length === 0) {
+                    contentArea.innerHTML = `
+                        <div class="empty-state">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            </svg>
+                            <div class="empty-state-title">Nenhuma avaliação encontrada</div>
+                            <div class="empty-state-text">Esta empresa ainda não possui avaliações NR-1 respondidas pelos colaboradores.</div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Calcular médias agregadas
+                const medias = calcularMediasAgregadas(questionarios);
+                console.log('📊 Médias calculadas:', medias);
+
+                // Buscar nome da empresa
+                const empresaNome = await getEmpresaNome(empresaId);
+
+                // Renderizar conteúdo
+                renderContent(empresaNome, empresaId, questionarios, medias);
+
+            } catch (error) {
+                console.error('❌ Erro ao carregar resultados:', error);
+                contentArea.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-title">Erro ao carregar dados</div>
+                        <div class="empty-state-text">${error.message}</div>
+                    </div>
+                `;
+            }
         }
-        function renderizarTabela(agregado){
-            let html='<thead><tr><th>Dimensão</th><th>Pontuação</th><th>Classificação</th></tr></thead><tbody>';
-            Object.entries(NOMES_TOPICOS).forEach(([key,nome])=>{
-                const pontuacao=agregado.resultadosMedios[key];
-                const classificacao=classificarRisco(pontuacao);
-                html+=`<tr><td>${nome}</td><td>${pontuacao.toFixed(1)}/10</td><td><span class="badge badge-${classificacao.nivel}">${classificacao.label}</span></td></tr>`;
+
+        // Obter nome da empresa
+        async function getEmpresaNome(empresaId) {
+            try {
+                const select = document.getElementById('empresa-select');
+                const option = select.querySelector(`option[value="${empresaId}"]`);
+                return option ? option.textContent : 'Empresa';
+            } catch (error) {
+                return 'Empresa';
+            }
+        }
+
+        // Calcular médias agregadas
+        function calcularMediasAgregadas(questionarios) {
+            const somas = {
+                assedio: 0,
+                carga_trabalho: 0,
+                reconhecimento: 0,
+                clima_organizacional: 0,
+                autonomia: 0,
+                pressao_metas: 0,
+                inseguranca: 0,
+                conflitos: 0,
+                vida_pessoal: 0,
+                risco_geral: 0
+            };
+
+            questionarios.forEach(q => {
+                const r = q.resultados;
+                somas.assedio += r.assedio || 0;
+                somas.carga_trabalho += r.carga_trabalho || 0;
+                somas.reconhecimento += r.reconhecimento || 0;
+                somas.clima_organizacional += r.clima_organizacional || 0;
+                somas.autonomia += r.autonomia || 0;
+                somas.pressao_metas += r.pressao_metas || 0;
+                somas.inseguranca += r.inseguranca || 0;
+                somas.conflitos += r.conflitos || 0;
+                somas.vida_pessoal += r.vida_pessoal || 0;
+                somas.risco_geral += r.risco_geral || 0;
             });
-            html+='</tbody>';
-            document.getElementById('tabela-resultados').innerHTML=html;
+
+            const count = questionarios.length;
+            return {
+                assedio: (somas.assedio / count).toFixed(1),
+                carga_trabalho: (somas.carga_trabalho / count).toFixed(1),
+                reconhecimento: (somas.reconhecimento / count).toFixed(1),
+                clima_organizacional: (somas.clima_organizacional / count).toFixed(1),
+                autonomia: (somas.autonomia / count).toFixed(1),
+                pressao_metas: (somas.pressao_metas / count).toFixed(1),
+                inseguranca: (somas.inseguranca / count).toFixed(1),
+                conflitos: (somas.conflitos / count).toFixed(1),
+                vida_pessoal: (somas.vida_pessoal / count).toFixed(1),
+                risco_geral: (somas.risco_geral / count).toFixed(1)
+            };
         }
-        carregarEmpresas();
+
+        // Classificar risco
+        function classificarRisco(pontuacao) {
+            const valor = parseFloat(pontuacao);
+            if (valor <= 2.5) return { nivel: 'baixo', label: 'Baixo Risco', classe: 'risk-baixo' };
+            if (valor <= 5.0) return { nivel: 'moderado', label: 'Risco Moderado', classe: 'risk-moderado' };
+            if (valor <= 7.5) return { nivel: 'alto', label: 'Risco Alto', classe: 'risk-alto' };
+            return { nivel: 'critico', label: 'Risco Crítico', classe: 'risk-critico' };
+        }
+
+        // Formatar data
+        function formatarData(timestamp) {
+            if (!timestamp) return 'N/A';
+            const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+            return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+
+        // Renderizar conteúdo
+        function renderContent(empresaNome, empresaId, questionarios, medias) {
+            const primeiraResposta = questionarios[questionarios.length - 1];
+            const ultimaResposta = questionarios[0];
+            const riscoGeral = classificarRisco(medias.risco_geral);
+
+            const html = `
+                <!-- Action Buttons -->
+                <div class="actions-bar">
+                    <button class="btn btn-primary" onclick="gerarLinkNR1('${empresaId}', '${empresaNome.replace(/'/g, "\\'")}')">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                        </svg>
+                        Copiar Link NR-1
+                    </button>
+                    <button class="btn btn-secondary" onclick="alert('Funcionalidade de exportação PDF em desenvolvimento')">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Exportar PDF
+                    </button>
+                </div>
+
+                <!-- Metrics Cards -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Total de Respostas</div>
+                        <div class="metric-value">${questionarios.length}</div>
+                        <div class="metric-secondary">colaboradores</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Risco Geral</div>
+                        <div class="metric-value">${medias.risco_geral}</div>
+                        <div class="metric-secondary">
+                            <span class="risk-badge ${riscoGeral.classe}">${riscoGeral.label}</span>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Primeira Resposta</div>
+                        <div class="metric-value" style="font-size: 1.5rem;">${formatarData(primeiraResposta.criadoEm)}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Última Resposta</div>
+                        <div class="metric-value" style="font-size: 1.5rem;">${formatarData(ultimaResposta.criadoEm)}</div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Visão Geral dos Riscos</div>
+                            <div class="chart-subtitle">Média agregada por tópico</div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="radar-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <div class="chart-title">Classificação de Riscos</div>
+                            <div class="chart-subtitle">Pontuação por categoria</div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="bar-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Breakdown por Setor -->
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="chart-title">Detalhamento por Setor</div>
+                        <div class="chart-subtitle">Análise comparativa entre setores</div>
+                    </div>
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Setor</th>
+                                    <th>Respostas</th>
+                                    <th>Risco Geral</th>
+                                    <th>Tópico Crítico</th>
+                                    <th>Classificação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="setor-table">
+                                ${renderSetorTable(questionarios)}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('content-area').innerHTML = html;
+
+            // Renderizar gráficos
+            setTimeout(() => {
+                renderRadarChart(medias);
+                renderBarChart(medias);
+            }, 100);
+        }
+
+        // Renderizar tabela de setores
+        function renderSetorTable(questionarios) {
+            const setores = {};
+
+            // Agrupar por setor
+            questionarios.forEach(q => {
+                const setor = q.setor || 'Não informado';
+                if (!setores[setor]) {
+                    setores[setor] = {
+                        count: 0,
+                        somas: {
+                            assedio: 0, carga_trabalho: 0, reconhecimento: 0,
+                            clima_organizacional: 0, autonomia: 0, pressao_metas: 0,
+                            inseguranca: 0, conflitos: 0, vida_pessoal: 0, risco_geral: 0
+                        }
+                    };
+                }
+                setores[setor].count++;
+                const r = q.resultados;
+                setores[setor].somas.assedio += r.assedio || 0;
+                setores[setor].somas.carga_trabalho += r.carga_trabalho || 0;
+                setores[setor].somas.reconhecimento += r.reconhecimento || 0;
+                setores[setor].somas.clima_organizacional += r.clima_organizacional || 0;
+                setores[setor].somas.autonomia += r.autonomia || 0;
+                setores[setor].somas.pressao_metas += r.pressao_metas || 0;
+                setores[setor].somas.inseguranca += r.inseguranca || 0;
+                setores[setor].somas.conflitos += r.conflitos || 0;
+                setores[setor].somas.vida_pessoal += r.vida_pessoal || 0;
+                setores[setor].somas.risco_geral += r.risco_geral || 0;
+            });
+
+            // Calcular médias e renderizar
+            return Object.entries(setores).map(([setor, data]) => {
+                const count = data.count;
+                const riscoGeral = (data.somas.risco_geral / count).toFixed(1);
+                const risco = classificarRisco(riscoGeral);
+
+                // Encontrar tópico crítico
+                const topicos = {
+                    'Assédio': data.somas.assedio / count,
+                    'Carga de Trabalho': data.somas.carga_trabalho / count,
+                    'Reconhecimento': data.somas.reconhecimento / count,
+                    'Clima Organizacional': data.somas.clima_organizacional / count,
+                    'Autonomia': data.somas.autonomia / count,
+                    'Pressão e Metas': data.somas.pressao_metas / count,
+                    'Insegurança': data.somas.inseguranca / count,
+                    'Conflitos': data.somas.conflitos / count,
+                    'Vida Pessoal': data.somas.vida_pessoal / count
+                };
+
+                const topicoCritico = Object.entries(topicos).reduce((a, b) => a[1] > b[1] ? a : b);
+
+                return `
+                    <tr>
+                        <td><strong>${setor}</strong></td>
+                        <td>${count}</td>
+                        <td>${riscoGeral}</td>
+                        <td>${topicoCritico[0]} (${topicoCritico[1].toFixed(1)})</td>
+                        <td><span class="risk-badge ${risco.classe}">${risco.label}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Renderizar gráfico radar
+        function renderRadarChart(medias) {
+            const ctx = document.getElementById('radar-chart');
+            if (!ctx) return;
+
+            if (radarChart) radarChart.destroy();
+
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: TOPICOS,
+                    datasets: [{
+                        label: 'Nível de Risco',
+                        data: [
+                            medias.assedio,
+                            medias.carga_trabalho,
+                            medias.reconhecimento,
+                            medias.clima_organizacional,
+                            medias.autonomia,
+                            medias.pressao_metas,
+                            medias.inseguranca,
+                            medias.conflitos,
+                            medias.vida_pessoal
+                        ],
+                        backgroundColor: 'rgba(109, 113, 65, 0.2)',
+                        borderColor: 'rgba(109, 113, 65, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(109, 113, 65, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(109, 113, 65, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 10,
+                            ticks: {
+                                stepSize: 2
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Renderizar gráfico de barras
+        function renderBarChart(medias) {
+            const ctx = document.getElementById('bar-chart');
+            if (!ctx) return;
+
+            if (barChart) barChart.destroy();
+
+            const data = [
+                medias.assedio,
+                medias.carga_trabalho,
+                medias.reconhecimento,
+                medias.clima_organizacional,
+                medias.autonomia,
+                medias.pressao_metas,
+                medias.inseguranca,
+                medias.conflitos,
+                medias.vida_pessoal
+            ];
+
+            // Cores baseadas no nível de risco
+            const backgroundColors = data.map(valor => {
+                const v = parseFloat(valor);
+                if (v <= 2.5) return 'rgba(76, 175, 80, 0.7)';
+                if (v <= 5.0) return 'rgba(255, 193, 7, 0.7)';
+                if (v <= 7.5) return 'rgba(255, 152, 0, 0.7)';
+                return 'rgba(244, 67, 54, 0.7)';
+            });
+
+            barChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: TOPICOS,
+                    datasets: [{
+                        label: 'Pontuação',
+                        data: data,
+                        backgroundColor: backgroundColors,
+                        borderColor: backgroundColors.map(c => c.replace('0.7', '1')),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 10
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        // Função para gerar link NR-1
+        window.gerarLinkNR1 = async function(empresaId, empresaNome) {
+            const baseUrl = window.location.origin.replace('/admin', '');
+            const linkNR1 = `${baseUrl}/convite.html?empresa=${empresaId}`;
+
+            try {
+                await navigator.clipboard.writeText(linkNR1);
+                showToast(`Link NR-1 copiado! Envie para os colaboradores de ${empresaNome}`);
+                console.log('✅ Link NR-1 gerado:', linkNR1);
+            } catch (error) {
+                console.error('❌ Erro ao copiar link:', error);
+                prompt('Link NR-1 gerado (copie manualmente):', linkNR1);
+            }
+        };
+
+        // Mostrar toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Event listeners
+        document.getElementById('empresa-select').addEventListener('change', (e) => {
+            loadResultados(e.target.value);
+        });
+
+        document.getElementById('logout-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            logout();
+        });
+
+        // Inicializar
+        loadEmpresas();
     </script>
 </body>
 </html>
