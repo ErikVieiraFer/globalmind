@@ -409,59 +409,87 @@
         const submitBtn = document.getElementById('submit-btn');
         const errorMessage = document.getElementById('error-message');
 
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            console.log('📋 Formulário enviado');
+        if (!form) {
+            console.error('❌ Formulário não encontrado!');
+        } else {
+            console.log('✅ Formulário encontrado, registrando handler...');
 
-            const setor = document.getElementById('setor').value;
-            const funcao = document.getElementById('funcao').value.trim();
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
 
-            console.log('📌 Setor:', setor);
-            console.log('📌 Função:', funcao);
+                console.log('📋 Formulário enviado');
 
-            if (!setor || !funcao) {
-                console.warn('⚠️ Validação falhou: campos obrigatórios não preenchidos');
-                errorMessage.classList.add('show');
-                return;
-            }
+                const setor = document.getElementById('setor').value;
+                const funcao = document.getElementById('funcao').value.trim();
 
-            errorMessage.classList.remove('show');
+                console.log('📌 Setor:', setor);
+                console.log('📌 Função:', funcao);
 
-            // Gerar ou recuperar visitorId para anonimato
-            let visitorId = localStorage.getItem('globalmind_nr1_visitorId');
-            if (!visitorId) {
-                visitorId = generateUUID();
-                localStorage.setItem('globalmind_nr1_visitorId', visitorId);
-                console.log('✅ Novo visitorId gerado:', visitorId);
-            } else {
-                console.log('✅ VisitorId existente:', visitorId);
-            }
+                if (!setor || !funcao) {
+                    console.warn('⚠️ Validação falhou: campos obrigatórios não preenchidos');
+                    errorMessage.classList.add('show');
+                    return false;
+                }
 
-            // Salvar dados iniciais no localStorage
-            const dadosIniciais = {
-                empresaId,
-                visitorId,
-                setor,
-                funcao,
-                iniciadoEm: new Date().toISOString()
-            };
+                errorMessage.classList.remove('show');
 
-            console.log('💾 Salvando dados no localStorage:', dadosIniciais);
-            localStorage.setItem('globalmind_nr1_dados', JSON.stringify(dadosIniciais));
+                // Desabilitar botão para evitar duplo clique
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Carregando...';
 
-            // Verificar se foi salvo
-            const verificacao = localStorage.getItem('globalmind_nr1_dados');
-            if (verificacao) {
-                console.log('✅ Dados salvos com sucesso no localStorage');
-            } else {
-                console.error('❌ Erro ao salvar dados no localStorage');
-            }
+                try {
+                    // Gerar ou recuperar visitorId para anonimato
+                    let visitorId = localStorage.getItem('globalmind_nr1_visitorId');
+                    if (!visitorId) {
+                        visitorId = generateUUID();
+                        localStorage.setItem('globalmind_nr1_visitorId', visitorId);
+                        console.log('✅ Novo visitorId gerado:', visitorId);
+                    } else {
+                        console.log('✅ VisitorId existente:', visitorId);
+                    }
 
-            // Redirecionar para o questionário
-            const urlRedirect = `questionario-nr1.html?empresa=${empresaId}`;
-            console.log('🔄 Redirecionando para:', urlRedirect);
-            window.location.href = urlRedirect;
-        });
+                    // Salvar dados iniciais no localStorage
+                    const dadosIniciais = {
+                        empresaId,
+                        visitorId,
+                        setor,
+                        funcao,
+                        iniciadoEm: new Date().toISOString()
+                    };
+
+                    console.log('💾 Salvando dados no localStorage:', dadosIniciais);
+                    localStorage.setItem('globalmind_nr1_dados', JSON.stringify(dadosIniciais));
+
+                    // Verificar se foi salvo
+                    const verificacao = localStorage.getItem('globalmind_nr1_dados');
+                    if (verificacao) {
+                        console.log('✅ Dados salvos com sucesso no localStorage');
+                    } else {
+                        console.error('❌ Erro ao salvar dados no localStorage');
+                    }
+
+                    // Redirecionar para o questionário
+                    const urlRedirect = `questionario-nr1.html?empresa=${empresaId}`;
+                    console.log('🔄 Redirecionando para:', urlRedirect);
+
+                    // Usar setTimeout para garantir que o localStorage seja salvo antes do redirect
+                    setTimeout(function() {
+                        window.location.href = urlRedirect;
+                    }, 100);
+
+                } catch (error) {
+                    console.error('❌ Erro no processamento:', error);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Iniciar Avaliação';
+                    alert('Ocorreu um erro. Por favor, tente novamente.');
+                }
+
+                return false;
+            });
+
+            console.log('✅ Handler registrado com sucesso');
+        }
     </script>
 </body>
 </html>

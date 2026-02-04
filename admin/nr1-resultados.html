@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         :root {
@@ -510,6 +511,235 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* PDF Content Styles */
+        #pdf-content-nr1 {
+            display: none;
+            width: 210mm;
+            padding: 15mm;
+            background: white;
+            font-family: 'Source Sans 3', Arial, sans-serif;
+            color: #1E2C36;
+        }
+
+        #pdf-content-nr1.visible {
+            display: block;
+        }
+
+        .pdf-header {
+            text-align: center;
+            border-bottom: 3px solid #6D7141;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .pdf-logo {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #6D7141;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        .pdf-logo-subtitle {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .pdf-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #1E2C36;
+            margin: 20px 0 5px;
+        }
+
+        .pdf-subtitle {
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .pdf-metrics-grid {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .pdf-metric-box {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .pdf-metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1E2C36;
+        }
+
+        .pdf-metric-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .pdf-section-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #1E2C36;
+            margin: 25px 0 15px;
+            padding-left: 10px;
+            border-left: 4px solid #6D7141;
+        }
+
+        .pdf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 11px;
+        }
+
+        .pdf-table th {
+            background: #1E2C36;
+            color: white;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pdf-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+        }
+
+        .pdf-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .pdf-score {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .pdf-bar-container {
+            width: 80px;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .pdf-bar {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .pdf-risk-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .pdf-risk-baixo {
+            background: rgba(76, 175, 80, 0.15);
+            color: #4CAF50;
+        }
+
+        .pdf-risk-moderado {
+            background: rgba(255, 193, 7, 0.15);
+            color: #F57C00;
+        }
+
+        .pdf-risk-alto {
+            background: rgba(255, 152, 0, 0.15);
+            color: #FF9800;
+        }
+
+        .pdf-risk-critico {
+            background: rgba(244, 67, 54, 0.15);
+            color: #F44336;
+        }
+
+        .pdf-charts-row {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+
+        .pdf-chart-box {
+            flex: 1;
+            text-align: center;
+        }
+
+        .pdf-chart-box img {
+            max-width: 100%;
+            height: auto;
+            max-height: 250px;
+        }
+
+        .pdf-chart-caption {
+            font-size: 11px;
+            color: #6c757d;
+            margin-top: 8px;
+        }
+
+        .pdf-footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+            text-align: center;
+            font-size: 10px;
+            color: #6c757d;
+        }
+
+        .pdf-footer-brand {
+            font-weight: 600;
+            color: #6D7141;
+        }
+
+        .pdf-risk-summary {
+            background: linear-gradient(135deg, #1E2C36 0%, #2d4251 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .pdf-risk-summary-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .pdf-risk-summary-value {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .pdf-risk-summary-classification {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -591,6 +821,85 @@
         </main>
     </div>
 
+    <!-- PDF Content (Hidden) -->
+    <div id="pdf-content-nr1">
+        <div class="pdf-header">
+            <div class="pdf-logo">GLOBALMIND</div>
+            <div class="pdf-logo-subtitle">Relatório de Avaliação NR-1</div>
+            <div class="pdf-title" id="pdf-nr1-title"></div>
+            <div class="pdf-subtitle" id="pdf-nr1-subtitle"></div>
+        </div>
+
+        <div class="pdf-metrics-grid">
+            <div class="pdf-metric-box">
+                <div class="pdf-metric-value" id="pdf-total-respostas"></div>
+                <div class="pdf-metric-label">Total de Respostas</div>
+            </div>
+            <div class="pdf-metric-box">
+                <div class="pdf-metric-value" id="pdf-risco-geral"></div>
+                <div class="pdf-metric-label">Risco Geral</div>
+            </div>
+            <div class="pdf-metric-box">
+                <div class="pdf-metric-value" id="pdf-primeira-resposta"></div>
+                <div class="pdf-metric-label">Primeira Resposta</div>
+            </div>
+            <div class="pdf-metric-box">
+                <div class="pdf-metric-value" id="pdf-ultima-resposta"></div>
+                <div class="pdf-metric-label">Última Resposta</div>
+            </div>
+        </div>
+
+        <div class="pdf-risk-summary">
+            <div class="pdf-risk-summary-label">Classificação de Risco Geral</div>
+            <div class="pdf-risk-summary-value" id="pdf-risco-valor"></div>
+            <div class="pdf-risk-summary-classification" id="pdf-risco-class"></div>
+        </div>
+
+        <div class="pdf-section-title">Análise por Tópico</div>
+        <table class="pdf-table">
+            <thead>
+                <tr>
+                    <th>Tópico</th>
+                    <th>Média</th>
+                    <th>Visualização</th>
+                    <th>Classificação</th>
+                </tr>
+            </thead>
+            <tbody id="pdf-topicos-tbody"></tbody>
+        </table>
+
+        <div class="pdf-section-title">Visão Geral dos Riscos</div>
+        <div class="pdf-charts-row">
+            <div class="pdf-chart-box">
+                <img id="pdf-radar-img" src="" alt="Gráfico Radar" />
+                <div class="pdf-chart-caption">Gráfico Radar - Distribuição por Tópico</div>
+            </div>
+            <div class="pdf-chart-box">
+                <img id="pdf-bar-img" src="" alt="Gráfico de Barras" />
+                <div class="pdf-chart-caption">Gráfico de Barras - Pontuação por Tópico</div>
+            </div>
+        </div>
+
+        <div class="pdf-section-title">Detalhamento por Setor</div>
+        <table class="pdf-table">
+            <thead>
+                <tr>
+                    <th>Setor</th>
+                    <th>Respostas</th>
+                    <th>Risco Geral</th>
+                    <th>Tópico Crítico</th>
+                    <th>Classificação</th>
+                </tr>
+            </thead>
+            <tbody id="pdf-setores-tbody"></tbody>
+        </table>
+
+        <div class="pdf-footer">
+            <span class="pdf-footer-brand">GlobalMind</span> - Avaliação de Riscos Psicossociais NR-1 | globalmind-db762.web.app
+            <br>Relatório gerado em <span id="pdf-nr1-generation-date"></span>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div class="toast" id="toast">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -601,7 +910,7 @@
 
     <script type="module">
         import { checkAdminAuth, logout } from './js/admin.js';
-        import { db } from './js/firebase-config.js';
+        import { db } from '../js/firebase-config.js';
         import { collection, getDocs, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
         // Verificar autenticação
@@ -706,6 +1015,11 @@
                 // Buscar nome da empresa
                 const empresaNome = await getEmpresaNome(empresaId);
 
+                // Armazenar dados para o PDF
+                currentEmpresaNome = empresaNome;
+                currentQuestionarios = questionarios;
+                currentMedias = medias;
+
                 // Renderizar conteúdo
                 renderContent(empresaNome, empresaId, questionarios, medias);
 
@@ -806,7 +1120,7 @@
                         </svg>
                         Copiar Link NR-1
                     </button>
-                    <button class="btn btn-secondary" onclick="alert('Funcionalidade de exportação PDF em desenvolvimento')">
+                    <button class="btn btn-primary" id="btn-exportar-pdf" onclick="gerarPDFNR1()">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
@@ -1094,6 +1408,183 @@
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
+
+        // Variáveis para armazenar dados do relatório atual
+        let currentEmpresaNome = '';
+        let currentQuestionarios = [];
+        let currentMedias = {};
+
+        // Função para gerar PDF NR-1
+        window.gerarPDFNR1 = async function() {
+            if (!currentQuestionarios || currentQuestionarios.length === 0) {
+                alert('Selecione uma empresa primeiro.');
+                return;
+            }
+
+            const btn = document.getElementById('btn-exportar-pdf');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="10" stroke-width="4" stroke-opacity="0.25"></circle><path d="M4 12a8 8 0 018-8" stroke-width="4"></path></svg> Gerando...';
+            btn.disabled = true;
+
+            try {
+                const primeiraResposta = currentQuestionarios[currentQuestionarios.length - 1];
+                const ultimaResposta = currentQuestionarios[0];
+                const riscoGeral = classificarRisco(currentMedias.risco_geral);
+
+                // Preencher dados do PDF
+                document.getElementById('pdf-nr1-title').textContent = `Empresa: ${currentEmpresaNome}`;
+                document.getElementById('pdf-nr1-subtitle').textContent = `Avaliação de Riscos Psicossociais conforme NR-1`;
+                document.getElementById('pdf-total-respostas').textContent = currentQuestionarios.length;
+                document.getElementById('pdf-risco-geral').textContent = currentMedias.risco_geral;
+                document.getElementById('pdf-primeira-resposta').textContent = formatarData(primeiraResposta.criadoEm);
+                document.getElementById('pdf-ultima-resposta').textContent = formatarData(ultimaResposta.criadoEm);
+                document.getElementById('pdf-nr1-generation-date').textContent = new Date().toLocaleDateString('pt-BR');
+
+                // Risco geral resumo
+                document.getElementById('pdf-risco-valor').textContent = currentMedias.risco_geral + '/10';
+                document.getElementById('pdf-risco-class').innerHTML = `<span class="pdf-risk-badge pdf-risk-${riscoGeral.nivel}">${riscoGeral.label}</span>`;
+
+                // Preencher tabela de tópicos
+                const topicosData = [
+                    { key: 'assedio', nome: 'Assédio' },
+                    { key: 'carga_trabalho', nome: 'Carga de Trabalho' },
+                    { key: 'reconhecimento', nome: 'Reconhecimento' },
+                    { key: 'clima_organizacional', nome: 'Clima Organizacional' },
+                    { key: 'autonomia', nome: 'Autonomia' },
+                    { key: 'pressao_metas', nome: 'Pressão e Metas' },
+                    { key: 'inseguranca', nome: 'Insegurança' },
+                    { key: 'conflitos', nome: 'Conflitos' },
+                    { key: 'vida_pessoal', nome: 'Vida Pessoal' }
+                ];
+
+                const topicosTbody = document.getElementById('pdf-topicos-tbody');
+                topicosTbody.innerHTML = topicosData.map(t => {
+                    const valor = parseFloat(currentMedias[t.key]);
+                    const risco = classificarRisco(valor);
+                    const porcentagem = (valor / 10) * 100;
+
+                    let barColor;
+                    if (valor <= 2.5) barColor = '#4CAF50';
+                    else if (valor <= 5.0) barColor = '#FFC107';
+                    else if (valor <= 7.5) barColor = '#FF9800';
+                    else barColor = '#F44336';
+
+                    return `
+                        <tr>
+                            <td><strong>${t.nome}</strong></td>
+                            <td><span class="pdf-score">${valor.toFixed(1)}</span></td>
+                            <td>
+                                <div class="pdf-bar-container">
+                                    <div class="pdf-bar" style="width: ${porcentagem}%; background: ${barColor};"></div>
+                                </div>
+                            </td>
+                            <td><span class="pdf-risk-badge pdf-risk-${risco.nivel}">${risco.label}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+
+                // Capturar gráficos como imagens
+                const radarCanvas = document.getElementById('radar-chart');
+                const barCanvas = document.getElementById('bar-chart');
+
+                if (radarCanvas) {
+                    document.getElementById('pdf-radar-img').src = radarCanvas.toDataURL('image/png', 1.0);
+                }
+                if (barCanvas) {
+                    document.getElementById('pdf-bar-img').src = barCanvas.toDataURL('image/png', 1.0);
+                }
+
+                // Preencher tabela de setores
+                const setoresTbody = document.getElementById('pdf-setores-tbody');
+                const setores = {};
+
+                currentQuestionarios.forEach(q => {
+                    const setor = q.setor || 'Não informado';
+                    if (!setores[setor]) {
+                        setores[setor] = {
+                            count: 0,
+                            somas: {
+                                assedio: 0, carga_trabalho: 0, reconhecimento: 0,
+                                clima_organizacional: 0, autonomia: 0, pressao_metas: 0,
+                                inseguranca: 0, conflitos: 0, vida_pessoal: 0, risco_geral: 0
+                            }
+                        };
+                    }
+                    setores[setor].count++;
+                    const r = q.resultados;
+                    setores[setor].somas.assedio += r.assedio || 0;
+                    setores[setor].somas.carga_trabalho += r.carga_trabalho || 0;
+                    setores[setor].somas.reconhecimento += r.reconhecimento || 0;
+                    setores[setor].somas.clima_organizacional += r.clima_organizacional || 0;
+                    setores[setor].somas.autonomia += r.autonomia || 0;
+                    setores[setor].somas.pressao_metas += r.pressao_metas || 0;
+                    setores[setor].somas.inseguranca += r.inseguranca || 0;
+                    setores[setor].somas.conflitos += r.conflitos || 0;
+                    setores[setor].somas.vida_pessoal += r.vida_pessoal || 0;
+                    setores[setor].somas.risco_geral += r.risco_geral || 0;
+                });
+
+                setoresTbody.innerHTML = Object.entries(setores).map(([setor, data]) => {
+                    const count = data.count;
+                    const riscoSetorGeral = (data.somas.risco_geral / count).toFixed(1);
+                    const riscoSetor = classificarRisco(riscoSetorGeral);
+
+                    const topicosSetor = {
+                        'Assédio': data.somas.assedio / count,
+                        'Carga de Trabalho': data.somas.carga_trabalho / count,
+                        'Reconhecimento': data.somas.reconhecimento / count,
+                        'Clima Organizacional': data.somas.clima_organizacional / count,
+                        'Autonomia': data.somas.autonomia / count,
+                        'Pressão e Metas': data.somas.pressao_metas / count,
+                        'Insegurança': data.somas.inseguranca / count,
+                        'Conflitos': data.somas.conflitos / count,
+                        'Vida Pessoal': data.somas.vida_pessoal / count
+                    };
+
+                    const topicoCritico = Object.entries(topicosSetor).reduce((a, b) => a[1] > b[1] ? a : b);
+
+                    return `
+                        <tr>
+                            <td><strong>${setor}</strong></td>
+                            <td>${count}</td>
+                            <td>${riscoSetorGeral}</td>
+                            <td>${topicoCritico[0]} (${topicoCritico[1].toFixed(1)})</td>
+                            <td><span class="pdf-risk-badge pdf-risk-${riscoSetor.nivel}">${riscoSetor.label}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+
+                // Mostrar conteúdo do PDF
+                const pdfContent = document.getElementById('pdf-content-nr1');
+                pdfContent.classList.add('visible');
+
+                // Gerar PDF
+                const nomeArquivo = `relatorio-nr1-${currentEmpresaNome.toLowerCase().replace(/\s+/g, '-')}.pdf`;
+
+                const opt = {
+                    margin: 10,
+                    filename: nomeArquivo,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, logging: false },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                await html2pdf().set(opt).from(pdfContent).save();
+
+                // Esconder conteúdo do PDF
+                pdfContent.classList.remove('visible');
+
+                showToast('PDF gerado com sucesso!');
+                console.log('✅ PDF NR-1 gerado:', nomeArquivo);
+
+            } catch (error) {
+                console.error('❌ Erro ao gerar PDF:', error);
+                alert('Erro ao gerar PDF. Por favor, tente novamente.');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        };
 
         // Event listeners
         document.getElementById('empresa-select').addEventListener('change', (e) => {
