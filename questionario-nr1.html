@@ -565,12 +565,25 @@
 
         // Salvar resposta
         window.salvarResposta = function(questaoId, valor) {
+            console.log(`💾 Salvando resposta: Questão ${questaoId} = ${valor}`);
             respostas[questaoId] = valor;
             localStorage.setItem('globalmind_nr1_respostas', JSON.stringify(respostas));
 
-            // Re-renderizar navegação para atualizar estado do botão
-            const navContainer = topicCard.querySelector('.navigation').parentElement;
-            navContainer.outerHTML = renderizarNavegacao(topicoAtual);
+            // Atualizar apenas o estado do botão sem re-renderizar tudo
+            const topicoCompleto = validarTopicoCompleto(respostas, topicoAtual);
+            const btnProximo = topicCard.querySelector('.btn-primary');
+            if (btnProximo) {
+                btnProximo.disabled = !topicoCompleto;
+                console.log(`🔘 Botão ${topicoCompleto ? 'habilitado' : 'desabilitado'}`);
+            }
+
+            // Esconder/mostrar mensagem de aviso
+            const warningMessage = topicCard.querySelector('.warning-message');
+            if (warningMessage) {
+                warningMessage.style.display = topicoCompleto ? 'none' : 'block';
+            }
+
+            console.log(`✅ Resposta salva! Total de respostas: ${Object.keys(respostas).length}`);
         };
 
         // Próximo tópico

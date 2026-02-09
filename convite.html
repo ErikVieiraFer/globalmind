@@ -313,7 +313,7 @@
                 mas não permitem sua identificação individual.
             </p>
 
-            <form id="convite-form">
+            <form id="convite-form" onsubmit="return handleFormSubmit(event);">
                 <div class="form-group">
                     <label class="form-label" for="setor">Setor / Departamento</label>
                     <select id="setor" class="form-control" required>
@@ -361,6 +361,32 @@
         </div>
     </div>
 
+    <!-- Script de emergência - sempre carrega primeiro -->
+    <script>
+        console.log('🔧 Script de emergência carregado');
+
+        // Função que sempre previne o submit
+        window.handleFormSubmit = function(event) {
+            console.log('🛑 EMERGÊNCIA: handleFormSubmit chamado');
+            event.preventDefault();
+            event.stopPropagation();
+            console.log('✅ Submit bloqueado via handler inline');
+
+            // Tentar chamar a função principal se existir
+            if (window.submitFormNR1) {
+                console.log('📞 Chamando função principal...');
+                window.submitFormNR1();
+            } else {
+                console.error('❌ Função principal não encontrada - script module não carregou!');
+                alert('ERRO: Script não carregou. Recarregue a página (Ctrl+F5)');
+            }
+
+            return false; // Garante que form não submete
+        };
+
+        console.log('✅ Handler de emergência instalado');
+    </script>
+
     <script type="module">
         // Função simples para gerar UUID v4
         function generateUUID() {
@@ -399,69 +425,113 @@
                     </a>
                 </div>
             `;
-            return;
-        }
+        } else {
+            // Código principal só executa se empresaId existir
+            console.log('✅ Link válido - Empresa ID encontrado');
+            console.log('✅ Configurando formulário...');
 
-        console.log('✅ Link válido - Empresa ID encontrado');
-        console.log('✅ Configurando formulário...');
-
-        const form = document.getElementById('convite-form');
+            const form = document.getElementById('convite-form');
         const submitBtn = document.getElementById('submit-btn');
         const errorMessage = document.getElementById('error-message');
 
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            console.log('📋 Formulário enviado');
+        if (!form) {
+            console.error('❌ ERRO: Formulário não encontrado!');
+        } else {
+            // Código só executa se formulário existir
+            console.log('✅ Formulário encontrado, anexando event listener...');
 
-            const setor = document.getElementById('setor').value;
-            const funcao = document.getElementById('funcao').value.trim();
+            // Indicador visual de que o script carregou
+            submitBtn.style.borderLeft = '4px solid #22c55e';
+            console.log('✅ Event listener anexado com sucesso!');
 
-            console.log('📌 Setor:', setor);
-            console.log('📌 Função:', funcao);
+            // Função principal de submit (pode ser chamada de qualquer lugar)
+            window.submitFormNR1 = async function() {
+            console.log('📋 submitFormNR1 executada');
 
-            if (!setor || !funcao) {
-                console.warn('⚠️ Validação falhou: campos obrigatórios não preenchidos');
-                errorMessage.classList.add('show');
-                return;
-            }
+            try {
+                const setor = document.getElementById('setor').value;
+                const funcao = document.getElementById('funcao').value.trim();
 
-            errorMessage.classList.remove('show');
+                console.log('📌 Setor:', setor);
+                console.log('📌 Função:', funcao);
 
-            // Gerar ou recuperar visitorId para anonimato
-            let visitorId = localStorage.getItem('globalmind_nr1_visitorId');
-            if (!visitorId) {
-                visitorId = generateUUID();
-                localStorage.setItem('globalmind_nr1_visitorId', visitorId);
-                console.log('✅ Novo visitorId gerado:', visitorId);
-            } else {
-                console.log('✅ VisitorId existente:', visitorId);
-            }
+                if (!setor || !funcao) {
+                    console.warn('⚠️ Validação falhou: campos obrigatórios não preenchidos');
+                    errorMessage.classList.add('show');
+                    return false;
+                }
 
-            // Salvar dados iniciais no localStorage
-            const dadosIniciais = {
-                empresaId,
-                visitorId,
-                setor,
-                funcao,
-                iniciadoEm: new Date().toISOString()
-            };
+                errorMessage.classList.remove('show');
 
-            console.log('💾 Salvando dados no localStorage:', dadosIniciais);
-            localStorage.setItem('globalmind_nr1_dados', JSON.stringify(dadosIniciais));
+                // Desabilitar botão para evitar duplo submit
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Aguarde...';
+                console.log('🔒 Botão desabilitado para evitar duplo submit');
 
-            // Verificar se foi salvo
-            const verificacao = localStorage.getItem('globalmind_nr1_dados');
-            if (verificacao) {
+                // Gerar ou recuperar visitorId para anonimato
+                let visitorId = localStorage.getItem('globalmind_nr1_visitorId');
+                if (!visitorId) {
+                    visitorId = generateUUID();
+                    localStorage.setItem('globalmind_nr1_visitorId', visitorId);
+                    console.log('✅ Novo visitorId gerado:', visitorId);
+                } else {
+                    console.log('✅ VisitorId existente:', visitorId);
+                }
+
+                // Salvar dados iniciais no localStorage
+                const dadosIniciais = {
+                    empresaId,
+                    visitorId,
+                    setor,
+                    funcao,
+                    iniciadoEm: new Date().toISOString()
+                };
+
+                console.log('💾 Salvando dados no localStorage:', dadosIniciais);
+                localStorage.setItem('globalmind_nr1_dados', JSON.stringify(dadosIniciais));
+
+                // Verificar se foi salvo
+                const verificacao = localStorage.getItem('globalmind_nr1_dados');
+                if (!verificacao) {
+                    console.error('❌ Erro ao salvar dados no localStorage');
+                    alert('Erro ao salvar dados. Por favor, habilite o localStorage e tente novamente.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Iniciar Avaliação';
+                    return false;
+                }
                 console.log('✅ Dados salvos com sucesso no localStorage');
-            } else {
-                console.error('❌ Erro ao salvar dados no localStorage');
-            }
 
-            // Redirecionar para o questionário
-            const urlRedirect = `questionario-nr1.html?empresa=${empresaId}`;
-            console.log('🔄 Redirecionando para:', urlRedirect);
-            window.location.href = urlRedirect;
-        });
+                // Redirecionar para o questionário
+                const urlRedirect = `questionario-nr1.html?empresa=${empresaId}`;
+                console.log('🔄 Redirecionando para:', urlRedirect);
+                console.log('⏱️ Aguardando 100ms antes do redirect...');
+
+                // Pequeno delay para garantir que logs apareçam
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+                console.log('🚀 Executando redirect agora!');
+                window.location.href = urlRedirect;
+
+            } catch (error) {
+                console.error('❌ ERRO CRÍTICO no handler do form:', error);
+                alert('Erro ao processar formulário: ' + error.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Iniciar Avaliação';
+                return false;
+            }
+        };
+
+        console.log('✅ Função submitFormNR1 criada e disponível globalmente');
+
+            // Event listener que chama a função
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('📋 Event listener triggered - chamando submitFormNR1');
+                await window.submitFormNR1();
+            });
+        } // Fecha else do form check
+    } // Fecha else block - código só executa se empresaId estiver presente
     </script>
 </body>
 </html>

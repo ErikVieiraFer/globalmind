@@ -608,12 +608,21 @@
                 const badgeClass = getStatusBadgeClass(status);
                 const statusText = getStatusText(status);
 
+                // Formatar telefone para WhatsApp
+                const telefoneWhatsApp = d.telefone ?
+                    `<a href="https://wa.me/55${d.telefone.replace(/\D/g,'')}" target="_blank"
+                        style="color: var(--verde-oliva); text-decoration: none;"
+                        title="Abrir WhatsApp">
+                        ${d.telefone} 📱
+                    </a>`
+                    : '-';
+
                 return `
                     <tr>
                         <td><strong>${d.nomeEmpresa || 'N/A'}</strong></td>
                         <td>${d.nomeRespondente || 'N/A'}</td>
-                        <td>${d.email || 'N/A'}</td>
-                        <td>${d.telefone || 'N/A'}</td>
+                        <td>${d.email || '-'}</td>
+                        <td>${telefoneWhatsApp}</td>
                         <td>${formatarDataCurta(d.criadoEm)}</td>
                         <td><span class="badge ${badgeClass}">${statusText}</span></td>
                         <td>

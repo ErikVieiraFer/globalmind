@@ -692,8 +692,22 @@
                 document.getElementById('page-subtitle').textContent = `Diagnóstico realizado em: ${formatarData(diagnostico.criadoEm)}`;
                 document.getElementById('info-empresa').textContent = diagnostico.nomeEmpresa || 'N/A';
                 document.getElementById('info-respondente').textContent = diagnostico.nomeRespondente || 'N/A';
-                document.getElementById('info-email').textContent = diagnostico.email || 'N/A';
-                document.getElementById('info-telefone').textContent = diagnostico.telefone || 'N/A';
+                document.getElementById('info-email').textContent = diagnostico.email || '-';
+
+                // Telefone com link WhatsApp
+                const telefoneEl = document.getElementById('info-telefone');
+                if (diagnostico.telefone) {
+                    const telefoneLimpo = diagnostico.telefone.replace(/\D/g, '');
+                    telefoneEl.innerHTML = `
+                        <a href="https://wa.me/55${telefoneLimpo}" target="_blank"
+                            style="color: var(--verde-oliva); text-decoration: none;"
+                            title="Abrir WhatsApp">
+                            ${diagnostico.telefone} 📱
+                        </a>
+                    `;
+                } else {
+                    telefoneEl.textContent = '-';
+                }
 
                 // Renderizar índices
                 renderIndices(diagnostico.resultados);

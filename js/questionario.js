@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const startButton = document.getElementById('start-button');
     const empresaInput = document.getElementById('empresa-nome');
     const respondenteInput = document.getElementById('respondente-nome');
+    const emailInput = document.getElementById('email');
+    const telefoneInput = document.getElementById('telefone');
 
     const perguntas = [
         {
@@ -103,27 +105,49 @@ document.addEventListener('DOMContentLoaded', () => {
         startButton.addEventListener('click', () => {
             const empresa = empresaInput.value.trim();
             const respondente = respondenteInput.value.trim();
+            const email = emailInput.value.trim();
+            const telefone = telefoneInput.value.trim();
 
-            if (empresa && respondente) {
-                // Gerar Visitor ID se não existir
-                let visitorId = localStorage.getItem('globalmind_visitorId');
-                if (!visitorId) {
-                    visitorId = Date.now().toString(36) + Math.random().toString(36).substr(2);
-                    localStorage.setItem('globalmind_visitorId', visitorId);
-                }
-
-                localStorage.setItem('globalmind_empresa', empresa);
-                localStorage.setItem('globalmind_respondente', respondente);
-                localStorage.setItem('globalmind_data', new Date().toISOString());
-                welcomeScreen.classList.add('fade-out');
-                setTimeout(() => {
-                    welcomeScreen.style.display = 'none';
-                    questionarioContainer.style.display = 'block';
-                    renderizarPergunta(perguntaAtualIndex);
-                }, 500);
-            } else {
-                alert('Por favor, preencha o nome da empresa e do respondente.');
+            // Validações
+            if (!empresa || !respondente || !email || !telefone) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
             }
+
+            // Validar formato de email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Por favor, insira um e-mail válido.');
+                return;
+            }
+
+            // Validar telefone (mínimo 10 dígitos)
+            const telefoneLimpo = telefone.replace(/\D/g, '');
+            if (telefoneLimpo.length < 10) {
+                alert('Por favor, insira um telefone válido com no mínimo 10 dígitos.');
+                return;
+            }
+
+            // Gerar Visitor ID se não existir
+            let visitorId = localStorage.getItem('globalmind_visitorId');
+            if (!visitorId) {
+                visitorId = Date.now().toString(36) + Math.random().toString(36).substr(2);
+                localStorage.setItem('globalmind_visitorId', visitorId);
+            }
+
+            // Salvar todos os dados no localStorage
+            localStorage.setItem('globalmind_empresa', empresa);
+            localStorage.setItem('globalmind_respondente', respondente);
+            localStorage.setItem('globalmind_email', email);
+            localStorage.setItem('globalmind_telefone', telefone);
+            localStorage.setItem('globalmind_data', new Date().toISOString());
+
+            welcomeScreen.classList.add('fade-out');
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+                questionarioContainer.style.display = 'block';
+                renderizarPergunta(perguntaAtualIndex);
+            }, 500);
         });
     }
 
