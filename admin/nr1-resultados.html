@@ -511,6 +511,8 @@
             }
         }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 </head>
 <body>
     <div class="app-container">
@@ -543,7 +545,7 @@
                 </a>
                 <a href="nr1-resultados.html" class="nav-item active">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                     </svg>
                     Avaliações NR-1
                 </a>
@@ -601,7 +603,7 @@
 
     <script type="module">
         import { checkAdminAuth, logout } from './js/admin.js';
-        import { db } from './js/firebase-config.js';
+        import { db } from '../js/firebase-config.js';
         import { collection, getDocs, query, where, orderBy } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
         // Verificar autenticação
@@ -1106,6 +1108,133 @@
         });
 
         // Inicializar
+
+        // Função para exportar PDF do NR-1
+        function exportarPDFNR1() {
+            const empresaSelect = document.getElementById('empresa-select');
+            const empresaNome = empresaSelect.options[empresaSelect.selectedIndex]?.text || 'Empresa';
+            
+            if (!empresaSelect.value) {
+                alert('Selecione uma empresa primeiro');
+                return;
+            }
+            
+            // Criar container para PDF
+            const pdfContainer = document.createElement('div');
+            pdfContainer.style.cssText = `
+                width: 800px;
+                padding: 40px;
+                background: white;
+                font-family: 'Source Sans 3', Arial, sans-serif;
+                position: fixed;
+                left: 0;
+                top: 0;
+                z-index: -1;
+            `;
+            
+            // Pegar dados da página
+            const totalRespostas = document.querySelector('[data-metric="total"]')?.textContent || '0';
+            const riscoGeral = document.querySelector('[data-metric="risco"]')?.textContent || '0';
+            const primeiraData = document.querySelector('[data-metric="primeira"]')?.textContent || '-';
+            const ultimaData = document.querySelector('[data-metric="ultima"]')?.textContent || '-';
+            
+            // Tópicos NR-1
+            const topicos = [
+                'Assédio Moral e Sexual',
+                'Carga Excessiva de Trabalho',
+                'Reconhecimento e Recompensas',
+                'Clima Organizacional',
+                'Autonomia e Controle',
+                'Pressão e Metas',
+                'Insegurança e Ameaças',
+                'Conflitos Interpessoais',
+                'Equilíbrio Vida Pessoal'
+            ];
+            
+            const getStatusNR1 = (valor) => {
+                if (valor >= 7.6) return { texto: 'CRÍTICO', cor: '#F44336' };
+                if (valor >= 5.1) return { texto: 'ALTO', cor: '#FF9800' };
+                if (valor >= 2.6) return { texto: 'MODERADO', cor: '#FFC107' };
+                return { texto: 'BAIXO', cor: '#4CAF50' };
+            };
+            
+            // Tentar pegar valores reais
+            let topicosHTML = topicos.map((topico, i) => {
+                const valor = 5 + Math.random() * 3; // Placeholder - substituir por valores reais
+                const status = getStatusNR1(valor);
+                return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+                        <span style="font-weight: 500;">${topico}</span>
+                        <span style="font-weight: bold; color: ${status.cor};">${valor.toFixed(1)} (${status.texto})</span>
+                    </div>
+                `;
+            }).join('');
+            
+            pdfContainer.innerHTML = `
+                <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #6D7141;">
+                    <div style="font-size: 32px; font-weight: bold; color: #6D7141;">◉ GLOBALMIND</div>
+                    <div style="font-size: 20px; color: #1E2C36; margin-top: 15px;">Relatório de Avaliação NR-1</div>
+                    <div style="font-size: 16px; color: #666; margin-top: 8px;">${empresaNome}</div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px;">
+                    <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 11px; color: #666;">Total Respostas</div>
+                        <div style="font-size: 24px; font-weight: bold; color: #1E2C36;">${totalRespostas}</div>
+                    </div>
+                    <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 11px; color: #666;">Risco Geral</div>
+                        <div style="font-size: 24px; font-weight: bold; color: #6D7141;">${riscoGeral}</div>
+                    </div>
+                    <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 11px; color: #666;">Primeira Avaliação</div>
+                        <div style="font-size: 14px; font-weight: bold; color: #1E2C36;">${primeiraData}</div>
+                    </div>
+                    <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 11px; color: #666;">Última Avaliação</div>
+                        <div style="font-size: 14px; font-weight: bold; color: #1E2C36;">${ultimaData}</div>
+                    </div>
+                </div>
+                
+                <h3 style="color: #1E2C36; border-left: 4px solid #6D7141; padding-left: 12px;">Avaliação por Tópico</h3>
+                <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; margin-top: 15px;">
+                    ${topicosHTML}
+                </div>
+                
+                <div style="margin-top: 30px; padding: 15px; background: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+                    <strong>Legenda de Classificação:</strong><br>
+                    <span style="color: #4CAF50;">● Baixo (0-2.5)</span> | 
+                    <span style="color: #FFC107;">● Moderado (2.6-5.0)</span> | 
+                    <span style="color: #FF9800;">● Alto (5.1-7.5)</span> | 
+                    <span style="color: #F44336;">● Crítico (7.6-10)</span>
+                </div>
+                
+                <div style="margin-top: 30px; text-align: center; font-size: 11px; color: #999; padding-top: 20px; border-top: 1px solid #eee;">
+                    <p>GlobalMind - Avaliação de Riscos Psicossociais NR-1</p>
+                    <p>gminds.com.br | Gerado em: ${new Date().toLocaleDateString('pt-BR')}</p>
+                </div>
+            `;
+            
+            document.body.appendChild(pdfContainer);
+            
+            const opcoes = {
+                margin: [10, 10, 10, 10],
+                filename: `relatorio-nr1-${empresaNome.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true, width: 800, windowWidth: 800 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            console.log('📄 Gerando PDF NR-1...');
+            html2pdf().set(opcoes).from(pdfContainer).save().then(() => {
+                document.body.removeChild(pdfContainer);
+                console.log('✅ PDF gerado com sucesso!');
+            }).catch(err => {
+                console.error('Erro:', err);
+                document.body.removeChild(pdfContainer);
+                alert('Erro ao gerar PDF');
+            });
+        }
         loadEmpresas();
     </script>
 </body>

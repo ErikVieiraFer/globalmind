@@ -62,7 +62,7 @@
 
             try {
                 await loginUser(email, senha);
-                window.location.href = 'resultado.html';
+                window.location.href = 'dashboard.html';
             } catch (error) {
                 alert('Erro ao entrar: ' + error.message);
             }
@@ -70,7 +70,7 @@
 
         document.getElementById('google-btn').addEventListener('click', async () => {
             await loginWithGoogle();
-            window.location.href = 'resultado.html';
+            window.location.href = 'dashboard.html';
         });
     </script>
 </body>

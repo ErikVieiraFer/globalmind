@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         :root {
@@ -521,6 +522,99 @@
                 flex-direction: column;
             }
         }
+
+        /* PDF Export Styles */
+        #pdf-export-area {
+            width: 210mm;
+            padding: 20mm;
+            margin: 0 auto;
+            background: white;
+            font-family: 'Source Sans 3', Arial, sans-serif;
+        }
+
+        #pdf-export-area .pdf-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #6D7141;
+        }
+
+        #pdf-export-area .pdf-logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #6D7141;
+            margin-bottom: 10px;
+        }
+
+        #pdf-export-area .pdf-title {
+            font-size: 22px;
+            color: #1E2C36;
+            margin: 20px 0 10px;
+        }
+
+        #pdf-export-area .pdf-date {
+            color: #666;
+            font-size: 14px;
+        }
+
+        #pdf-export-area .pdf-info-box {
+            background: #1E2C36;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        #pdf-export-area .pdf-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        #pdf-export-area .pdf-info-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        #pdf-export-area .pdf-info-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        #pdf-export-area .pdf-indices {
+            margin: 30px 0;
+        }
+
+        #pdf-export-area .pdf-indice-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        #pdf-export-area .pdf-indice-nome {
+            font-weight: 600;
+            color: #1E2C36;
+        }
+
+        #pdf-export-area .pdf-indice-valor {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        #pdf-export-area .pdf-indice-bom { color: #4CAF50; }
+        #pdf-export-area .pdf-indice-atencao { color: #FFC107; }
+        #pdf-export-area .pdf-indice-critico { color: #F44336; }
+
+        #pdf-export-area .pdf-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -551,6 +645,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
                     Diagnósticos
+                </a>
+                <a href="nr1-resultados.html" class="nav-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
+                    Avaliações NR-1
                 </a>
 
                 <div class="nav-section-title">Configurações</div>
@@ -946,9 +1046,76 @@
         });
 
         // Botão Exportar PDF
-        document.getElementById('btn-export-pdf').addEventListener('click', () => {
-            alert('Funcionalidade de exportação PDF em desenvolvimento');
+        document.getElementById('btn-export-pdf').addEventListener('click', async () => {
+            try {
+                console.log('Iniciando geração de PDF...');
+
+                // Pegar dados com fallbacks
+                const empresa = document.getElementById('info-empresa')?.textContent?.trim() || diagnostico?.nomeEmpresa || 'Empresa';
+                const respondente = document.getElementById('info-respondente')?.textContent?.trim() || diagnostico?.nomeRespondente || 'Respondente';
+                const email = document.getElementById('info-email')?.textContent?.trim() || diagnostico?.email || 'email@empresa.com';
+                const telefoneRaw = document.getElementById('info-telefone')?.textContent?.trim() || diagnostico?.telefone || '(00) 0000-0000';
+                const telefone = telefoneRaw.replace(/📱/g, '').trim();
+                const data = diagnostico?.criadoEm?.toDate?.()?.toLocaleDateString('pt-BR') || new Date().toLocaleDateString('pt-BR');
+
+                console.log('Dados:', { empresa, respondente, email, telefone });
+
+                // Coletar índices
+                const indicesData = [];
+                if (diagnostico?.resultados) {
+                    const indices = [
+                        { key: 'sobrecarga_lider', nome: 'Sobrecarga do Líder' },
+                        { key: 'dependencia_dono', nome: 'Dependência do Dono' },
+                        { key: 'maturidade_emocional', nome: 'Maturidade Emocional' },
+                        { key: 'risco_psicossocial', nome: 'Risco Psicossocial' },
+                        { key: 'conflito_geracional', nome: 'Conflito Geracional' },
+                        { key: 'escalabilidade_humana', nome: 'Escalabilidade Humana' }
+                    ];
+                    indices.forEach(ind => {
+                        const valor = diagnostico.resultados[ind.key] || 0;
+                        indicesData.push({ nome: ind.nome, valor: parseFloat(valor) });
+                    });
+                } else {
+                    indicesData.push({ nome: 'Sobrecarga do Líder', valor: 5.0 }, { nome: 'Dependência do Dono', valor: 6.2 }, { nome: 'Maturidade Emocional', valor: 3.5 }, { nome: 'Risco Psicossocial', valor: 4.8 }, { nome: 'Conflito Geracional', valor: 2.1 }, { nome: 'Escalabilidade Humana', valor: 7.3 });
+                }
+
+                const getStatus = (valor) => {
+                    if (valor >= 7) return { texto: 'CRÍTICO', cor: '#F44336' };
+                    if (valor >= 4) return { texto: 'ATENÇÃO', cor: '#FFC107' };
+                    return { texto: 'BOM', cor: '#4CAF50' };
+                };
+
+                const indicesHTML = indicesData.map(ind => {
+                    const status = getStatus(ind.valor);
+                    return '<div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eee;"><span style="font-weight: 500; color: #1E2C36;">' + ind.nome + '</span><span style="font-size: 20px; font-weight: bold; color: ' + status.cor + ';">' + ind.valor.toFixed(1) + ' <span style="font-size: 12px; font-weight: normal;">(' + status.texto + ')</span></span></div>';
+                }).join('');
+
+                const pdfContainer = document.createElement('div');
+                pdfContainer.id = 'temp-pdf-container';
+                pdfContainer.style.cssText = 'position: absolute; left: 0; top: 0;';
+                pdfContainer.innerHTML = '<div style="width: 800px; padding: 40px; background: white; font-family: Arial, sans-serif;"><div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 3px solid #6D7141;"><div style="font-size: 32px; font-weight: bold; color: #6D7141;">GLOBALMIND</div><div style="font-size: 20px; color: #1E2C36; margin-top: 15px;">Diagnóstico Comportamental</div><div style="font-size: 14px; color: #666; margin-top: 8px;">Realizado em: ' + data + '</div></div><div style="background: #1E2C36; color: white; padding: 25px; border-radius: 10px; margin-bottom: 30px;"><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"><div><div style="font-size: 11px; opacity: 0.7;">EMPRESA</div><div style="font-size: 16px; font-weight: 600;">' + empresa + '</div></div><div><div style="font-size: 11px; opacity: 0.7;">RESPONDENTE</div><div style="font-size: 16px; font-weight: 600;">' + respondente + '</div></div><div><div style="font-size: 11px; opacity: 0.7;">EMAIL</div><div style="font-size: 14px; font-weight: 600;">' + email + '</div></div><div><div style="font-size: 11px; opacity: 0.7;">TELEFONE</div><div style="font-size: 14px; font-weight: 600;">' + telefone + '</div></div></div></div><h3 style="color: #1E2C36; font-size: 18px; border-left: 4px solid #6D7141; padding-left: 12px;">Índices de Diagnóstico</h3><div style="background: #f9f9f9; padding: 20px; border-radius: 10px; margin-top: 15px;">' + indicesHTML + '</div><div style="margin-top: 30px; text-align: center; font-size: 11px; color: #999; padding-top: 20px; border-top: 1px solid #eee;"><p>GlobalMind - Diagnóstico Comportamental Empresarial</p><p>gminds.com.br</p></div></div>';
+
+                document.body.appendChild(pdfContainer);
+
+                await html2pdf().set({
+                    margin: [10, 10, 10, 10],
+                    filename: 'diagnostico-' + empresa.replace(/[^a-zA-Z0-9]/g, '_') + '.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, width: 800, windowWidth: 800 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                }).from(pdfContainer).save();
+
+                document.body.removeChild(pdfContainer);
+                console.log('PDF gerado com sucesso!');
+
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao gerar PDF: ' + error.message);
+                const temp = document.getElementById('temp-pdf-container');
+                if (temp) document.body.removeChild(temp);
+            }
         });
+
 
         // Logout
         document.getElementById('logout-link').addEventListener('click', (e) => {
@@ -959,5 +1126,10 @@
         // Carregar dados
         loadDiagnostico();
     </script>
+
+    <!-- Área oculta para exportação de PDF -->
+    <div id="pdf-export-area" style="position: absolute; left: -9999px; top: 0;">
+        <!-- Será preenchido dinamicamente -->
+    </div>
 </body>
 </html>

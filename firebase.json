@@ -4,7 +4,37 @@
     "ignore": [
       "firebase.json",
       "**/.*",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "README.md",
+      "*.md",
+      "serviceAccountKey.json"
+    ],
+    "rewrites": [
+      { "source": "/", "destination": "/index.html" },
+      { "source": "/questionario", "destination": "/questionario.html" },
+      { "source": "/diagnostico", "destination": "/questionario.html" },
+      { "source": "/obrigado", "destination": "/obrigado.html" },
+      { "source": "/convite", "destination": "/convite.html" },
+      { "source": "/nr1", "destination": "/questionario-nr1.html" },
+      { "source": "/obrigado-nr1", "destination": "/obrigado-nr1.html" },
+      { "source": "/admin", "destination": "/admin/login.html" },
+      { "source": "/admin/painel", "destination": "/admin/dashboard.html" },
+      { "source": "/admin/diagnosticos", "destination": "/admin/diagnosticos.html" },
+      { "source": "/admin/resultado", "destination": "/admin/resultado.html" },
+      { "source": "/admin/nr1", "destination": "/admin/nr1-resultados.html" }
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      }
     ]
   }
 }

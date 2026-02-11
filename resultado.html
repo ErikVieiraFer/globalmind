@@ -128,7 +128,8 @@
             const diagnosticoId = urlParams.get('id');
 
             if (!diagnosticoId) {
-                document.querySelector('main').innerHTML = '<div class="alert alert-danger">ID do diagnóstico não fornecido. Acesse através do questionário.</div>';
+                // Redirecionar para a página inicial se não houver ID
+                window.location.href = '/';
                 return;
             }
 

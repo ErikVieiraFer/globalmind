@@ -221,6 +221,73 @@
             border-color: var(--verde-oliva);
         }
 
+        /* Status Select Styling */
+        .status-select {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: white;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+        }
+
+        .status-select:hover {
+            border-color: #6D7141;
+        }
+
+        .status-select:focus {
+            outline: none;
+            border-color: #6D7141;
+            box-shadow: 0 0 0 3px rgba(109, 113, 65, 0.1);
+        }
+
+        /* Ações Buttons Styling */
+        .acoes-btns {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-acao {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .btn-ver {
+            background: #E8F5E9;
+        }
+        .btn-ver:hover {
+            background: #C8E6C9;
+        }
+
+        .btn-link {
+            background: #E3F2FD;
+        }
+        .btn-link:hover {
+            background: #BBDEFB;
+        }
+
+        .btn-excluir {
+            background: #FFEBEE;
+        }
+        .btn-excluir:hover {
+            background: #FFCDD2;
+        }
+
         .search-box {
             flex: 1;
             min-width: 250px;
@@ -406,6 +473,16 @@
             color: var(--white);
         }
 
+        .action-btn-delete {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger);
+        }
+
+        .action-btn-delete:hover {
+            background: var(--danger);
+            color: var(--white);
+        }
+
         /* Toast Notification */
         .toast {
             position: fixed;
@@ -479,7 +556,7 @@
                 </a>
                 <a href="nr1-resultados.html" class="nav-item">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
                     </svg>
                     Avaliações NR-1
                 </a>
@@ -508,9 +585,10 @@
             <div class="filters-bar">
                 <div class="filter-group">
                     <button class="filter-btn active" data-filter="todos">Todos</button>
-                    <button class="filter-btn" data-filter="novos">Novos</button>
-                    <button class="filter-btn" data-filter="convertidos">Convertidos</button>
-                    <button class="filter-btn" data-filter="nao-visualizados">Não Visualizados</button>
+                    <button class="filter-btn" data-filter="novo">🆕 Novos</button>
+                    <button class="filter-btn" data-filter="contatado">📞 Contatados</button>
+                    <button class="filter-btn" data-filter="convertido">✅ Convertidos</button>
+                    <button class="filter-btn" data-filter="perdido">❌ Perdidos</button>
                 </div>
                 <div class="search-box">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -569,6 +647,8 @@
 
     <script type="module">
         import { checkAdminAuth, getDiagnosticos, logout, determinarStatus, getStatusBadgeClass, getStatusText, formatarDataCurta } from './js/admin.js';
+        import { db } from '../js/firebase-config.js';
+        import { doc, deleteDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
         // Verificar autenticação
         try {
@@ -579,6 +659,7 @@
 
         let currentFilter = 'todos';
         let currentSearch = '';
+        let diagnosticosCache = []; // Cache para filtros locais
 
         // Renderizar tabela
         function renderTable(diagnosticos) {
@@ -604,9 +685,7 @@
             }
 
             tbody.innerHTML = diagnosticos.map(d => {
-                const status = determinarStatus(d);
-                const badgeClass = getStatusBadgeClass(status);
-                const statusText = getStatusText(status);
+                const status = d.status || 'novo'; // Usar status do documento ou 'novo' como padrão
 
                 // Formatar telefone para WhatsApp
                 const telefoneWhatsApp = d.telefone ?
@@ -624,7 +703,16 @@
                         <td>${d.email || '-'}</td>
                         <td>${telefoneWhatsApp}</td>
                         <td>${formatarDataCurta(d.criadoEm)}</td>
-                        <td><span class="badge ${badgeClass}">${statusText}</span></td>
+                        <td>
+                            <select class="form-select form-select-sm status-select"
+                                    onchange="atualizarStatus('${d.id}', this.value)"
+                                    style="width: auto; min-width: 140px; font-size: 0.875rem;">
+                                <option value="novo" ${status === 'novo' ? 'selected' : ''}>🆕 Novo</option>
+                                <option value="contatado" ${status === 'contatado' ? 'selected' : ''}>📞 Contatado</option>
+                                <option value="convertido" ${status === 'convertido' ? 'selected' : ''}>✅ Convertido</option>
+                                <option value="perdido" ${status === 'perdido' ? 'selected' : ''}>❌ Perdido</option>
+                            </select>
+                        </td>
                         <td>
                             <button
                                 class="action-btn action-btn-nr1"
@@ -643,6 +731,15 @@
                                 </svg>
                                 Ver
                             </button>
+                            <button
+                                class="action-btn action-btn-delete"
+                                onclick="event.stopPropagation(); excluirDiagnostico('${d.id}', '${(d.nomeEmpresa || '').replace(/'/g, "\\'")}')"
+                                title="Excluir diagnóstico">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                                Excluir
+                            </button>
                         </td>
                     </tr>
                 `;
@@ -652,11 +749,43 @@
         // Carregar diagnósticos
         async function loadDiagnosticos() {
             try {
-                const diagnosticos = await getDiagnosticos(currentFilter, 'data-desc', currentSearch);
-                renderTable(diagnosticos);
+                console.log('🔍 Carregando diagnósticos...');
+                // Carregar todos os diagnósticos
+                const todos = await getDiagnosticos('todos', 'data-desc', '');
+                diagnosticosCache = todos;
+                console.log(`📊 Total carregado: ${diagnosticosCache.length}`);
+
+                // Aplicar filtros
+                aplicarFiltro();
             } catch (error) {
                 console.error('Erro ao carregar diagnósticos:', error);
             }
+        }
+
+        // Aplicar filtro aos dados em cache
+        function aplicarFiltro() {
+            let dadosFiltrados = diagnosticosCache;
+
+            // Filtrar por status
+            if (currentFilter !== 'todos') {
+                dadosFiltrados = dadosFiltrados.filter(d => {
+                    const status = d.status || 'novo';
+                    return status === currentFilter;
+                });
+            }
+
+            // Filtrar por busca
+            if (currentSearch) {
+                const searchLower = currentSearch.toLowerCase();
+                dadosFiltrados = dadosFiltrados.filter(d => {
+                    return (d.nomeEmpresa || '').toLowerCase().includes(searchLower) ||
+                           (d.nomeRespondente || '').toLowerCase().includes(searchLower) ||
+                           (d.email || '').toLowerCase().includes(searchLower);
+                });
+            }
+
+            console.log(`✅ Filtro "${currentFilter}": ${dadosFiltrados.length} resultados`);
+            renderTable(dadosFiltrados);
         }
 
         // Event listeners para filtros
@@ -665,7 +794,8 @@
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentFilter = btn.dataset.filter;
-                loadDiagnosticos();
+                console.log(`🔍 Filtro selecionado: ${currentFilter}`);
+                aplicarFiltro(); // Usar filtro local ao invés de recarregar
             });
         });
 
@@ -675,7 +805,8 @@
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 currentSearch = e.target.value.trim();
-                loadDiagnosticos();
+                console.log(`🔎 Busca: "${currentSearch}"`);
+                aplicarFiltro(); // Usar filtro local
             }, 300);
         });
 
@@ -698,6 +829,60 @@
                 console.error('❌ Erro ao copiar link:', error);
                 // Fallback: mostrar prompt com o link
                 prompt('Link NR-1 gerado (copie manualmente):', linkNR1);
+            }
+        };
+
+        // Função para excluir diagnóstico
+        window.excluirDiagnostico = async function(diagnosticoId, nomeEmpresa) {
+            if (!confirm(`Tem certeza que deseja excluir o diagnóstico de "${nomeEmpresa}"?\n\nEsta ação não pode ser desfeita.`)) {
+                return;
+            }
+
+            try {
+                console.log('🗑️ Excluindo diagnóstico:', diagnosticoId);
+
+                // Excluir do Firestore
+                await deleteDoc(doc(db, 'diagnosticos', diagnosticoId));
+
+                console.log('✅ Diagnóstico excluído com sucesso');
+                showToast(`Diagnóstico de ${nomeEmpresa} excluído com sucesso!`);
+
+                // Recarregar lista
+                setTimeout(() => {
+                    loadDiagnosticos();
+                }, 500);
+
+            } catch (error) {
+                console.error('❌ Erro ao excluir diagnóstico:', error);
+                alert(`Erro ao excluir diagnóstico: ${error.message}`);
+            }
+        };
+
+        // Função para atualizar status do diagnóstico
+        window.atualizarStatus = async function(docId, novoStatus) {
+            try {
+                console.log(`📝 Atualizando status para: ${novoStatus}`);
+
+                await updateDoc(doc(db, 'diagnosticos', docId), {
+                    status: novoStatus,
+                    statusAtualizadoEm: serverTimestamp()
+                });
+
+                console.log('✅ Status atualizado com sucesso');
+                showToast(`Status atualizado para: ${novoStatus}`);
+
+                // Atualizar cache local
+                const item = diagnosticosCache.find(d => d.id === docId);
+                if (item) {
+                    item.status = novoStatus;
+                    aplicarFiltro(); // Re-aplicar filtro para atualizar visualização
+                }
+
+            } catch (error) {
+                console.error('❌ Erro ao atualizar status:', error);
+                alert(`Erro ao atualizar status: ${error.message}`);
+                // Recarregar para reverter o select
+                loadDiagnosticos();
             }
         };
 
