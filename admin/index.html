@@ -18,7 +18,7 @@
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 // Não está logado, redireciona para login do admin
-                window.location.href = 'login.html';
+                window.location.href = '/admin/login.html';
                 return;
             }
 
@@ -28,14 +28,14 @@
 
                 if (userDoc.exists() && userDoc.data().role === "admin") {
                     // É admin, redireciona para dashboard
-                    window.location.href = 'dashboard.html';
+                    window.location.href = '/admin/dashboard.html';
                 } else {
                     // Não é admin, redireciona para login
-                    window.location.href = 'login.html';
+                    window.location.href = '/admin/login.html';
                 }
             } catch (error) {
                 console.error("Erro ao verificar role:", error);
-                window.location.href = 'login.html';
+                window.location.href = '/admin/login.html';
             }
         });
     </script>

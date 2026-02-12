@@ -21,7 +21,7 @@ export async function checkAdminAuth() {
     return new Promise((resolve, reject) => {
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
-                window.location.href = 'login.html';
+                window.location.href = '/admin/login.html';
                 reject('Não autenticado');
                 return;
             }
@@ -30,7 +30,7 @@ export async function checkAdminAuth() {
                 const userDoc = await getDoc(doc(db, "users", user.uid));
 
                 if (!userDoc.exists() || userDoc.data().role !== "admin") {
-                    window.location.href = 'login.html';
+                    window.location.href = '/admin/login.html';
                     reject('Não é admin');
                     return;
                 }
@@ -38,7 +38,7 @@ export async function checkAdminAuth() {
                 resolve(user);
             } catch (error) {
                 console.error("Erro ao verificar admin:", error);
-                window.location.href = 'login.html';
+                window.location.href = '/admin/login.html';
                 reject(error);
             }
         });
@@ -51,7 +51,7 @@ export async function checkAdminAuth() {
 export async function logout() {
     try {
         await signOut(auth);
-        window.location.href = 'login.html';
+        window.location.href = '/admin/login.html';
     } catch (error) {
         console.error("Erro ao fazer logout:", error);
     }

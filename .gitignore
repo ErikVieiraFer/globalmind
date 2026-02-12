@@ -52,4 +52,6 @@ build/Release
 .env.local
 
 # Firebase/Google
-.dataconnect
+.dataconnectdashboard.html.backup
+.claude
+

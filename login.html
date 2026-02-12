@@ -54,6 +54,23 @@
 
     <script type="module">
         import { loginUser, loginWithGoogle } from './js/auth.js';
+        import { db } from './js/firebase-config.js';
+        import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+        // Verificar role do usuário e redirecionar
+        async function redirectByRole(user) {
+            try {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists() && userDoc.data().role === 'admin') {
+                    window.location.href = '/admin/dashboard.html';
+                } else {
+                    window.location.href = '/';
+                }
+            } catch (error) {
+                console.error('Erro ao verificar role:', error);
+                window.location.href = '/';
+            }
+        }
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -61,16 +78,16 @@
             const senha = document.getElementById('senha').value;
 
             try {
-                await loginUser(email, senha);
-                window.location.href = 'dashboard.html';
+                const user = await loginUser(email, senha);
+                await redirectByRole(user);
             } catch (error) {
                 alert('Erro ao entrar: ' + error.message);
             }
         });
 
         document.getElementById('google-btn').addEventListener('click', async () => {
-            await loginWithGoogle();
-            window.location.href = 'dashboard.html';
+            const user = await loginWithGoogle();
+            await redirectByRole(user);
         });
     </script>
 </body>

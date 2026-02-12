@@ -9,6 +9,9 @@
       "*.md",
       "serviceAccountKey.json"
     ],
+    "redirects": [
+      { "source": "/admin", "destination": "/admin/dashboard", "type": 302 }
+    ],
     "rewrites": [
       { "source": "/", "destination": "/index.html" },
       { "source": "/questionario", "destination": "/questionario.html" },
@@ -17,7 +20,7 @@
       { "source": "/convite", "destination": "/convite.html" },
       { "source": "/nr1", "destination": "/questionario-nr1.html" },
       { "source": "/obrigado-nr1", "destination": "/obrigado-nr1.html" },
-      { "source": "/admin", "destination": "/admin/login.html" },
+      { "source": "/login", "destination": "/login.html" },
       { "source": "/admin/painel", "destination": "/admin/dashboard.html" },
       { "source": "/admin/diagnosticos", "destination": "/admin/diagnosticos.html" },
       { "source": "/admin/resultado", "destination": "/admin/resultado.html" },
