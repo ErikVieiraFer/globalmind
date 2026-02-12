@@ -714,6 +714,24 @@
 
         /* ===== RESPONSIVE ===== */
 
+        /* Large desktop (>1400px) - more breathing room */
+        @media (min-width: 1400px) {
+            .main-content { padding: 2.5rem 3.5rem; }
+            .table thead th { padding: 1rem 1.5rem; }
+            .table tbody td { padding: 1.125rem 1.5rem; }
+        }
+
+        /* Medium desktop / small laptop (1025px - 1280px) */
+        @media (max-width: 1280px) {
+            .main-content { padding: 1.5rem 2rem; }
+            .table thead th { padding: 0.75rem 0.875rem; font-size: 0.75rem; }
+            .table tbody td { padding: 0.75rem 0.875rem; font-size: 0.85rem; }
+            .status-select { min-width: 115px; font-size: 0.75rem; padding: 0.3rem 1.75rem 0.3rem 0.625rem; }
+            .btn-acao { width: 28px; height: 28px; font-size: 12px; }
+            .acoes-btns { gap: 3px; }
+        }
+
+        /* Tablet / sidebar collapses (<1024px) */
         @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -735,14 +753,29 @@
             .page-header {
                 display: none;
             }
+
+            .table thead th { padding: 0.625rem 0.75rem; font-size: 0.7rem; }
+            .table tbody td { padding: 0.625rem 0.75rem; font-size: 0.8rem; }
+            .card-header { padding: 1rem 1.25rem; }
+            .card-title { font-size: 0.95rem; }
         }
 
+        /* Small tablet (769px - 900px) - table gets tight, use compact layout */
+        @media (max-width: 900px) and (min-width: 769px) {
+            .table thead th:nth-child(3),
+            .table tbody td:nth-child(3) { display: none; } /* Hide email column */
+            .table thead th { padding: 0.5rem 0.625rem; }
+            .table tbody td { padding: 0.5rem 0.625rem; }
+            .status-select { min-width: 100px; font-size: 0.7rem; }
+            .btn-acao { width: 26px; height: 26px; font-size: 11px; }
+        }
+
+        /* Mobile (<768px) - switch to cards */
         @media (max-width: 768px) {
             .main-content {
                 padding: 1rem;
             }
 
-            /* Hide table, show cards */
             .card { display: none; }
             .cards-container { display: flex; }
 
@@ -751,11 +784,29 @@
                 font-size: 1rem;
             }
 
+            .filter-pill {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+
             .toast {
                 bottom: 1rem;
                 left: 1rem;
                 right: 1rem;
             }
+        }
+
+        /* Small mobile (<480px) */
+        @media (max-width: 480px) {
+            .main-content { padding: 0.75rem; }
+            .diag-card { padding: 0.875rem; }
+            .diag-card-empresa { font-size: 0.9rem; }
+            .diag-card-body { gap: 0.5rem; }
+            .diag-card-value { font-size: 0.8rem; }
+            .btn-acao-mobile { width: 40px; height: 40px; font-size: 1rem; }
+            .diag-card-actions { gap: 0.25rem; }
+            .search-input { font-size: 0.9rem; }
+            .mobile-header-title { font-size: 1.1rem; }
         }
 
         @media (min-width: 769px) {
