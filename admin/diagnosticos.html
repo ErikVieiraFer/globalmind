@@ -27,6 +27,7 @@
             --success: #22c55e;
             --info: #3b82f6;
             --warning: #f59e0b;
+            --danger: #dc3545;
             --purple: #8b5cf6;
 
             --font-display: 'Playfair Display', Georgia, serif;
@@ -41,11 +42,7 @@
             --radius-lg: 20px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: var(--font-body);
@@ -60,7 +57,7 @@
             min-height: 100vh;
         }
 
-        /* Sidebar */
+        /* ===== SIDEBAR ===== */
         .sidebar {
             width: 280px;
             background: var(--azul-petroleo);
@@ -70,6 +67,7 @@
             height: 100vh;
             overflow-y: auto;
             z-index: 100;
+            transition: transform 0.3s ease;
         }
 
         .sidebar-header {
@@ -147,22 +145,71 @@
             opacity: 0.8;
         }
 
-        .nav-item.active svg {
-            opacity: 1;
+        .nav-item.active svg { opacity: 1; }
+
+        /* Sidebar overlay for mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
         }
 
-        /* Main Content */
+        .sidebar-overlay.active { display: block; }
+
+        /* ===== MAIN CONTENT ===== */
         .main-content {
             flex: 1;
             margin-left: 280px;
             padding: 2rem 2.5rem;
         }
 
+        /* ===== MOBILE HEADER ===== */
+        .mobile-header {
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--bege-dark);
+        }
+
+        .menu-toggle {
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: var(--white);
+            border-radius: var(--radius-sm);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .menu-toggle span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: var(--azul-petroleo);
+            border-radius: 2px;
+        }
+
+        .mobile-header-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        /* ===== PAGE HEADER ===== */
         .page-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 2rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
             padding-bottom: 1.5rem;
             border-bottom: 1px solid var(--bege-dark);
         }
@@ -172,7 +219,7 @@
             font-size: 2rem;
             font-weight: 600;
             color: var(--azul-petroleo);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
 
         .page-subtitle {
@@ -180,28 +227,13 @@
             font-size: 1rem;
         }
 
-        /* Filters */
-        .filters-bar {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 1.5rem;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
+        .btn-refresh {
+            display: inline-flex;
             align-items: center;
-        }
-
-        .filter-group {
-            display: flex;
             gap: 0.5rem;
-        }
-
-        .filter-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--gray-300);
+            padding: 0.625rem 1.25rem;
             background: var(--white);
+            border: 1px solid var(--gray-300);
             border-radius: var(--radius-sm);
             font-family: var(--font-body);
             font-size: 0.875rem;
@@ -211,47 +243,229 @@
             transition: all 0.2s ease;
         }
 
-        .filter-btn:hover {
+        .btn-refresh:hover {
             background: var(--gray-100);
+            border-color: var(--verde-oliva);
         }
 
-        .filter-btn.active {
+        .btn-refresh svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-refresh.spinning svg {
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== SEARCH BAR ===== */
+        .search-container {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .search-container svg {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: var(--gray-500);
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            background: var(--white);
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--verde-oliva);
+            box-shadow: 0 0 0 3px rgba(109, 113, 65, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--gray-500);
+        }
+
+        /* ===== FILTER PILLS ===== */
+        .filters-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .filters-container::-webkit-scrollbar { display: none; }
+
+        .filter-pill {
+            flex-shrink: 0;
+            padding: 0.5rem 1.125rem;
+            border-radius: 50px;
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+            border: 1px solid var(--gray-300);
+            background: var(--white);
+            color: var(--azul-petroleo);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .filter-pill:hover {
+            background: var(--gray-100);
+            border-color: var(--gray-400);
+        }
+
+        .filter-pill.active {
             background: var(--verde-oliva);
             color: var(--white);
             border-color: var(--verde-oliva);
         }
 
-        /* Status Select Styling */
-        .status-select {
-            padding: 6px 12px;
-            border: 1px solid #ddd;
+        .filter-pill .filter-count {
+            background: rgba(0,0,0,0.1);
+            padding: 0.1rem 0.5rem;
             border-radius: 20px;
-            background: white;
-            font-size: 13px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .filter-pill.active .filter-count {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* ===== TABLE CARD ===== */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--azul-petroleo);
+        }
+
+        .results-count {
+            color: var(--gray-600);
+            font-size: 0.85rem;
+        }
+
+        /* ===== DESKTOP TABLE ===== */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead th {
+            text-align: left;
+            padding: 0.875rem 1.25rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: var(--gray-100);
+            position: sticky;
+            top: 0;
+        }
+
+        .table tbody td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.9rem;
+        }
+
+        .table tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background: var(--bege);
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ===== STATUS SELECT ===== */
+        .status-select {
+            padding: 0.375rem 2rem 0.375rem 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 20px;
+            background: var(--white);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
             appearance: none;
             -webkit-appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 10px center;
-            padding-right: 30px;
-        }
-
-        .status-select:hover {
-            border-color: #6D7141;
+            background-position: right 8px center;
+            min-width: 130px;
         }
 
         .status-select:focus {
             outline: none;
-            border-color: #6D7141;
+            border-color: var(--verde-oliva);
             box-shadow: 0 0 0 3px rgba(109, 113, 65, 0.1);
         }
 
-        /* Ações Buttons Styling */
+        /* ===== STATUS BADGES ===== */
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.625rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-novo { background: #E3F2FD; color: #1976D2; }
+        .status-contatado { background: #FFF3E0; color: #F57C00; }
+        .status-convertido { background: #E8F5E9; color: #388E3C; }
+        .status-perdido { background: #FFEBEE; color: #D32F2F; }
+
+        /* ===== ACTION BUTTONS (desktop) ===== */
         .acoes-btns {
             display: flex;
-            gap: 5px;
+            gap: 4px;
         }
 
         .btn-acao {
@@ -265,225 +479,189 @@
             align-items: center;
             justify-content: center;
             font-size: 14px;
-        }
-
-        .btn-ver {
-            background: #E8F5E9;
-        }
-        .btn-ver:hover {
-            background: #C8E6C9;
-        }
-
-        .btn-link {
-            background: #E3F2FD;
-        }
-        .btn-link:hover {
-            background: #BBDEFB;
-        }
-
-        .btn-excluir {
-            background: #FFEBEE;
-        }
-        .btn-excluir:hover {
-            background: #FFCDD2;
-        }
-
-        .search-box {
-            flex: 1;
-            min-width: 250px;
             position: relative;
         }
 
-        .search-box input {
-            width: 100%;
-            padding: 0.5rem 1rem 0.5rem 2.5rem;
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius-sm);
-            font-family: var(--font-body);
-            font-size: 0.875rem;
-        }
+        .btn-acao:hover { transform: scale(1.1); }
 
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--verde-oliva);
-        }
+        .btn-ver-resultado { background: #E8F5E9; }
+        .btn-ver-resultado:hover { background: #C8E6C9; }
+        .btn-link-nr1 { background: #E3F2FD; }
+        .btn-link-nr1:hover { background: #BBDEFB; }
+        .btn-whatsapp { background: #E8F5E9; }
+        .btn-whatsapp:hover { background: #C8E6C9; }
+        .btn-excluir { background: #FFEBEE; }
+        .btn-excluir:hover { background: #FFCDD2; }
 
-        .search-box svg {
+        /* Tooltip */
+        .btn-acao[title]:hover::after {
+            content: attr(title);
             position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 16px;
-            height: 16px;
-            color: var(--gray-500);
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--azul-petroleo);
+            color: var(--white);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            margin-bottom: 4px;
+            pointer-events: none;
         }
 
-        /* Table Card */
-        .card {
+        /* WhatsApp link in table */
+        .whatsapp-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #25D366;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .whatsapp-link:hover { text-decoration: underline; }
+
+        /* ===== MOBILE CARDS ===== */
+        .cards-container {
+            display: none;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .diag-card {
             background: var(--white);
-            border-radius: var(--radius-lg);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.125rem;
             box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--verde-oliva);
+            transition: box-shadow 0.2s ease;
         }
 
-        .card-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--gray-200);
+        .diag-card:active {
+            box-shadow: var(--shadow-md);
+        }
+
+        .diag-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+
+        .diag-card-empresa {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--azul-petroleo);
+            line-height: 1.3;
+        }
+
+        .diag-card-data {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            white-space: nowrap;
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .diag-card-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.625rem;
+            margin-bottom: 0.875rem;
+        }
+
+        .diag-card-field {
+            min-width: 0;
+        }
+
+        .diag-card-label {
+            font-size: 0.65rem;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 0.125rem;
+        }
+
+        .diag-card-value {
+            font-size: 0.875rem;
+            color: var(--azul-petroleo);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .diag-card-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--gray-200);
+            gap: 0.5rem;
         }
 
-        .card-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--azul-petroleo);
-        }
-
-        .results-count {
-            color: var(--gray-600);
-            font-size: 0.875rem;
-        }
-
-        .card-body {
-            padding: 0;
-        }
-
-        /* Table */
-        .table-container {
-            overflow-x: auto;
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .table thead th {
-            text-align: left;
-            padding: 1rem 1.5rem;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--gray-600);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background: var(--gray-100);
-            position: sticky;
-            top: 0;
-        }
-
-        .table tbody td {
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid var(--gray-200);
-        }
-
-        .table tbody tr {
-            transition: background 0.2s ease;
-            cursor: pointer;
-        }
-
-        .table tbody tr:hover {
-            background: var(--bege);
-        }
-
-        .table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* Badges */
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
+        .diag-card-status-select {
+            padding: 0.375rem 1.75rem 0.375rem 0.625rem;
+            border: 1px solid var(--gray-300);
             border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            background: var(--white);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 6px center;
+            flex-shrink: 0;
         }
 
-        .badge-novo {
-            background: rgba(34, 197, 94, 0.1);
-            color: var(--success);
+        .diag-card-actions {
+            display: flex;
+            gap: 0.375rem;
         }
 
-        .badge-visualizado {
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--info);
+        .btn-acao-mobile {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            font-size: 1.15rem;
+            transition: all 0.15s ease;
         }
 
-        .badge-convertido {
-            background: rgba(139, 92, 246, 0.1);
-            color: var(--purple);
-        }
+        .btn-acao-mobile:active { transform: scale(0.95); }
 
-        .badge-contatado {
-            background: rgba(107, 114, 128, 0.1);
-            color: var(--gray-600);
-        }
-
+        /* ===== EMPTY STATE ===== */
         .empty-state {
             text-align: center;
-            padding: 3rem 1rem;
+            padding: 3rem 1.5rem;
             color: var(--gray-500);
         }
 
-        .empty-state svg {
-            width: 64px;
-            height: 64px;
-            margin-bottom: 1rem;
-            opacity: 0.3;
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+            opacity: 0.5;
         }
 
-        /* Action Buttons */
-        .action-btn {
-            padding: 0.5rem 0.875rem;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
+        .empty-state-text {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
         }
 
-        .action-btn svg {
-            width: 14px;
-            height: 14px;
+        .empty-state-sub {
+            font-size: 0.85rem;
+            color: var(--gray-400);
         }
 
-        .action-btn-nr1 {
-            background: rgba(59, 130, 246, 0.1);
-            color: var(--info);
-        }
-
-        .action-btn-nr1:hover {
-            background: var(--info);
-            color: var(--white);
-        }
-
-        .action-btn-view {
-            background: rgba(109, 113, 65, 0.1);
-            color: var(--verde-oliva);
-        }
-
-        .action-btn-view:hover {
-            background: var(--verde-oliva);
-            color: var(--white);
-        }
-
-        .action-btn-delete {
-            background: rgba(220, 53, 69, 0.1);
-            color: var(--danger);
-        }
-
-        .action-btn-delete:hover {
-            background: var(--danger);
-            color: var(--white);
-        }
-
-        /* Toast Notification */
+        /* ===== TOAST ===== */
         .toast {
             position: fixed;
             bottom: 2rem;
@@ -499,11 +677,10 @@
             transform: translateY(120%);
             transition: transform 0.3s ease;
             z-index: 1000;
+            max-width: 90vw;
         }
 
-        .toast.show {
-            transform: translateY(0);
-        }
+        .toast.show { transform: translateY(0); }
 
         .toast svg {
             width: 20px;
@@ -512,23 +689,87 @@
         }
 
         .toast-message {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
+
+        /* ===== LOADING ===== */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+            color: var(--gray-500);
+            gap: 1rem;
+        }
+
+        .loading-spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--verde-oliva);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* ===== RESPONSIVE ===== */
 
         @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
             }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
             .main-content {
                 margin-left: 0;
+                padding: 1.5rem;
             }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            .page-header {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            /* Hide table, show cards */
+            .card { display: none; }
+            .cards-container { display: flex; }
+
+            .search-input {
+                padding: 0.75rem 1rem 0.75rem 2.75rem;
+                font-size: 1rem;
+            }
+
+            .toast {
+                bottom: 1rem;
+                left: 1rem;
+                right: 1rem;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .cards-container { display: none !important; }
         }
     </style>
 </head>
 <body>
     <div class="app-container">
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
                     <div class="logo-icon">
@@ -573,65 +814,83 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            <!-- Header -->
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <button class="menu-toggle" id="menu-toggle" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+                <span class="mobile-header-title">Diagnósticos</span>
+            </div>
+
+            <!-- Desktop Header -->
             <header class="page-header">
                 <div>
                     <h1 class="page-title">Diagnósticos</h1>
                     <p class="page-subtitle">Visualize e gerencie todos os diagnósticos realizados</p>
                 </div>
+                <button class="btn-refresh" id="btn-refresh" title="Atualizar">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Atualizar
+                </button>
             </header>
 
-            <!-- Filters -->
-            <div class="filters-bar">
-                <div class="filter-group">
-                    <button class="filter-btn active" data-filter="todos">Todos</button>
-                    <button class="filter-btn" data-filter="novo">🆕 Novos</button>
-                    <button class="filter-btn" data-filter="contatado">📞 Contatados</button>
-                    <button class="filter-btn" data-filter="convertido">✅ Convertidos</button>
-                    <button class="filter-btn" data-filter="perdido">❌ Perdidos</button>
-                </div>
-                <div class="search-box">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                    <input type="text" id="search-input" placeholder="Buscar por empresa, respondente ou email...">
-                </div>
+            <!-- Search -->
+            <div class="search-container">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+                <input type="text" class="search-input" id="search-input" placeholder="Buscar por empresa, respondente ou email...">
             </div>
 
-            <!-- Table -->
-            <div class="card">
+            <!-- Filters -->
+            <div class="filters-container" id="filters-container">
+                <button class="filter-pill active" data-filter="todos">Todos <span class="filter-count" id="count-todos">0</span></button>
+                <button class="filter-pill" data-filter="novo">Novos <span class="filter-count" id="count-novo">0</span></button>
+                <button class="filter-pill" data-filter="contatado">Contatados <span class="filter-count" id="count-contatado">0</span></button>
+                <button class="filter-pill" data-filter="convertido">Convertidos <span class="filter-count" id="count-convertido">0</span></button>
+                <button class="filter-pill" data-filter="perdido">Perdidos <span class="filter-count" id="count-perdido">0</span></button>
+            </div>
+
+            <!-- Desktop Table -->
+            <div class="card" id="desktop-card">
                 <div class="card-header">
                     <h2 class="card-title">Lista de Diagnósticos</h2>
                     <span class="results-count" id="results-count">0 resultados</span>
                 </div>
-                <div class="card-body">
-                    <div class="table-container">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Empresa</th>
-                                    <th>Respondente</th>
-                                    <th>Email</th>
-                                    <th>Telefone</th>
-                                    <th>Data</th>
-                                    <th>Status</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="diagnosticos-table">
-                                <tr>
-                                    <td colspan="7">
-                                        <div class="empty-state">
-                                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                            </svg>
-                                            <p>Carregando diagnósticos...</p>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Empresa</th>
+                                <th>Respondente</th>
+                                <th>Email</th>
+                                <th>Telefone</th>
+                                <th>Data</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="diagnosticos-table">
+                            <tr>
+                                <td colspan="7">
+                                    <div class="loading-container">
+                                        <div class="loading-spinner"></div>
+                                        <p>Carregando diagnósticos...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mobile Cards -->
+            <div class="cards-container" id="diagnosticos-cards">
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p>Carregando diagnósticos...</p>
                 </div>
             </div>
         </main>
@@ -646,7 +905,7 @@
     </div>
 
     <script type="module">
-        import { checkAdminAuth, getDiagnosticos, logout, determinarStatus, getStatusBadgeClass, getStatusText, formatarDataCurta } from './js/admin.js';
+        import { checkAdminAuth, getDiagnosticos, logout, formatarDataCurta } from './js/admin.js';
         import { db } from '../js/firebase-config.js';
         import { doc, deleteDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
@@ -659,9 +918,40 @@
 
         let currentFilter = 'todos';
         let currentSearch = '';
-        let diagnosticosCache = []; // Cache para filtros locais
+        let diagnosticosCache = [];
 
-        // Renderizar tabela
+        // ===== Mobile sidebar toggle =====
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        const menuToggle = document.getElementById('menu-toggle');
+
+        function openSidebar() {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+
+        menuToggle.addEventListener('click', openSidebar);
+        overlay.addEventListener('click', closeSidebar);
+
+        // ===== Update filter counts =====
+        function updateFilterCounts() {
+            const counts = { todos: diagnosticosCache.length, novo: 0, contatado: 0, convertido: 0, perdido: 0 };
+            diagnosticosCache.forEach(d => {
+                const s = d.status || 'novo';
+                if (counts[s] !== undefined) counts[s]++;
+            });
+            Object.keys(counts).forEach(key => {
+                const el = document.getElementById(`count-${key}`);
+                if (el) el.textContent = counts[key];
+            });
+        }
+
+        // ===== Render desktop table =====
         function renderTable(diagnosticos) {
             const tbody = document.getElementById('diagnosticos-table');
             const resultsCount = document.getElementById('results-count');
@@ -670,30 +960,20 @@
 
             if (diagnosticos.length === 0) {
                 tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7">
-                            <div class="empty-state">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                </svg>
-                                <p>Nenhum diagnóstico encontrado</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
+                    <tr><td colspan="7">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">&#128203;</div>
+                            <p class="empty-state-text">Nenhum diagnóstico encontrado</p>
+                            <p class="empty-state-sub">Tente ajustar os filtros ou busca</p>
+                        </div>
+                    </td></tr>`;
                 return;
             }
 
             tbody.innerHTML = diagnosticos.map(d => {
-                const status = d.status || 'novo'; // Usar status do documento ou 'novo' como padrão
-
-                // Formatar telefone para WhatsApp
-                const telefoneWhatsApp = d.telefone ?
-                    `<a href="https://wa.me/55${d.telefone.replace(/\D/g,'')}" target="_blank"
-                        style="color: var(--verde-oliva); text-decoration: none;"
-                        title="Abrir WhatsApp">
-                        ${d.telefone} 📱
-                    </a>`
+                const status = d.status || 'novo';
+                const telefoneLink = d.telefone
+                    ? `<a href="https://wa.me/55${d.telefone.replace(/\D/g,'')}" target="_blank" class="whatsapp-link">${d.telefone} &#128242;</a>`
                     : '-';
 
                 return `
@@ -701,205 +981,231 @@
                         <td><strong>${d.nomeEmpresa || 'N/A'}</strong></td>
                         <td>${d.nomeRespondente || 'N/A'}</td>
                         <td>${d.email || '-'}</td>
-                        <td>${telefoneWhatsApp}</td>
+                        <td>${telefoneLink}</td>
                         <td>${formatarDataCurta(d.criadoEm)}</td>
                         <td>
-                            <select class="form-select form-select-sm status-select"
-                                    onchange="atualizarStatus('${d.id}', this.value)"
-                                    style="width: auto; min-width: 140px; font-size: 0.875rem;">
-                                <option value="novo" ${status === 'novo' ? 'selected' : ''}>🆕 Novo</option>
-                                <option value="contatado" ${status === 'contatado' ? 'selected' : ''}>📞 Contatado</option>
-                                <option value="convertido" ${status === 'convertido' ? 'selected' : ''}>✅ Convertido</option>
-                                <option value="perdido" ${status === 'perdido' ? 'selected' : ''}>❌ Perdido</option>
+                            <select class="status-select" onchange="atualizarStatus('${d.id}', this.value)">
+                                <option value="novo" ${status === 'novo' ? 'selected' : ''}>&#127195; Novo</option>
+                                <option value="contatado" ${status === 'contatado' ? 'selected' : ''}>&#128222; Contatado</option>
+                                <option value="convertido" ${status === 'convertido' ? 'selected' : ''}>&#9989; Convertido</option>
+                                <option value="perdido" ${status === 'perdido' ? 'selected' : ''}>&#10060; Perdido</option>
                             </select>
                         </td>
                         <td>
-                            <button
-                                class="action-btn action-btn-nr1"
-                                onclick="event.stopPropagation(); gerarLinkNR1('${d.id}', '${(d.nomeEmpresa || '').replace(/'/g, "\\'")}')">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-                                </svg>
-                                Link NR-1
-                            </button>
-                            <button
-                                class="action-btn action-btn-view"
-                                onclick="window.location.href='resultado.html?id=${d.id}'">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                </svg>
-                                Ver
-                            </button>
-                            <button
-                                class="action-btn action-btn-delete"
-                                onclick="event.stopPropagation(); excluirDiagnostico('${d.id}', '${(d.nomeEmpresa || '').replace(/'/g, "\\'")}')"
-                                title="Excluir diagnóstico">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                </svg>
-                                Excluir
-                            </button>
+                            <div class="acoes-btns">
+                                <button class="btn-acao btn-ver-resultado" title="Ver resultado" onclick="window.location.href='resultado.html?id=${d.id}'">&#128065;</button>
+                                <button class="btn-acao btn-link-nr1" title="Copiar link NR-1" onclick="event.stopPropagation(); gerarLinkNR1('${d.id}', '${(d.nomeEmpresa || '').replace(/'/g, "\\'")}')">&#128279;</button>
+                                ${d.telefone ? `<button class="btn-acao btn-whatsapp" title="WhatsApp" onclick="event.stopPropagation(); window.open('https://wa.me/55${d.telefone.replace(/\D/g,'')}', '_blank')">&#128172;</button>` : ''}
+                                <button class="btn-acao btn-excluir" title="Excluir" onclick="event.stopPropagation(); excluirDiagnostico('${d.id}', '${(d.nomeEmpresa || '').replace(/'/g, "\\'")}')">&#128465;</button>
+                            </div>
                         </td>
-                    </tr>
-                `;
+                    </tr>`;
             }).join('');
         }
 
-        // Carregar diagnósticos
+        // ===== Render mobile cards =====
+        function renderCards(diagnosticos) {
+            const container = document.getElementById('diagnosticos-cards');
+
+            if (diagnosticos.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">&#128203;</div>
+                        <p class="empty-state-text">Nenhum diagnóstico encontrado</p>
+                        <p class="empty-state-sub">Tente ajustar os filtros ou busca</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = diagnosticos.map(d => {
+                const status = d.status || 'novo';
+                const statusClass = `status-${status}`;
+                const statusLabels = { novo: 'Novo', contatado: 'Contatado', convertido: 'Convertido', perdido: 'Perdido' };
+
+                const telefoneDisplay = d.telefone
+                    ? `<a href="https://wa.me/55${d.telefone.replace(/\D/g,'')}" target="_blank" class="whatsapp-link">${d.telefone}</a>`
+                    : '-';
+
+                return `
+                    <div class="diag-card">
+                        <div class="diag-card-header">
+                            <div>
+                                <div class="diag-card-empresa">${d.nomeEmpresa || 'N/A'}</div>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:0.5rem;">
+                                <span class="status-badge ${statusClass}">${statusLabels[status] || 'Novo'}</span>
+                                <span class="diag-card-data">${formatarDataCurta(d.criadoEm)}</span>
+                            </div>
+                        </div>
+
+                        <div class="diag-card-body">
+                            <div class="diag-card-field">
+                                <div class="diag-card-label">Respondente</div>
+                                <div class="diag-card-value">${d.nomeRespondente || 'N/A'}</div>
+                            </div>
+                            <div class="diag-card-field">
+                                <div class="diag-card-label">Email</div>
+                                <div class="diag-card-value">${d.email || '-'}</div>
+                            </div>
+                            <div class="diag-card-field">
+                                <div class="diag-card-label">Telefone</div>
+                                <div class="diag-card-value">${telefoneDisplay}</div>
+                            </div>
+                            <div class="diag-card-field">
+                                <div class="diag-card-label">Alterar Status</div>
+                                <select class="diag-card-status-select" onchange="atualizarStatus('${d.id}', this.value)">
+                                    <option value="novo" ${status === 'novo' ? 'selected' : ''}>&#127195; Novo</option>
+                                    <option value="contatado" ${status === 'contatado' ? 'selected' : ''}>&#128222; Contatado</option>
+                                    <option value="convertido" ${status === 'convertido' ? 'selected' : ''}>&#9989; Convertido</option>
+                                    <option value="perdido" ${status === 'perdido' ? 'selected' : ''}>&#10060; Perdido</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="diag-card-footer">
+                            <div class="diag-card-actions">
+                                <button class="btn-acao-mobile btn-ver-resultado" onclick="window.location.href='resultado.html?id=${d.id}'">&#128065;</button>
+                                <button class="btn-acao-mobile btn-link-nr1" onclick="gerarLinkNR1('${d.id}', '${(d.nomeEmpresa || '').replace(/'/g, "\\'")}')">&#128279;</button>
+                                ${d.telefone ? `<button class="btn-acao-mobile btn-whatsapp" onclick="window.open('https://wa.me/55${d.telefone.replace(/\D/g,'')}', '_blank')">&#128172;</button>` : ''}
+                                <button class="btn-acao-mobile btn-excluir" onclick="excluirDiagnostico('${d.id}', '${(d.nomeEmpresa || '').replace(/'/g, "\\'")}')">&#128465;</button>
+                            </div>
+                        </div>
+                    </div>`;
+            }).join('');
+        }
+
+        // ===== Render both =====
+        function renderAll(diagnosticos) {
+            renderTable(diagnosticos);
+            renderCards(diagnosticos);
+        }
+
+        // ===== Load data =====
         async function loadDiagnosticos() {
             try {
-                console.log('🔍 Carregando diagnósticos...');
-                // Carregar todos os diagnósticos
                 const todos = await getDiagnosticos('todos', 'data-desc', '');
                 diagnosticosCache = todos;
-                console.log(`📊 Total carregado: ${diagnosticosCache.length}`);
-
-                // Aplicar filtros
+                updateFilterCounts();
                 aplicarFiltro();
             } catch (error) {
                 console.error('Erro ao carregar diagnósticos:', error);
             }
         }
 
-        // Aplicar filtro aos dados em cache
+        // ===== Apply filter =====
         function aplicarFiltro() {
             let dadosFiltrados = diagnosticosCache;
 
-            // Filtrar por status
             if (currentFilter !== 'todos') {
-                dadosFiltrados = dadosFiltrados.filter(d => {
-                    const status = d.status || 'novo';
-                    return status === currentFilter;
-                });
+                dadosFiltrados = dadosFiltrados.filter(d => (d.status || 'novo') === currentFilter);
             }
 
-            // Filtrar por busca
             if (currentSearch) {
-                const searchLower = currentSearch.toLowerCase();
-                dadosFiltrados = dadosFiltrados.filter(d => {
-                    return (d.nomeEmpresa || '').toLowerCase().includes(searchLower) ||
-                           (d.nomeRespondente || '').toLowerCase().includes(searchLower) ||
-                           (d.email || '').toLowerCase().includes(searchLower);
-                });
+                const s = currentSearch.toLowerCase();
+                dadosFiltrados = dadosFiltrados.filter(d =>
+                    (d.nomeEmpresa || '').toLowerCase().includes(s) ||
+                    (d.nomeRespondente || '').toLowerCase().includes(s) ||
+                    (d.email || '').toLowerCase().includes(s)
+                );
             }
 
-            console.log(`✅ Filtro "${currentFilter}": ${dadosFiltrados.length} resultados`);
-            renderTable(dadosFiltrados);
+            renderAll(dadosFiltrados);
         }
 
-        // Event listeners para filtros
-        document.querySelectorAll('.filter-btn').forEach(btn => {
+        // ===== Filter listeners =====
+        document.querySelectorAll('.filter-pill').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 currentFilter = btn.dataset.filter;
-                console.log(`🔍 Filtro selecionado: ${currentFilter}`);
-                aplicarFiltro(); // Usar filtro local ao invés de recarregar
+                aplicarFiltro();
             });
         });
 
-        // Event listener para busca
+        // ===== Search listener =====
         let searchTimeout;
         document.getElementById('search-input').addEventListener('input', (e) => {
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 currentSearch = e.target.value.trim();
-                console.log(`🔎 Busca: "${currentSearch}"`);
-                aplicarFiltro(); // Usar filtro local
+                aplicarFiltro();
             }, 300);
         });
 
-        // Logout
+        // ===== Refresh button =====
+        document.getElementById('btn-refresh').addEventListener('click', async () => {
+            const btn = document.getElementById('btn-refresh');
+            btn.classList.add('spinning');
+            await loadDiagnosticos();
+            btn.classList.remove('spinning');
+            showToast('Lista atualizada!');
+        });
+
+        // ===== Logout =====
         document.getElementById('logout-link').addEventListener('click', (e) => {
             e.preventDefault();
             logout();
         });
 
-        // Função para gerar e copiar link NR-1
+        // ===== Generate NR-1 link =====
         window.gerarLinkNR1 = async function(diagnosticoId, nomeEmpresa) {
             const baseUrl = window.location.origin.replace('/admin', '');
             const linkNR1 = `${baseUrl}/convite.html?empresa=${diagnosticoId}`;
 
             try {
                 await navigator.clipboard.writeText(linkNR1);
-                showToast(`Link NR-1 copiado! Envie para os colaboradores de ${nomeEmpresa}`);
-                console.log('✅ Link NR-1 gerado:', linkNR1);
+                showToast(`Link NR-1 copiado para ${nomeEmpresa}!`);
             } catch (error) {
-                console.error('❌ Erro ao copiar link:', error);
-                // Fallback: mostrar prompt com o link
-                prompt('Link NR-1 gerado (copie manualmente):', linkNR1);
+                prompt('Link NR-1 (copie manualmente):', linkNR1);
             }
         };
 
-        // Função para excluir diagnóstico
+        // ===== Delete diagnostic =====
         window.excluirDiagnostico = async function(diagnosticoId, nomeEmpresa) {
-            if (!confirm(`Tem certeza que deseja excluir o diagnóstico de "${nomeEmpresa}"?\n\nEsta ação não pode ser desfeita.`)) {
-                return;
-            }
+            if (!confirm(`Excluir diagnóstico de "${nomeEmpresa}"?\n\nEsta ação não pode ser desfeita.`)) return;
 
             try {
-                console.log('🗑️ Excluindo diagnóstico:', diagnosticoId);
-
-                // Excluir do Firestore
                 await deleteDoc(doc(db, 'diagnosticos', diagnosticoId));
-
-                console.log('✅ Diagnóstico excluído com sucesso');
-                showToast(`Diagnóstico de ${nomeEmpresa} excluído com sucesso!`);
-
-                // Recarregar lista
-                setTimeout(() => {
-                    loadDiagnosticos();
-                }, 500);
-
+                showToast(`Diagnóstico de ${nomeEmpresa} excluído!`);
+                setTimeout(() => loadDiagnosticos(), 500);
             } catch (error) {
-                console.error('❌ Erro ao excluir diagnóstico:', error);
-                alert(`Erro ao excluir diagnóstico: ${error.message}`);
+                console.error('Erro ao excluir:', error);
+                alert(`Erro ao excluir: ${error.message}`);
             }
         };
 
-        // Função para atualizar status do diagnóstico
+        // ===== Update status =====
         window.atualizarStatus = async function(docId, novoStatus) {
             try {
-                console.log(`📝 Atualizando status para: ${novoStatus}`);
-
                 await updateDoc(doc(db, 'diagnosticos', docId), {
                     status: novoStatus,
                     statusAtualizadoEm: serverTimestamp()
                 });
+                showToast(`Status atualizado: ${novoStatus}`);
 
-                console.log('✅ Status atualizado com sucesso');
-                showToast(`Status atualizado para: ${novoStatus}`);
-
-                // Atualizar cache local
                 const item = diagnosticosCache.find(d => d.id === docId);
                 if (item) {
                     item.status = novoStatus;
-                    aplicarFiltro(); // Re-aplicar filtro para atualizar visualização
+                    updateFilterCounts();
+                    aplicarFiltro();
                 }
-
             } catch (error) {
-                console.error('❌ Erro ao atualizar status:', error);
-                alert(`Erro ao atualizar status: ${error.message}`);
-                // Recarregar para reverter o select
+                console.error('Erro ao atualizar status:', error);
+                alert(`Erro: ${error.message}`);
                 loadDiagnosticos();
             }
         };
 
-        // Função para mostrar toast
+        // ===== Toast =====
         function showToast(message) {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toast-message');
-
             toastMessage.textContent = message;
             toast.classList.add('show');
-
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // Carregar dados iniciais
+        // ===== Init =====
         loadDiagnosticos();
     </script>
 </body>
