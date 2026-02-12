@@ -81,7 +81,8 @@
 
             try {
                 await registerUser(email, senha, nome, empresa, telefone);
-                window.location.href = 'dashboard.html';
+                // Redirecionar para index (landing page) - usuários comuns
+                window.location.href = '/';
             } catch (error) {
                 alert('Erro ao cadastrar: ' + error.message);
             }
@@ -89,7 +90,8 @@
 
         document.getElementById('google-btn').addEventListener('click', async () => {
             await loginWithGoogle();
-            window.location.href = 'dashboard.html';
+            // Redirecionar para index (landing page) - usuários comuns
+            window.location.href = '/';
         });
     </script>
 </body>
