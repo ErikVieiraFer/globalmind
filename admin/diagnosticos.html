@@ -1131,6 +1131,21 @@
             renderCards(diagnosticos);
         }
 
+        // ===== Read filter from URL =====
+        function aplicarFiltroURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const filtro = urlParams.get('filtro');
+            if (filtro && ['todos', 'novo', 'contatado', 'convertido', 'perdido'].includes(filtro)) {
+                currentFilter = filtro;
+                document.querySelectorAll('.filter-pill').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.filter === filtro);
+                });
+                window.history.replaceState({}, '', window.location.pathname);
+            }
+        }
+
+        aplicarFiltroURL();
+
         // ===== Load data =====
         async function loadDiagnosticos() {
             try {

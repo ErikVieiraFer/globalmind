@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GlobalMind - Diagnóstico Comportamental Empresarial</title>
-    <meta name="description" content="Diagnóstico comportamental empresarial e avaliação NR-1 de riscos psicossociais. Transforme a saúde organizacional da sua empresa.">
+    <title>GlobalMind - Transformação e Implantação NR-1</title>
+    <meta name="description" content="Transformação e implantação NR-1. Nova Lei do Bem-Estar no Trabalho. Desenvolvimento humano, saúde organizacional e conformidade legal corporativa.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -461,13 +461,38 @@
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 2rem;
         }
 
         .stat-card {
             text-align: center;
-            padding: 2rem 1rem;
+            padding: 2rem 1.25rem;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: rgba(109, 113, 65, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .stat-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--verde-oliva-light);
         }
 
         .stat-number {
@@ -479,10 +504,19 @@
             margin-bottom: 0.75rem;
         }
 
+        .stat-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+
         .stat-label {
-            font-size: 1rem;
-            opacity: 0.8;
-            font-weight: 500;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            font-weight: 400;
+            line-height: 1.5;
         }
 
         .stat-divider {
@@ -877,7 +911,7 @@
             .hero-buttons { justify-content: center; }
             .hero-visual { display: none; }
             .features-grid { grid-template-columns: repeat(2, 1fr); }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
             .steps-grid { grid-template-columns: repeat(2, 1fr); }
             .steps-grid::before { display: none; }
             .nr1-card { grid-template-columns: 1fr; padding: 2.5rem; }
@@ -902,7 +936,7 @@
             .navbar-links.active a { color: var(--azul-petroleo) !important; }
             .menu-toggle { display: block; }
             .features-grid { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .stats-grid { grid-template-columns: 1fr; }
             .steps-grid { grid-template-columns: 1fr; gap: 1.5rem; }
             .section { padding: 4rem 1.5rem; }
             .hero { padding: 7rem 1.5rem 3rem; }
@@ -924,12 +958,13 @@
             </a>
             <ul class="navbar-links" id="nav-links">
                 <li><a href="#home">Home</a></li>
-                <li><a href="questionario.html">Diagnóstico</a></li>
-                <li><a href="#nr1">NR-1</a></li>
-                <li><a href="#sobre">Sobre</a></li>
+                <li><a href="#quem-somos">Quem Somos</a></li>
+                <li><a href="#proposta">Proposta</a></li>
+                <li><a href="#jornada">Jornada</a></li>
+                <li><a href="#beneficios">Benefícios</a></li>
                 <li><a href="#contato">Contato</a></li>
                 <li>
-                    <a href="https://wa.me/5527999833488?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20a%20GlobalMind." target="_blank" class="navbar-cta">
+                    <a href="https://wa.me/5527999027376?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20a%20GlobalMind." target="_blank" class="navbar-cta">
                         <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                         Falar com Especialista
                     </a>
@@ -955,10 +990,10 @@
             <div class="hero-text">
                 <div class="hero-badge">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    Diagnóstico Gratuito e Imediato
+                    Lei n.º 14.831/2024
                 </div>
-                <h1>Transforme a <span>saúde comportamental</span> da sua empresa</h1>
-                <p class="hero-subtitle">Diagnóstico empresarial e avaliação NR-1 de riscos psicossociais. Identifique padrões ocultos de liderança e desbloqueie o potencial da sua equipe.</p>
+                <h1>Transformação e <span>Implantação NR-1</span></h1>
+                <p class="hero-subtitle">Nova Lei do Bem-Estar no Trabalho. Desenvolvimento humano, saúde organizacional e conformidade legal corporativa para a sua empresa.</p>
                 <div class="hero-buttons">
                     <a href="questionario.html" class="btn btn-primary">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
@@ -1002,148 +1037,188 @@
         </div>
     </section>
 
-    <!-- FEATURES / O QUE FAZEMOS -->
-    <section class="section features" id="sobre">
+    <!-- QUEM SOMOS / MISSÃO / PROPOSTA -->
+    <section class="section features" id="quem-somos">
         <div class="section-container">
             <div class="section-header animate-on-scroll">
-                <span class="section-label">O que fazemos</span>
-                <h2 class="section-title">Soluções para a saúde organizacional</h2>
-                <p class="section-subtitle">Ferramentas de diagnóstico e consultoria para transformar o ambiente corporativo.</p>
+                <span class="section-label">Institucional</span>
+                <h2 class="section-title">Conheça a GlobalMind</h2>
+                <p class="section-subtitle">Identidade corporativa com atuação nacional e internacional em desenvolvimento humano.</p>
             </div>
             <div class="features-grid">
                 <div class="feature-card animate-on-scroll animate-delay-1">
                     <div class="feature-icon green">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
                     </div>
-                    <h3>Diagnóstico Comportamental</h3>
-                    <p>Análise profunda de 6 índices essenciais: sobrecarga, dependência, maturidade emocional, risco psicossocial, conflitos e escalabilidade.</p>
+                    <h3>Quem Somos</h3>
+                    <p>A GlobalMind Identidade Corporativa é uma empresa brasileira com atuação nacional e internacional, especializada em desenvolvimento humano, saúde organizacional e conformidade legal corporativa. Atuamos como parceira estratégica na implementação da Lei n.º 14.831/2024.</p>
                 </div>
                 <div class="feature-card animate-on-scroll animate-delay-2">
                     <div class="feature-icon blue">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <h3>Nossa Missão</h3>
+                    <p>Promover o desenvolvimento humano e a saúde organizacional por meio de soluções integradas, estratégicas e alinhadas à legislação vigente, contribuindo para ambientes de trabalho mais saudáveis, conscientes e sustentáveis, no Brasil e no exterior.</p>
+                </div>
+                <div class="feature-card animate-on-scroll animate-delay-3" id="proposta">
+                    <div class="feature-icon orange">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                     </div>
-                    <h3>Avaliação NR-1</h3>
-                    <p>Mapeamento completo dos riscos psicossociais conforme a Norma Regulamentadora, com relatório detalhado para o PGR da empresa.</p>
-                </div>
-                <div class="feature-card animate-on-scroll animate-delay-3">
-                    <div class="feature-icon orange">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                    </div>
-                    <h3>Consultoria Especializada</h3>
-                    <p>Acompanhamento personalizado com planos de ação estratégicos para desenvolvimento de lideranças e clima organizacional.</p>
+                    <h3>Nossa Proposta</h3>
+                    <p>Mais do que um diagnóstico, oferecemos uma jornada real de transformação organizacional. Por meio de diagnósticos psicossociais, treinamentos práticos, oficinas temáticas e programas de transformação, preparamos empresas de todos os portes para atender às exigências legais e aos novos padrões de bem-estar e produtividade humana.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- STATS -->
-    <section class="section stats">
+    <!-- BENEFÍCIOS -->
+    <section class="section stats" id="beneficios">
         <div class="section-container">
             <div class="section-header animate-on-scroll">
-                <span class="section-label">Nosso Impacto</span>
-                <h2 class="section-title">Por que escolher a GlobalMind</h2>
-                <p class="section-subtitle">Resultados que transformam empresas e pessoas.</p>
+                <span class="section-label">Vantagens</span>
+                <h2 class="section-title">Benefícios para sua empresa</h2>
+                <p class="section-subtitle">Resultados concretos que transformam organizações.</p>
             </div>
             <div class="stats-grid">
                 <div class="stat-card animate-on-scroll animate-delay-1">
-                    <div class="stat-number" data-count="500">0</div>
-                    <div class="stat-label">Empresas Atendidas</div>
-                    <div class="stat-divider"></div>
+                    <div class="stat-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </div>
+                    <div class="stat-title">Adequação à Lei</div>
+                    <div class="stat-label">Evita passivos jurídicos e garante conformidade com a Lei n.º 14.831/2024.</div>
                 </div>
                 <div class="stat-card animate-on-scroll animate-delay-2">
-                    <div class="stat-number" data-count="10000">0</div>
-                    <div class="stat-label">Colaboradores Avaliados</div>
-                    <div class="stat-divider"></div>
+                    <div class="stat-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                    </div>
+                    <div class="stat-title">Valorização da Imagem</div>
+                    <div class="stat-label">Torne-se referência em responsabilidade social e Employer Branding.</div>
                 </div>
                 <div class="stat-card animate-on-scroll animate-delay-3">
-                    <div class="stat-number" data-count="98" data-suffix="%">0</div>
-                    <div class="stat-label">Satisfação dos Clientes</div>
-                    <div class="stat-divider"></div>
+                    <div class="stat-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                    </div>
+                    <div class="stat-title">Produtividade Sustentável</div>
+                    <div class="stat-label">Maior foco, criatividade, engajamento e entrega de resultados.</div>
                 </div>
-                <div class="stat-card animate-on-scroll animate-delay-4">
-                    <div class="stat-number" data-count="6" data-suffix=" índices">0</div>
-                    <div class="stat-label">Dimensões Analisadas</div>
-                    <div class="stat-divider"></div>
+                <div class="stat-card animate-on-scroll animate-delay-1">
+                    <div class="stat-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <div class="stat-title">Redução de Rotatividade</div>
+                    <div class="stat-label">Previne adoecimentos e aumenta a retenção de talentos.</div>
+                </div>
+                <div class="stat-card animate-on-scroll animate-delay-2">
+                    <div class="stat-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    </div>
+                    <div class="stat-title">Cultura Organizacional</div>
+                    <div class="stat-label">Ambientes mais humanos e alinhados ao ESG.</div>
+                </div>
+                <div class="stat-card animate-on-scroll animate-delay-3">
+                    <div class="stat-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    </div>
+                    <div class="stat-title">Clima Organizacional</div>
+                    <div class="stat-label">Redução de conflitos e mais harmonia no ambiente de trabalho.</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- HOW IT WORKS -->
-    <section class="section" id="como-funciona">
+    <!-- ETAPAS DA JORNADA -->
+    <section class="section" id="jornada">
         <div class="section-container">
             <div class="section-header animate-on-scroll">
                 <span class="section-label">Metodologia</span>
-                <h2 class="section-title">Como funciona</h2>
-                <p class="section-subtitle">Um processo simples e poderoso em 4 etapas.</p>
+                <h2 class="section-title">Etapas da Jornada</h2>
+                <p class="section-subtitle">Um processo estruturado para transformar sua organização.</p>
             </div>
             <div class="steps-grid">
                 <div class="step-card animate-on-scroll animate-delay-1">
                     <div class="step-number-circle"><span class="step-num">1</span></div>
-                    <h3>Responda</h3>
-                    <p>Questionário rápido e intuitivo de aproximadamente 10 minutos.</p>
+                    <h3>Mapeamento</h3>
+                    <p>Levantamento inicial das práticas, rotinas e políticas relacionadas à saúde mental e bem-estar no ambiente de trabalho.</p>
                 </div>
                 <div class="step-card animate-on-scroll animate-delay-2">
                     <div class="step-number-circle"><span class="step-num">2</span></div>
-                    <h3>Analise</h3>
-                    <p>Receba seu diagnóstico instantâneo com gráficos detalhados.</p>
+                    <h3>Diagnóstico</h3>
+                    <p>Aplicação de metodologias e instrumentos psicossociais para avaliar o clima organizacional, níveis de risco e conformidade legal.</p>
                 </div>
                 <div class="step-card animate-on-scroll animate-delay-3">
                     <div class="step-number-circle"><span class="step-num">3</span></div>
-                    <h3>Compreenda</h3>
-                    <p>Identifique padrões e pontos de atenção na sua liderança.</p>
+                    <h3>Identificação dos Gargalos</h3>
+                    <p>Análise crítica dos pontos de vulnerabilidade, disfunções comportamentais e impactos na cultura corporativa.</p>
                 </div>
                 <div class="step-card animate-on-scroll animate-delay-4">
                     <div class="step-number-circle"><span class="step-num">4</span></div>
-                    <h3>Transforme</h3>
-                    <p>Receba orientação especializada e crie seu plano de ação.</p>
+                    <h3>Causas e Efeitos</h3>
+                    <p>Compreensão das origens dos problemas e das consequências individuais, coletivas e estratégicas para a organização.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- NR-1 HIGHLIGHT -->
-    <section class="section nr1-section" id="nr1">
+    <!-- PLANO DE AÇÃO -->
+    <section class="section nr1-section" id="plano">
         <div class="section-container">
             <div class="nr1-card animate-on-scroll">
                 <div class="nr1-info">
                     <div class="nr1-alert-icon">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                     </div>
-                    <span class="nr1-badge">Obrigatório desde 2025</span>
-                    <h2 class="nr1-title">Sua empresa cumpre a NR-1?</h2>
-                    <p class="nr1-text">A Norma Regulamentadora 01 exige que todas as empresas incluam riscos psicossociais no Gerenciamento de Riscos Ocupacionais (GRO). O descumprimento pode resultar em multas severas e passivos trabalhistas.</p>
-                    <a href="apresentacao.html" class="btn btn-primary">
+                    <span class="nr1-badge">Estratégia Personalizada</span>
+                    <h2 class="nr1-title">Plano de Ação</h2>
+                    <p class="nr1-text">Após o diagnóstico, elaboramos um plano de ação sob medida para posicionar sua empresa na conformidade com a Lei n.º 14.831/2024, tornando-se referência em responsabilidade social, inovação e bem-estar corporativo.</p>
+                    <a href="https://wa.me/5527999027376?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20o%20plano%20de%20a%C3%A7%C3%A3o%20GlobalMind." target="_blank" class="btn btn-primary">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                        Saiba mais sobre NR-1
+                        Falar com Especialista
                     </a>
                 </div>
                 <div class="nr1-visual">
                     <div class="nr1-stat-item">
                         <div class="nr1-stat-icon red">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/></svg>
                         </div>
                         <div>
-                            <strong>Multas de até R$ 50.000</strong>
-                            <span>por não conformidade com a norma</span>
+                            <strong>Definição de Prioridades</strong>
+                            <span>Classificação dos riscos psicossociais por grau de urgência e impacto</span>
                         </div>
                     </div>
                     <div class="nr1-stat-item">
                         <div class="nr1-stat-icon yellow">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                         </div>
                         <div>
-                            <strong>72% dos trabalhadores</strong>
-                            <span>sofrem de estresse no trabalho</span>
+                            <strong>Metas e Indicadores</strong>
+                            <span>Objetivos mensuráveis com KPIs claros para acompanhamento</span>
                         </div>
                     </div>
                     <div class="nr1-stat-item">
                         <div class="nr1-stat-icon green">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
                         </div>
                         <div>
-                            <strong>GlobalMind resolve</strong>
-                            <span>Diagnóstico + Relatório + Consultoria</span>
+                            <strong>Ações Corretivas</strong>
+                            <span>Oficinas, palestras, treinamentos e programas de escuta ativa</span>
+                        </div>
+                    </div>
+                    <div class="nr1-stat-item">
+                        <div class="nr1-stat-icon yellow">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        </div>
+                        <div>
+                            <strong>Monitoramento</strong>
+                            <span>Acompanhamento sistemático com relatórios e feedbacks</span>
+                        </div>
+                    </div>
+                    <div class="nr1-stat-item">
+                        <div class="nr1-stat-icon green">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                        </div>
+                        <div>
+                            <strong>Certificação</strong>
+                            <span>Reconhecimento pelo compromisso com a saúde mental (opcional)</span>
                         </div>
                     </div>
                 </div>
@@ -1155,8 +1230,8 @@
     <section class="section cta-section">
         <div class="section-container cta-content">
             <h2 class="section-title">Pronto para transformar sua empresa?</h2>
-            <p class="cta-subtitle">O diagnóstico é gratuito, rápido e pode ser o primeiro passo para uma gestão mais saudável e eficiente.</p>
-            <a href="https://wa.me/5527999833488?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20os%20servi%C3%A7os%20da%20GlobalMind." target="_blank" class="btn-cta">
+            <p class="cta-subtitle">Posicione sua empresa para implementar a Lei n.º 14.831/2024 e torne-se referência em bem-estar corporativo.</p>
+            <a href="https://wa.me/5527999027376?text=Ol%C3%A1%2C%20gostaria%20de%20saber%20mais%20sobre%20os%20servi%C3%A7os%20da%20GlobalMind." target="_blank" class="btn-cta">
                 <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                 Falar com Especialista pelo WhatsApp
             </a>
@@ -1168,38 +1243,39 @@
         <div class="footer-grid">
             <div class="footer-brand">
                 <img src="assets/logo-full.jpeg" alt="GlobalMind" style="filter: brightness(10);">
-                <p>Transformando ambientes corporativos através de dados, inteligência comportamental e conformidade regulatória.</p>
+                <p>Desenvolvimento humano, saúde organizacional e conformidade legal corporativa. Parceira estratégica na implementação da Lei n.º 14.831/2024.</p>
             </div>
             <div>
                 <h4>Links</h4>
                 <ul class="footer-links">
                     <li><a href="#home">Home</a></li>
-                    <li><a href="questionario.html">Diagnóstico</a></li>
-                    <li><a href="apresentacao.html">NR-1</a></li>
-                    <li><a href="#sobre">Sobre</a></li>
+                    <li><a href="#quem-somos">Quem Somos</a></li>
+                    <li><a href="#proposta">Proposta</a></li>
+                    <li><a href="#jornada">Jornada</a></li>
+                    <li><a href="#beneficios">Benefícios</a></li>
                 </ul>
             </div>
             <div>
                 <h4>Serviços</h4>
                 <ul class="footer-links">
                     <li><a href="questionario.html">Diagnóstico Comportamental</a></li>
-                    <li><a href="apresentacao.html">Avaliação NR-1</a></li>
-                    <li><a href="https://wa.me/5527999833488" target="_blank">Consultoria</a></li>
+                    <li><a href="#plano">Plano de Ação NR-1</a></li>
+                    <li><a href="https://wa.me/5527999027376" target="_blank">Consultoria</a></li>
                 </ul>
             </div>
             <div>
                 <h4>Contato</h4>
                 <div class="footer-contact-item">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    <a href="mailto:contato@gminds.com.br">contato@gminds.com.br</a>
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    Viviane Moura
                 </div>
                 <div class="footer-contact-item">
                     <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                    <a href="https://wa.me/5527999833488" target="_blank">(27) 99983-3488</a>
+                    <a href="https://wa.me/5527999027376" target="_blank">(27) 99902-7376</a>
                 </div>
                 <div class="footer-contact-item">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    Vitória - ES, Brasil
+                    Itajaí - SC | Praia da Costa - ES
                 </div>
             </div>
         </div>

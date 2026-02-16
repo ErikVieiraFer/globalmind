@@ -66,42 +66,29 @@ export async function getDashboardStats() {
         const allDiagnosticos = await getDocs(diagnosticosRef);
 
         const total = allDiagnosticos.size;
-
-        // Novos (últimos 7 dias)
-        const seteDiasAtras = new Date();
-        seteDiasAtras.setDate(seteDiasAtras.getDate() - 7);
-
         let novos = 0;
+        let contatados = 0;
         let convertidos = 0;
-        let aguardandoContato = 0;
+        let perdidos = 0;
 
         allDiagnosticos.forEach((doc) => {
             const data = doc.data();
+            const status = data.status || 'novo';
 
-            // Verificar se é novo (últimos 7 dias)
-            if (data.criadoEm) {
-                const criadoEm = data.criadoEm.toDate();
-                if (criadoEm >= seteDiasAtras) {
-                    novos++;
-                }
-            }
-
-            // Verificar se é convertido
-            if (data.convertido === true || data.userId) {
-                convertidos++;
-            }
-
-            // Aguardando contato: não visualizado pelo admin E não contatado
-            if (!data.visualizadoAdmin && data.status !== 'contatado') {
-                aguardandoContato++;
+            switch (status) {
+                case 'novo': novos++; break;
+                case 'contatado': contatados++; break;
+                case 'convertido': convertidos++; break;
+                case 'perdido': perdidos++; break;
             }
         });
 
         return {
             total,
             novos,
+            contatados,
             convertidos,
-            aguardandoContato
+            perdidos
         };
     } catch (error) {
         console.error("Erro ao buscar estatísticas:", error);
@@ -236,7 +223,7 @@ export function gerarMensagemWhatsApp(diagnostico) {
 
     const mensagem = `Olá ${nome}! Sou a Viviane da GlobalMind. Vi que você realizou o diagnóstico comportamental da ${empresa} e gostaria de conversar sobre os resultados. Podemos agendar uma conversa?`;
 
-    const whatsappNumber = '5527999833488';
+    const whatsappNumber = '5527999027376';
     const encodedMessage = encodeURIComponent(mensagem);
 
     return `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
@@ -299,9 +286,9 @@ export function formatarDataCurta(timestamp) {
 export function getStatusBadgeClass(status) {
     const classes = {
         'novo': 'badge-novo',
-        'visualizado': 'badge-visualizado',
+        'contatado': 'badge-contatado',
         'convertido': 'badge-convertido',
-        'contatado': 'badge-contatado'
+        'perdido': 'badge-perdido'
     };
 
     return classes[status] || 'badge-novo';
@@ -313,9 +300,9 @@ export function getStatusBadgeClass(status) {
 export function getStatusText(status) {
     const texts = {
         'novo': 'Novo',
-        'visualizado': 'Visualizado',
+        'contatado': 'Contatado',
         'convertido': 'Convertido',
-        'contatado': 'Contatado'
+        'perdido': 'Perdido'
     };
 
     return texts[status] || 'Novo';
