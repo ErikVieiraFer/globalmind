@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DRPS – Enviando respostas…</title>
+
+  <style>
+    /* ─── Reset & Tokens ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cor-primaria:    #1a3a5c;
+      --cor-secundaria:  #2d7dd2;
+      --cor-destaque:    #f0a500;
+      --cor-fundo:       #f4f6f9;
+      --cor-branco:      #ffffff;
+      --cor-texto:       #2c3e50;
+      --cor-texto-suave: #6b7c93;
+      --cor-borda:       #dde3ed;
+      --cor-erro:        #e74c3c;
+      --cor-sucesso:     #27ae60;
+
+      --raio:   10px;
+      --sombra: 0 4px 18px rgba(26,58,92,.12);
+      --fonte:  'Segoe UI', system-ui, sans-serif;
+    }
+
+    body {
+      font-family: var(--fonte);
+      background: var(--cor-fundo);
+      color: var(--cor-texto);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Header ─────────────────────────────────────── */
+    .header-drps {
+      background: var(--cor-primaria);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+
+    .header-drps img.logo {
+      height: 34px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .header-titulo h1 {
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--cor-branco);
+    }
+
+    .header-titulo p {
+      font-size: .72rem;
+      color: rgba(255,255,255,.65);
+      margin-top: 1px;
+    }
+
+    /* ─── Barra de progresso completa ───────────────── */
+    .barra-progresso-wrapper {
+      background: var(--cor-branco);
+      border-bottom: 1px solid var(--cor-borda);
+      padding: 10px 20px;
+    }
+
+    .progresso-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: .72rem;
+      color: var(--cor-texto-suave);
+      margin-bottom: 5px;
+    }
+
+    .barra-progresso {
+      height: 6px;
+      background: var(--cor-borda);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .barra-progresso-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cor-secundaria), var(--cor-destaque));
+      border-radius: 99px;
+    }
+
+    /* ─── Conteúdo principal ─────────────────────────── */
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 40px 16px 40px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ─── Estado: enviando ───────────────────────────── */
+    .estado-enviando {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+    }
+
+    .spinner {
+      width: 52px;
+      height: 52px;
+      border: 5px solid var(--cor-borda);
+      border-top-color: var(--cor-secundaria);
+      border-radius: 50%;
+      animation: girar .8s linear infinite;
+    }
+
+    @keyframes girar { to { transform: rotate(360deg); } }
+
+    .enviando-titulo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--cor-primaria);
+    }
+
+    .enviando-subtitulo {
+      font-size: .88rem;
+      color: var(--cor-texto-suave);
+      line-height: 1.55;
+    }
+
+    /* ─── Estado: sucesso ────────────────────────────── */
+    .estado-sucesso { display: none; }
+
+    .icone-sucesso {
+      width: 80px;
+      height: 80px;
+      background: rgba(39,174,96,.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+
+    .icone-sucesso svg {
+      width: 40px;
+      height: 40px;
+      color: var(--cor-sucesso);
+    }
+
+    .card-conclusao {
+      background: var(--cor-branco);
+      border-radius: var(--raio);
+      box-shadow: var(--sombra);
+      padding: 36px 28px;
+      text-align: center;
+      border-top: 5px solid var(--cor-sucesso);
+      width: 100%;
+    }
+
+    .conclusao-titulo {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--cor-primaria);
+      margin-bottom: 10px;
+    }
+
+    .conclusao-subtitulo {
+      font-size: 1rem;
+      color: var(--cor-sucesso);
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .conclusao-texto {
+      font-size: .88rem;
+      color: var(--cor-texto-suave);
+      line-height: 1.65;
+      margin-bottom: 10px;
+    }
+
+    .conclusao-detalhe {
+      background: rgba(45,125,210,.06);
+      border: 1px solid rgba(45,125,210,.15);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: .82rem;
+      color: var(--cor-texto);
+      line-height: 1.55;
+      margin-top: 20px;
+      margin-bottom: 28px;
+      text-align: left;
+    }
+
+    .conclusao-detalhe strong { color: var(--cor-primaria); }
+
+    .btn-encerrar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--cor-secundaria);
+      color: var(--cor-branco);
+      font-size: .92rem;
+      font-weight: 700;
+      padding: 13px 32px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--fonte);
+      transition: background .2s;
+      text-decoration: none;
+    }
+
+    .btn-encerrar:hover { background: #1a5fa8; }
+
+    /* ─── Estado: erro ───────────────────────────────── */
+    .estado-erro { display: none; }
+
+    .icone-erro {
+      width: 80px;
+      height: 80px;
+      background: rgba(231,76,60,.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+    }
+
+    .icone-erro svg {
+      width: 40px;
+      height: 40px;
+      color: var(--cor-erro);
+    }
+
+    .card-erro {
+      background: var(--cor-branco);
+      border-radius: var(--raio);
+      box-shadow: var(--sombra);
+      padding: 36px 28px;
+      text-align: center;
+      border-top: 5px solid var(--cor-erro);
+      width: 100%;
+    }
+
+    .erro-titulo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--cor-primaria);
+      margin-bottom: 10px;
+    }
+
+    .erro-texto {
+      font-size: .88rem;
+      color: var(--cor-texto-suave);
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .erro-detalhe {
+      font-size: .78rem;
+      color: var(--cor-erro);
+      background: rgba(231,76,60,.06);
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin-bottom: 24px;
+      word-break: break-word;
+    }
+
+    .btn-tentar-novamente {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--cor-erro);
+      color: var(--cor-branco);
+      font-size: .9rem;
+      font-weight: 700;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--fonte);
+      transition: opacity .2s;
+    }
+
+    .btn-tentar-novamente:hover { opacity: .88; }
+
+    /* ─── Responsivo ─────────────────────────────────── */
+    @media (max-width: 480px) {
+      .card-conclusao,
+      .card-erro { padding: 28px 18px; }
+      .container { padding: 28px 12px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Header ── -->
+  <header class="header-drps">
+    <img class="logo" src="assets/logo-full.jpeg" alt="GlobalMind" onerror="this.style.display='none'" />
+    <div class="header-titulo">
+      <h1>DRPS – Diagnóstico de Riscos Psicossociais</h1>
+      <p id="nome-empresa-header">—</p>
+    </div>
+  </header>
+
+  <!-- ── Barra de progresso (100%) ── -->
+  <div class="barra-progresso-wrapper">
+    <div class="progresso-label">
+      <span>Conclusão</span>
+      <span>Etapa 10 de 10</span>
+    </div>
+    <div class="barra-progresso">
+      <div class="barra-progresso-fill" style="width: 100%"></div>
+    </div>
+  </div>
+
+  <!-- ── Conteúdo ── -->
+  <main class="container">
+
+    <!-- Estado: enviando -->
+    <div class="estado-enviando" id="estado-enviando">
+      <div class="spinner"></div>
+      <p class="enviando-titulo">Registrando suas respostas…</p>
+      <p class="enviando-subtitulo">Aguarde enquanto suas respostas são enviadas com segurança.</p>
+    </div>
+
+    <!-- Estado: sucesso -->
+    <div class="estado-sucesso" id="estado-sucesso">
+      <div class="card-conclusao">
+        <div class="icone-sucesso">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <h2 class="conclusao-titulo">Obrigado pela sua participação!</h2>
+        <p class="conclusao-subtitulo">Respostas registradas com sucesso.</p>
+        <p class="conclusao-texto">
+          Suas respostas foram salvas de forma segura e serão utilizadas
+          exclusivamente para fins de diagnóstico organizacional, em
+          conformidade com a <strong>LGPD</strong> e a <strong>NR 01</strong>.
+        </p>
+        <p class="conclusao-texto">
+          Os resultados serão analisados pela equipe <strong>GlobalMind</strong>
+          e apresentados de forma agregada e anonimizada à liderança da empresa.
+        </p>
+        <div class="conclusao-detalhe">
+          <strong>🔒 Privacidade garantida:</strong> Nenhuma resposta individual
+          será identificada. Os dados são apresentados apenas como indicadores
+          coletivos para orientar melhorias no ambiente de trabalho.
+        </div>
+        <a href="index.html" class="btn-encerrar">Encerrar</a>
+      </div>
+    </div>
+
+    <!-- Estado: erro -->
+    <div class="estado-erro" id="estado-erro">
+      <div class="card-erro">
+        <div class="icone-erro">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          </svg>
+        </div>
+        <h2 class="erro-titulo">Não foi possível enviar as respostas</h2>
+        <p class="erro-texto">
+          Ocorreu um problema de conexão. Suas respostas estão salvas neste dispositivo —
+          nenhuma resposta foi perdida. Verifique sua conexão com a internet e tente novamente.
+        </p>
+        <p class="erro-detalhe" id="erro-detalhe"></p>
+        <button class="btn-tentar-novamente" id="btn-tentar-novamente">
+          Tentar novamente
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <script type="module">
+    import { db }          from './js/firebase-config.js';
+    import { TOPICOS }     from './js/drps-dados.js';
+    import {
+      collection,
+      addDoc,
+      serverTimestamp
+    } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+    /* ────────────────────────────────────────────────────
+       Parâmetros e dados de sessão
+    ──────────────────────────────────────────────────── */
+    const params     = new URLSearchParams(window.location.search);
+    const empresaId  = params.get('empresaId') || sessionStorage.getItem('drps_empresaId');
+    const nomeEmpresa = sessionStorage.getItem('drps_nomeEmpresa') || '';
+    const funcao     = sessionStorage.getItem('drps_funcao')     || '';
+    const setor      = sessionStorage.getItem('drps_setor')      || '';
+    const inicioTs   = parseInt(sessionStorage.getItem('drps_inicioTs') || '0', 10);
+
+    document.getElementById('nome-empresa-header').textContent = nomeEmpresa || empresaId || '—';
+
+    /* ────────────────────────────────────────────────────
+       Coleta e validação das respostas do sessionStorage
+    ──────────────────────────────────────────────────── */
+    function coletarRespostas() {
+      const respostas = {};
+      const faltando  = [];
+
+      TOPICOS.forEach(topico => {
+        const chave = `drps_t${topico.numero}`;
+        const raw   = sessionStorage.getItem(chave);
+
+        if (!raw) {
+          faltando.push(topico.titulo);
+          return;
+        }
+
+        respostas[`t${topico.numero}`] = JSON.parse(raw);
+      });
+
+      return { respostas, faltando };
+    }
+
+    /* ────────────────────────────────────────────────────
+       Cálculo de scores
+       ─────────────────────────────────────────────────
+       Para cada questão:
+         invertida = false → score = valor bruto  (0–4)
+         invertida = true  → score = 4 − valor    (inverte o sentido de risco)
+
+       Score do tópico = média das 10 questões após inversão  (0–4)
+       Score geral     = média dos 9 scores de tópico         (0–4)
+    ──────────────────────────────────────────────────── */
+    function calcularScores(respostas) {
+      const scores = {};
+      let somaGeral = 0;
+      let topicosComDados = 0;
+
+      TOPICOS.forEach(topico => {
+        const respostasTopico = respostas[`t${topico.numero}`];
+        if (!respostasTopico) return;
+
+        let soma = 0;
+        let count = 0;
+
+        topico.perguntas.forEach(pergunta => {
+          const valor = respostasTopico[pergunta.id];
+          if (valor === undefined || valor === null) return;
+
+          const scoreAjustado = pergunta.invertida ? (4 - valor) : valor;
+          soma  += scoreAjustado;
+          count += 1;
+        });
+
+        if (count > 0) {
+          const media = parseFloat((soma / count).toFixed(2));
+          scores[`t${topico.numero}`] = media;
+          somaGeral += media;
+          topicosComDados += 1;
+        }
+      });
+
+      scores.geral = topicosComDados > 0
+        ? parseFloat((somaGeral / topicosComDados).toFixed(2))
+        : 0;
+
+      return scores;
+    }
+
+    /* ────────────────────────────────────────────────────
+       Envio ao Firestore
+    ──────────────────────────────────────────────────── */
+    async function enviarRespostas() {
+      mostrarEstado('enviando');
+
+      if (!empresaId || !funcao || !setor) {
+        mostrarEstado('erro', 'Sessão incompleta. Dados de identificação ausentes.');
+        return;
+      }
+
+      const { respostas, faltando } = coletarRespostas();
+
+      if (faltando.length > 0) {
+        mostrarEstado('erro', `Tópicos sem resposta: ${faltando.join(', ')}. Volte e complete o questionário.`);
+        return;
+      }
+
+      const scores        = calcularScores(respostas);
+      const duracaoSegundos = inicioTs ? Math.round((Date.now() - inicioTs) / 1000) : null;
+
+      /* Documento a salvar */
+      const documento = {
+        empresaId,
+        nomeEmpresa,
+        funcao,
+        setor,
+        criadoEm:         serverTimestamp(),
+        status:           'aguardando_contato',
+        duracaoSegundos,
+        respostas,
+        scores
+      };
+
+      try {
+        const docRef = await addDoc(collection(db, 'diagnosticos_drps'), documento);
+        console.log('DRPS salvo com ID:', docRef.id);
+
+        /* Limpa sessionStorage após confirmação */
+        limparSessao();
+
+        mostrarEstado('sucesso');
+
+      } catch (err) {
+        console.error('Erro ao salvar DRPS:', err);
+        mostrarEstado('erro', err.message);
+      }
+    }
+
+    /* ────────────────────────────────────────────────────
+       Limpar sessionStorage (mantém apenas chaves não-DRPS)
+    ──────────────────────────────────────────────────── */
+    function limparSessao() {
+      const prefixos = ['drps_'];
+      Object.keys(sessionStorage).forEach(chave => {
+        if (prefixos.some(p => chave.startsWith(p))) {
+          sessionStorage.removeItem(chave);
+        }
+      });
+    }
+
+    /* ────────────────────────────────────────────────────
+       Controle de estados visuais
+    ──────────────────────────────────────────────────── */
+    function mostrarEstado(estado, msgErro = '') {
+      document.getElementById('estado-enviando').style.display = estado === 'enviando' ? 'flex'  : 'none';
+      document.getElementById('estado-sucesso').style.display  = estado === 'sucesso'  ? 'block' : 'none';
+      document.getElementById('estado-erro').style.display     = estado === 'erro'     ? 'block' : 'none';
+
+      if (estado === 'erro' && msgErro) {
+        document.getElementById('erro-detalhe').textContent = msgErro;
+      }
+    }
+
+    /* ────────────────────────────────────────────────────
+       Botão tentar novamente
+    ──────────────────────────────────────────────────── */
+    document.getElementById('btn-tentar-novamente').addEventListener('click', enviarRespostas);
+
+    /* ────────────────────────────────────────────────────
+       Execução automática ao carregar a página
+    ──────────────────────────────────────────────────── */
+    enviarRespostas();
+  </script>
+
+</body>
+</html>

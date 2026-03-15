@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DRPS – Diagnóstico de Riscos Psicossociais</title>
+
+  <style>
+    /* ─── Reset & Tokens ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cor-primaria:    #1a3a5c;
+      --cor-secundaria:  #2d7dd2;
+      --cor-destaque:    #f0a500;
+      --cor-fundo:       #f4f6f9;
+      --cor-branco:      #ffffff;
+      --cor-texto:       #2c3e50;
+      --cor-texto-suave: #6b7c93;
+      --cor-borda:       #dde3ed;
+      --cor-erro:        #e74c3c;
+      --cor-sucesso:     #27ae60;
+
+      --raio:   10px;
+      --sombra: 0 4px 18px rgba(26,58,92,.12);
+      --fonte:  'Segoe UI', system-ui, sans-serif;
+    }
+
+    body {
+      font-family: var(--fonte);
+      background: var(--cor-fundo);
+      color: var(--cor-texto);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Header ─────────────────────────────────────── */
+    .header-drps {
+      background: var(--cor-primaria);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+
+    .header-drps img.logo {
+      height: 38px;
+      object-fit: contain;
+    }
+
+    .header-drps .header-titulo { flex: 1; }
+
+    .header-drps .header-titulo h1 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--cor-branco);
+      line-height: 1.2;
+    }
+
+    .header-drps .header-titulo p {
+      font-size: .75rem;
+      color: rgba(255,255,255,.7);
+      margin-top: 2px;
+    }
+
+    /* ─── Progresso ──────────────────────────────────── */
+    .barra-progresso-wrapper {
+      background: var(--cor-branco);
+      border-bottom: 1px solid var(--cor-borda);
+      padding: 12px 20px;
+    }
+
+    .progresso-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: .73rem;
+      color: var(--cor-texto-suave);
+      margin-bottom: 6px;
+    }
+
+    .barra-progresso {
+      height: 6px;
+      background: var(--cor-borda);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .barra-progresso-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cor-secundaria), var(--cor-destaque));
+      border-radius: 99px;
+      transition: width .4s ease;
+    }
+
+    /* ─── Conteúdo principal ─────────────────────────── */
+    .container {
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 24px 16px 80px;
+      flex: 1;
+    }
+
+    /* ─── Cards genéricos ────────────────────────────── */
+    .card {
+      background: var(--cor-branco);
+      border-radius: var(--raio);
+      box-shadow: var(--sombra);
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    /* ─── Card: Boas-vindas ──────────────────────────── */
+    .card-boas-vindas { border-top: 5px solid var(--cor-secundaria); }
+
+    .titulo-formulario {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--cor-primaria);
+      margin-bottom: 4px;
+    }
+
+    .subtitulo-formulario {
+      font-size: .85rem;
+      color: var(--cor-secundaria);
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .texto-boas-vindas {
+      font-size: .88rem;
+      line-height: 1.65;
+      color: var(--cor-texto);
+    }
+
+    .texto-boas-vindas + .texto-boas-vindas { margin-top: 10px; }
+
+    /* ─── Card: Vídeo ────────────────────────────────── */
+    .card-video {
+      border-left: 4px solid var(--cor-destaque);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .card-video .icone-video {
+      font-size: 2rem;
+      flex-shrink: 0;
+      line-height: 1;
+      margin-top: 2px;
+    }
+
+    .card-video h3 {
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--cor-primaria);
+      margin-bottom: 4px;
+    }
+
+    .card-video p {
+      font-size: .82rem;
+      color: var(--cor-texto-suave);
+      margin-bottom: 10px;
+    }
+
+    .video-embed-wrapper {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #000;
+      margin-top: 12px;
+    }
+
+    .video-embed-wrapper iframe {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+
+    .video-placeholder {
+      background: var(--cor-fundo);
+      border: 2px dashed var(--cor-borda);
+      border-radius: 8px;
+      padding: 28px;
+      text-align: center;
+      font-size: .8rem;
+      color: var(--cor-texto-suave);
+      margin-top: 10px;
+    }
+
+    /* ─── Seção identificação ────────────────────────── */
+    .secao-identificacao h2 {
+      font-size: .8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--cor-secundaria);
+      margin-bottom: 4px;
+    }
+
+    .secao-identificacao .descricao-secao {
+      font-size: .83rem;
+      color: var(--cor-texto-suave);
+      margin-bottom: 20px;
+    }
+
+    /* ─── Grupos de campo ────────────────────────────── */
+    .campo-grupo { margin-bottom: 18px; }
+
+    .campo-grupo label {
+      display: block;
+      font-size: .84rem;
+      font-weight: 600;
+      color: var(--cor-primaria);
+      margin-bottom: 6px;
+    }
+
+    .campo-grupo label .obrigatorio {
+      color: var(--cor-erro);
+      margin-left: 2px;
+    }
+
+    .campo-grupo input[type="text"],
+    .campo-grupo select {
+      width: 100%;
+      padding: 11px 14px;
+      font-size: .9rem;
+      font-family: var(--fonte);
+      color: var(--cor-texto);
+      background: var(--cor-branco);
+      border: 1.5px solid var(--cor-borda);
+      border-radius: 8px;
+      transition: border-color .2s, box-shadow .2s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+
+    .campo-grupo select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%232d7dd2' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    .campo-grupo input:focus,
+    .campo-grupo select:focus {
+      outline: none;
+      border-color: var(--cor-secundaria);
+      box-shadow: 0 0 0 3px rgba(45,125,210,.15);
+    }
+
+    .campo-grupo .hint {
+      font-size: .76rem;
+      color: var(--cor-texto-suave);
+      margin-top: 4px;
+    }
+
+    .campo-grupo.com-erro input,
+    .campo-grupo.com-erro select {
+      border-color: var(--cor-erro);
+      box-shadow: 0 0 0 3px rgba(231,76,60,.12);
+    }
+
+    .campo-grupo .msg-erro {
+      font-size: .76rem;
+      color: var(--cor-erro);
+      margin-top: 4px;
+      display: none;
+    }
+
+    .campo-grupo.com-erro .msg-erro { display: block; }
+
+    /* ─── LGPD notice ────────────────────────────────── */
+    .lgpd-notice {
+      background: rgba(45,125,210,.07);
+      border: 1px solid rgba(45,125,210,.2);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: .8rem;
+      color: var(--cor-texto);
+      line-height: 1.55;
+      margin-top: 16px;
+    }
+
+    .lgpd-notice strong { color: var(--cor-primaria); }
+
+    .checkbox-grupo {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 14px;
+      cursor: pointer;
+    }
+
+    .checkbox-grupo input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      accent-color: var(--cor-secundaria);
+      cursor: pointer;
+      margin-top: 2px;
+    }
+
+    .checkbox-grupo span {
+      font-size: .82rem;
+      color: var(--cor-texto);
+      line-height: 1.4;
+    }
+
+    /* ─── Rodapé fixo ────────────────────────────────── */
+    .rodape-fixo {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--cor-branco);
+      border-top: 1px solid var(--cor-borda);
+      padding: 14px 20px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 12px;
+      z-index: 99;
+      box-shadow: 0 -4px 16px rgba(0,0,0,.08);
+    }
+
+    .btn-proximo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--cor-secundaria);
+      color: var(--cor-branco);
+      font-size: .9rem;
+      font-weight: 700;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+      font-family: var(--fonte);
+    }
+
+    .btn-proximo:hover  { background: #1a5fa8; }
+    .btn-proximo:active { transform: scale(.98); }
+    .btn-proximo:disabled {
+      background: var(--cor-borda);
+      color: var(--cor-texto-suave);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ─── Loading overlay ────────────────────────────── */
+    #loading-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,.85);
+      z-index: 200;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    #loading-overlay.visivel { display: flex; }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--cor-borda);
+      border-top-color: var(--cor-secundaria);
+      border-radius: 50%;
+      animation: girar .7s linear infinite;
+    }
+
+    @keyframes girar { to { transform: rotate(360deg); } }
+
+    .loading-texto {
+      font-size: .9rem;
+      color: var(--cor-texto-suave);
+    }
+
+    /* ─── Toast de erro ──────────────────────────────── */
+    #toast-erro {
+      display: none;
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--cor-erro);
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: .85rem;
+      font-weight: 600;
+      z-index: 300;
+      max-width: 340px;
+      text-align: center;
+      box-shadow: 0 4px 16px rgba(231,76,60,.35);
+      animation: fadeIn .2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    }
+
+    /* ─── Responsivo ─────────────────────────────────── */
+    @media (max-width: 480px) {
+      .card { padding: 18px 16px; }
+      .titulo-formulario { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <p class="loading-texto">Carregando dados da empresa…</p>
+  </div>
+
+  <div id="toast-erro"></div>
+
+  <!-- ── Header ── -->
+  <header class="header-drps">
+    <img class="logo" src="assets/logo-full.jpeg" alt="GlobalMind" onerror="this.style.display='none'" />
+    <div class="header-titulo">
+      <h1>DRPS – Diagnóstico de Riscos Psicossociais</h1>
+      <p id="nome-empresa-header">Carregando…</p>
+    </div>
+  </header>
+
+  <!-- ── Barra de progresso ── -->
+  <div class="barra-progresso-wrapper">
+    <div class="progresso-label">
+      <span>Identificação</span>
+      <span>Etapa 1 de 10</span>
+    </div>
+    <div class="barra-progresso">
+      <div class="barra-progresso-fill" style="width: 10%"></div>
+    </div>
+  </div>
+
+  <!-- ── Conteúdo ── -->
+  <main class="container">
+
+    <!-- Boas-vindas -->
+    <div class="card card-boas-vindas">
+      <h1 class="titulo-formulario">Avaliação de Riscos Psicossociais (NR 01)</h1>
+      <p class="subtitulo-formulario">Bem-vindo(a)!</p>
+
+      <p class="texto-boas-vindas">
+        Este formulário tem como objetivo avaliar os riscos psicossociais no
+        ambiente de trabalho, contribuindo para a construção de um ambiente
+        mais saudável e seguro para todos.
+      </p>
+      <p class="texto-boas-vindas">
+        Sua participação é <strong>voluntária</strong> e suas respostas serão
+        tratadas de forma <strong>confidencial</strong>. Os dados coletados
+        serão apresentados apenas de forma agregada ou anonimizada no relatório
+        final, garantindo que nenhuma informação pessoal seja identificável.
+      </p>
+      <p class="texto-boas-vindas">
+        O Questionário de DRPS foi criado com base nos principais fatores de
+        riscos psicossociais que têm levado ao adoecimento da classe
+        trabalhadora, de acordo com o Ministério do Trabalho e Emprego (MTE).
+      </p>
+      <p class="texto-boas-vindas">
+        Você responderá a <strong>9 tópicos</strong>, cada um investigando a
+        fundo a ocorrência desses riscos. Ao responder, seja sincero(a) —
+        sua resposta verdadeira ajudará a construir um ambiente de trabalho
+        mentalmente mais seguro!
+      </p>
+
+      <div class="lgpd-notice">
+        <strong>🔒 Privacidade e LGPD:</strong> Ao preencher este formulário,
+        você concorda com o uso das informações fornecidas para fins de
+        diagnóstico, análise e melhoria do clima organizacional, em
+        conformidade com a
+        <strong>Lei Geral de Proteção de Dados (LGPD)</strong>.
+      </div>
+    </div>
+
+    <!-- Vídeo de introdução -->
+    <div class="card card-video">
+      <div class="icone-video">🎬</div>
+      <div style="flex:1">
+        <h3>Vídeo de Introdução</h3>
+        <p>Assista antes de começar para entender melhor o processo.</p>
+
+        <!--
+          Quando o link estiver disponível, remova o placeholder abaixo
+          e descomente o bloco iframe, ajustando o src:
+
+          <div class="video-embed-wrapper">
+            <iframe
+              src="https://www.youtube.com/embed/SEU_VIDEO_ID"
+              allow="accelerometer; autoplay; clipboard-write;
+                     encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          </div>
+        -->
+        <div class="video-placeholder">
+          ⏳ Vídeo de introdução será disponibilizado em breve.
+        </div>
+      </div>
+    </div>
+
+    <!-- Identificação -->
+    <div class="card secao-identificacao">
+      <h2>Identificação</h2>
+      <p class="descricao-secao">
+        Começaremos a sua avaliação conhecendo um pouco de você e do que você faz!
+      </p>
+
+      <div class="campo-grupo" id="grupo-funcao">
+        <label for="campo-funcao">
+          Qual a sua função? <span class="obrigatorio">*</span>
+        </label>
+        <input
+          type="text"
+          id="campo-funcao"
+          placeholder="Ex.: Analista Financeiro, Operador de Produção…"
+          autocomplete="off"
+          maxlength="120"
+        />
+        <span class="hint">Digite o nome do seu cargo ou função.</span>
+        <span class="msg-erro">Por favor, informe sua função.</span>
+      </div>
+
+      <div class="campo-grupo" id="grupo-setor">
+        <label for="campo-setor">
+          Qual o seu setor? <span class="obrigatorio">*</span>
+        </label>
+        <select id="campo-setor" disabled>
+          <option value="">Carregando setores…</option>
+        </select>
+        <span class="hint">Selecione o setor em que você trabalha.</span>
+        <span class="msg-erro">Por favor, selecione seu setor.</span>
+      </div>
+
+      <label class="checkbox-grupo" for="chk-lgpd">
+        <input type="checkbox" id="chk-lgpd" />
+        <span>
+          Li e concordo com o uso das minhas respostas para fins de
+          diagnóstico organizacional, conforme a <strong>LGPD</strong> e
+          a <strong>NR 01</strong>.
+          <span class="obrigatorio">*</span>
+        </span>
+      </label>
+      <div id="erro-lgpd" style="display:none; font-size:.76rem; color:var(--cor-erro); margin-top:6px;">
+        Você precisa aceitar os termos para continuar.
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── Rodapé fixo ── -->
+  <footer class="rodape-fixo">
+    <span style="font-size:.8rem; color:var(--cor-texto-suave);">
+      Campos com <span style="color:var(--cor-erro)">*</span> são obrigatórios
+    </span>
+    <button class="btn-proximo" id="btn-proximo">
+      Próximo ›
+    </button>
+  </footer>
+
+  <script type="module">
+    import { db } from './js/firebase-config.js';
+    import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+    /* ── Configuração ─────────────────────────────────── */
+    // Ajuste para o caminho real da próxima etapa quando ela existir
+    const PROXIMA_PAGINA = 'topico.html?topico=1';
+
+    /* ── Parâmetros da URL ────────────────────────────── */
+    const params       = new URLSearchParams(window.location.search);
+    const empresaId    = params.get('empresaId') || sessionStorage.getItem('drps_empresaId');
+
+    /* ── Init ─────────────────────────────────────────── */
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!empresaId) {
+        mostrarToast('Link inválido: empresa não identificada.');
+        document.getElementById('btn-proximo').disabled = true;
+        return;
+      }
+      sessionStorage.setItem('drps_empresaId', empresaId);
+      carregarEmpresa();
+    });
+
+    document.getElementById('btn-proximo').addEventListener('click', avancarParaTopico1);
+
+    /* ── Carregar empresa ─────────────────────────────── */
+    async function carregarEmpresa() {
+      mostrarLoading(true);
+      try {
+        const snap = await getDoc(doc(db, 'empresas', empresaId));
+
+        if (!snap.exists()) {
+          throw new Error('Empresa não encontrada.');
+        }
+
+        const dados = snap.data();
+
+        document.getElementById('nome-empresa-header').textContent =
+          dados.nome || 'Empresa';
+
+        sessionStorage.setItem('drps_nomeEmpresa', dados.nome || '');
+
+        popularSetores(dados.setores || []);
+
+      } catch (err) {
+        console.error('Erro ao carregar empresa:', err);
+        mostrarToast('Não foi possível carregar os dados da empresa.');
+      } finally {
+        mostrarLoading(false);
+      }
+    }
+
+    function popularSetores(setores) {
+      const sel = document.getElementById('campo-setor');
+      sel.innerHTML = '';
+
+      const optDefault = document.createElement('option');
+      optDefault.value = '';
+      optDefault.textContent = setores.length
+        ? '— Selecione seu setor —'
+        : '— Nenhum setor cadastrado —';
+      sel.appendChild(optDefault);
+
+      setores.forEach(setor => {
+        const opt = document.createElement('option');
+        opt.value   = setor;
+        opt.textContent = setor;
+        sel.appendChild(opt);
+      });
+
+      sel.disabled = setores.length === 0;
+    }
+
+    /* ── Validação e avanço ───────────────────────────── */
+    function avancarParaTopico1() {
+      const funcao = document.getElementById('campo-funcao').value.trim();
+      const setor  = document.getElementById('campo-setor').value;
+      const lgpd   = document.getElementById('chk-lgpd').checked;
+      let valido   = true;
+
+      const grupoFuncao = document.getElementById('grupo-funcao');
+      if (!funcao) { grupoFuncao.classList.add('com-erro');    valido = false; }
+      else          { grupoFuncao.classList.remove('com-erro'); }
+
+      const grupoSetor = document.getElementById('grupo-setor');
+      if (!setor) { grupoSetor.classList.add('com-erro');    valido = false; }
+      else         { grupoSetor.classList.remove('com-erro'); }
+
+      document.getElementById('erro-lgpd').style.display = lgpd ? 'none' : 'block';
+      if (!lgpd) valido = false;
+
+      if (!valido) return;
+
+      sessionStorage.setItem('drps_funcao',     funcao);
+      sessionStorage.setItem('drps_setor',      setor);
+      sessionStorage.setItem('drps_lgpdAceito', 'true');
+      sessionStorage.setItem('drps_inicioTs',   Date.now().toString());
+
+      const url = new URL(PROXIMA_PAGINA, window.location.href);
+      url.searchParams.set('empresaId', empresaId);
+      window.location.href = url.toString();
+    }
+
+    /* ── Limpar erros ao interagir ────────────────────── */
+    document.getElementById('campo-funcao').addEventListener('input', () => {
+      document.getElementById('grupo-funcao').classList.remove('com-erro');
+    });
+    document.getElementById('campo-setor').addEventListener('change', () => {
+      document.getElementById('grupo-setor').classList.remove('com-erro');
+    });
+    document.getElementById('chk-lgpd').addEventListener('change', () => {
+      document.getElementById('erro-lgpd').style.display = 'none';
+    });
+
+    /* ── Helpers de UI ────────────────────────────────── */
+    function mostrarLoading(visivel) {
+      document.getElementById('loading-overlay').classList.toggle('visivel', visivel);
+    }
+
+    let toastTimer;
+    function mostrarToast(msg) {
+      const el = document.getElementById('toast-erro');
+      el.textContent  = msg;
+      el.style.display = 'block';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { el.style.display = 'none'; }, 4000);
+    }
+  </script>
+
+</body>
+</html>

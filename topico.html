@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DRPS – Diagnóstico de Riscos Psicossociais</title>
+
+  <style>
+    /* ─── Reset & Tokens ─────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cor-primaria:    #1a3a5c;
+      --cor-secundaria:  #2d7dd2;
+      --cor-destaque:    #f0a500;
+      --cor-fundo:       #f4f6f9;
+      --cor-branco:      #ffffff;
+      --cor-texto:       #2c3e50;
+      --cor-texto-suave: #6b7c93;
+      --cor-borda:       #dde3ed;
+      --cor-erro:        #e74c3c;
+      --cor-sucesso:     #27ae60;
+
+      --raio:   10px;
+      --sombra: 0 4px 18px rgba(26,58,92,.12);
+      --fonte:  'Segoe UI', system-ui, sans-serif;
+    }
+
+    body {
+      font-family: var(--fonte);
+      background: var(--cor-fundo);
+      color: var(--cor-texto);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Header ─────────────────────────────────────── */
+    .header-drps {
+      background: var(--cor-primaria);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+
+    .header-drps img.logo {
+      height: 34px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+
+    .header-titulo { flex: 1; min-width: 0; }
+
+    .header-titulo h1 {
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--cor-branco);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-titulo p {
+      font-size: .72rem;
+      color: rgba(255,255,255,.65);
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ─── Barra de progresso ─────────────────────────── */
+    .barra-progresso-wrapper {
+      background: var(--cor-branco);
+      border-bottom: 1px solid var(--cor-borda);
+      padding: 10px 20px;
+    }
+
+    .progresso-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: .72rem;
+      color: var(--cor-texto-suave);
+      margin-bottom: 5px;
+    }
+
+    .barra-progresso {
+      height: 6px;
+      background: var(--cor-borda);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .barra-progresso-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--cor-secundaria), var(--cor-destaque));
+      border-radius: 99px;
+      transition: width .5s ease;
+    }
+
+    /* ─── Conteúdo principal ─────────────────────────── */
+    .container {
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 20px 16px 88px;
+      flex: 1;
+    }
+
+    /* ─── Cabeçalho do tópico ────────────────────────── */
+    .card-topico-header {
+      background: var(--cor-branco);
+      border-radius: var(--raio);
+      box-shadow: var(--sombra);
+      padding: 20px 22px;
+      margin-bottom: 14px;
+      border-top: 5px solid var(--cor-secundaria);
+    }
+
+    .topico-badge {
+      display: inline-block;
+      background: rgba(45,125,210,.1);
+      color: var(--cor-secundaria);
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      padding: 3px 10px;
+      border-radius: 99px;
+      margin-bottom: 10px;
+    }
+
+    .topico-titulo {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--cor-primaria);
+      margin-bottom: 6px;
+    }
+
+    .topico-descricao {
+      font-size: .84rem;
+      color: var(--cor-texto-suave);
+      line-height: 1.55;
+    }
+
+    /* ─── Legenda da escala ──────────────────────────── */
+    .legenda-escala {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      background: var(--cor-branco);
+      border-radius: var(--raio);
+      box-shadow: var(--sombra);
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+
+    .legenda-escala span {
+      font-size: .72rem;
+      color: var(--cor-texto-suave);
+    }
+
+    .legenda-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: .72rem;
+      color: var(--cor-texto-suave);
+    }
+
+    .legenda-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--cor-fundo);
+      border: 1.5px solid var(--cor-borda);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .72rem;
+      font-weight: 700;
+      color: var(--cor-texto-suave);
+      flex-shrink: 0;
+    }
+
+    /* ─── Card de pergunta ───────────────────────────── */
+    .card-pergunta {
+      background: var(--cor-branco);
+      border-radius: var(--raio);
+      box-shadow: var(--sombra);
+      padding: 18px 20px;
+      margin-bottom: 10px;
+      transition: box-shadow .2s;
+    }
+
+    .card-pergunta.respondida {
+      border-left: 4px solid var(--cor-sucesso);
+    }
+
+    .card-pergunta.com-erro {
+      border-left: 4px solid var(--cor-erro);
+    }
+
+    .pergunta-numero {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--cor-texto-suave);
+      margin-bottom: 6px;
+    }
+
+    .pergunta-texto {
+      font-size: .9rem;
+      line-height: 1.55;
+      color: var(--cor-texto);
+      margin-bottom: 14px;
+    }
+
+    /* ─── Botões Likert ──────────────────────────────── */
+    .likert-grupo {
+      display: flex;
+      gap: 6px;
+    }
+
+    .likert-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 4px;
+      background: var(--cor-fundo);
+      border: 1.5px solid var(--cor-borda);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background .15s, border-color .15s, transform .1s;
+      font-family: var(--fonte);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .likert-btn:hover {
+      background: rgba(45,125,210,.07);
+      border-color: var(--cor-secundaria);
+    }
+
+    .likert-btn:active { transform: scale(.96); }
+
+    .likert-btn.selecionado {
+      background: var(--cor-secundaria);
+      border-color: var(--cor-secundaria);
+    }
+
+    .likert-valor {
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--cor-texto-suave);
+      line-height: 1;
+    }
+
+    .likert-btn.selecionado .likert-valor { color: var(--cor-branco); }
+
+    .likert-label {
+      font-size: .6rem;
+      font-weight: 600;
+      color: var(--cor-texto-suave);
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .likert-btn.selecionado .likert-label { color: rgba(255,255,255,.85); }
+
+    /* ─── Contador de respostas ──────────────────────── */
+    .contador-respostas {
+      font-size: .78rem;
+      color: var(--cor-texto-suave);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .contador-respostas strong {
+      color: var(--cor-secundaria);
+    }
+
+    /* ─── Rodapé fixo ────────────────────────────────── */
+    .rodape-fixo {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--cor-branco);
+      border-top: 1px solid var(--cor-borda);
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 99;
+      box-shadow: 0 -4px 16px rgba(0,0,0,.08);
+      gap: 12px;
+    }
+
+    .btn-voltar {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      color: var(--cor-texto-suave);
+      font-size: .85rem;
+      font-weight: 600;
+      padding: 10px 18px;
+      border: 1.5px solid var(--cor-borda);
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--fonte);
+      transition: background .2s, color .2s;
+    }
+
+    .btn-voltar:hover {
+      background: var(--cor-fundo);
+      color: var(--cor-texto);
+    }
+
+    .btn-proximo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--cor-secundaria);
+      color: var(--cor-branco);
+      font-size: .9rem;
+      font-weight: 700;
+      padding: 11px 26px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--fonte);
+      transition: background .2s, transform .1s;
+    }
+
+    .btn-proximo:hover  { background: #1a5fa8; }
+    .btn-proximo:active { transform: scale(.98); }
+
+    .btn-proximo:disabled {
+      background: var(--cor-borda);
+      color: var(--cor-texto-suave);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ─── Toast ──────────────────────────────────────── */
+    #toast-erro {
+      display: none;
+      position: fixed;
+      bottom: 76px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--cor-erro);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: .82rem;
+      font-weight: 600;
+      z-index: 300;
+      max-width: 320px;
+      text-align: center;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(231,76,60,.35);
+      animation: fadeIn .2s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ─── Responsivo ─────────────────────────────────── */
+    @media (max-width: 480px) {
+      .container { padding: 16px 12px 88px; }
+      .card-pergunta { padding: 16px 14px; }
+      .likert-label { display: none; }   /* só o número em telas muito pequenas */
+      .likert-btn { padding: 9px 2px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="toast-erro"></div>
+
+  <!-- ── Header ── -->
+  <header class="header-drps">
+    <img class="logo" src="assets/logo-full.jpeg" alt="GlobalMind" onerror="this.style.display='none'" />
+    <div class="header-titulo">
+      <h1>DRPS – Diagnóstico de Riscos Psicossociais</h1>
+      <p id="nome-empresa-header">Carregando…</p>
+    </div>
+  </header>
+
+  <!-- ── Barra de progresso ── -->
+  <div class="barra-progresso-wrapper">
+    <div class="progresso-label">
+      <span id="label-etapa">Tópico…</span>
+      <span id="label-numero">Etapa … de 10</span>
+    </div>
+    <div class="barra-progresso">
+      <div class="barra-progresso-fill" id="barra-fill" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <!-- ── Conteúdo ── -->
+  <main class="container">
+
+    <!-- Cabeçalho do tópico -->
+    <div class="card-topico-header">
+      <div class="topico-badge" id="topico-badge">Tópico —</div>
+      <h2 class="topico-titulo" id="topico-titulo">—</h2>
+      <p class="topico-descricao" id="topico-descricao">—</p>
+    </div>
+
+    <!-- Legenda da escala -->
+    <div class="legenda-escala">
+      <span>Escala:</span>
+      <div class="legenda-item"><div class="legenda-num">0</div> Nunca</div>
+      <div class="legenda-item"><div class="legenda-num">1</div> Raramente</div>
+      <div class="legenda-item"><div class="legenda-num">2</div> Ocasionalmente</div>
+      <div class="legenda-item"><div class="legenda-num">3</div> Frequentemente</div>
+      <div class="legenda-item"><div class="legenda-num">4</div> Sempre</div>
+    </div>
+
+    <!-- Perguntas renderizadas via JS -->
+    <div id="lista-perguntas"></div>
+
+    <!-- Contador -->
+    <p class="contador-respostas" id="contador">
+      <strong>0</strong> de <strong id="total-perguntas">10</strong> perguntas respondidas
+    </p>
+
+  </main>
+
+  <!-- ── Rodapé fixo ── -->
+  <footer class="rodape-fixo">
+    <button class="btn-voltar" id="btn-voltar">‹ Voltar</button>
+    <button class="btn-proximo" id="btn-proximo">Próximo ›</button>
+  </footer>
+
+  <script type="module">
+    import { TOPICOS } from './js/drps-dados.js';
+
+    /* ────────────────────────────────────────────────────
+       Página final após o último tópico (ajustar quando
+       a tela de finalização for criada)
+    ──────────────────────────────────────────────────── */
+    const PAGINA_FINAL = 'drps-finalizar.html';
+
+    /* ────────────────────────────────────────────────────
+       Parâmetros da URL
+    ──────────────────────────────────────────────────── */
+    const params     = new URLSearchParams(window.location.search);
+    const topicoNum  = parseInt(params.get('topico'), 10) || 1;
+    const empresaId  = params.get('empresaId') || sessionStorage.getItem('drps_empresaId');
+
+    /* ────────────────────────────────────────────────────
+       Validação de sessão
+    ──────────────────────────────────────────────────── */
+    if (!empresaId) {
+      mostrarToast('Sessão expirada. Redirecionando…');
+      setTimeout(() => { window.location.href = 'step-identificacao.html'; }, 2000);
+    }
+
+    const topico = TOPICOS[topicoNum - 1];
+
+    if (!topico) {
+      mostrarToast('Tópico inválido.');
+    }
+
+    /* ────────────────────────────────────────────────────
+       Estado das respostas do tópico atual
+       Tenta restaurar do sessionStorage (navegação "Voltar")
+    ──────────────────────────────────────────────────── */
+    const storageKey  = `drps_t${topicoNum}`;
+    const respostas   = JSON.parse(sessionStorage.getItem(storageKey) || '{}');
+
+    /* ────────────────────────────────────────────────────
+       Renderizar header e progresso
+    ──────────────────────────────────────────────────── */
+    const etapaAtual  = topicoNum + 1;              // 1 = identificação, 2-10 = tópicos
+    const progresso   = (etapaAtual / 10) * 100;
+
+    document.getElementById('nome-empresa-header').textContent =
+      sessionStorage.getItem('drps_nomeEmpresa') || empresaId;
+
+    document.getElementById('label-etapa').textContent  = topico.titulo;
+    document.getElementById('label-numero').textContent = `Etapa ${etapaAtual} de 10`;
+    document.getElementById('barra-fill').style.width   = `${progresso}%`;
+    document.title = `DRPS – ${topico.titulo}`;
+
+    document.getElementById('topico-badge').textContent     = `Tópico ${topicoNum} de 9`;
+    document.getElementById('topico-titulo').textContent    = topico.titulo;
+    document.getElementById('topico-descricao').textContent = topico.descricao;
+
+    /* ────────────────────────────────────────────────────
+       Renderizar perguntas
+    ──────────────────────────────────────────────────── */
+    const LABELS = ['Nunca', 'Raramente', 'Ocasionalmente', 'Frequentemente', 'Sempre'];
+
+    const lista = document.getElementById('lista-perguntas');
+
+    topico.perguntas.forEach((p, i) => {
+      const card = document.createElement('div');
+      card.className = 'card-pergunta';
+      card.id        = `card-${p.id}`;
+
+      const botoesHTML = [0, 1, 2, 3, 4].map(v => `
+        <button
+          class="likert-btn${respostas[p.id] === v ? ' selecionado' : ''}"
+          data-pergunta="${p.id}"
+          data-valor="${v}"
+          type="button"
+          aria-label="${LABELS[v]}"
+        >
+          <span class="likert-valor">${v}</span>
+          <span class="likert-label">${LABELS[v]}</span>
+        </button>
+      `).join('');
+
+      card.innerHTML = `
+        <p class="pergunta-numero">Pergunta ${i + 1}</p>
+        <p class="pergunta-texto">${p.texto}</p>
+        <div class="likert-grupo" role="group" aria-label="Escala de resposta">${botoesHTML}</div>
+      `;
+
+      if (respostas[p.id] !== undefined) {
+        card.classList.add('respondida');
+      }
+
+      lista.appendChild(card);
+    });
+
+    document.getElementById('total-perguntas').textContent = topico.perguntas.length;
+    atualizarContador();
+
+    /* ────────────────────────────────────────────────────
+       Interação com os botões Likert
+    ──────────────────────────────────────────────────── */
+    lista.addEventListener('click', e => {
+      const btn = e.target.closest('.likert-btn');
+      if (!btn) return;
+
+      const perguntaId = btn.dataset.pergunta;
+      const valor      = parseInt(btn.dataset.valor, 10);
+
+      // Desmarca todos os botões do mesmo grupo
+      const grupo = btn.closest('.likert-grupo');
+      grupo.querySelectorAll('.likert-btn').forEach(b => b.classList.remove('selecionado'));
+
+      // Marca o selecionado
+      btn.classList.add('selecionado');
+
+      // Salva resposta
+      respostas[perguntaId] = valor;
+
+      // Atualiza visual do card
+      const card = document.getElementById(`card-${perguntaId}`);
+      card.classList.add('respondida');
+      card.classList.remove('com-erro');
+
+      atualizarContador();
+    });
+
+    /* ────────────────────────────────────────────────────
+       Contador de respondidas
+    ──────────────────────────────────────────────────── */
+    function atualizarContador() {
+      const respondidas = Object.keys(respostas).length;
+      const total       = topico.perguntas.length;
+      document.querySelector('#contador strong').textContent = respondidas;
+    }
+
+    /* ────────────────────────────────────────────────────
+       Botão Próximo
+    ──────────────────────────────────────────────────── */
+    document.getElementById('btn-proximo').addEventListener('click', () => {
+      // Valida se todas foram respondidas
+      const naoRespondidas = topico.perguntas
+        .filter(p => respostas[p.id] === undefined)
+        .map(p => p.id);
+
+      if (naoRespondidas.length > 0) {
+        // Marca cards sem resposta com borda de erro
+        naoRespondidas.forEach(id => {
+          const card = document.getElementById(`card-${id}`);
+          card.classList.add('com-erro');
+          // Scroll até o primeiro não respondido
+          if (id === naoRespondidas[0]) {
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        });
+        mostrarToast(`Responda todas as ${naoRespondidas.length} pergunta(s) antes de continuar.`);
+        return;
+      }
+
+      // Persiste respostas do tópico atual
+      sessionStorage.setItem(storageKey, JSON.stringify(respostas));
+
+      // Navega para o próximo tópico ou página final
+      const proxUrl = new URL(
+        topicoNum < TOPICOS.length ? 'topico.html' : PAGINA_FINAL,
+        window.location.href
+      );
+      proxUrl.searchParams.set('empresaId', empresaId);
+      if (topicoNum < TOPICOS.length) {
+        proxUrl.searchParams.set('topico', topicoNum + 1);
+      }
+      window.location.href = proxUrl.toString();
+    });
+
+    /* ────────────────────────────────────────────────────
+       Botão Voltar
+    ──────────────────────────────────────────────────── */
+    document.getElementById('btn-voltar').addEventListener('click', () => {
+      // Salva progresso parcial antes de voltar
+      if (Object.keys(respostas).length > 0) {
+        sessionStorage.setItem(storageKey, JSON.stringify(respostas));
+      }
+
+      const voltarUrl = new URL(
+        topicoNum > 1 ? 'topico.html' : 'step-identificacao.html',
+        window.location.href
+      );
+      voltarUrl.searchParams.set('empresaId', empresaId);
+      if (topicoNum > 1) {
+        voltarUrl.searchParams.set('topico', topicoNum - 1);
+      }
+      window.location.href = voltarUrl.toString();
+    });
+
+    /* ────────────────────────────────────────────────────
+       Toast
+    ──────────────────────────────────────────────────── */
+    let toastTimer;
+    function mostrarToast(msg) {
+      const el = document.getElementById('toast-erro');
+      el.textContent   = msg;
+      el.style.display = 'block';
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { el.style.display = 'none'; }, 4000);
+    }
+  </script>
+
+</body>
+</html>

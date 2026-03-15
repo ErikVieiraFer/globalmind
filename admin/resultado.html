@@ -386,6 +386,17 @@
             background: linear-gradient(90deg, var(--success), #4ade80);
         }
 
+        /* ── DRPS: classificação de risco (escala 0–4) ── */
+        .risk-baixo   { background: rgba(34,197,94,.12);  color: #16a34a; }
+        .risk-medio   { background: rgba(245,158,11,.12); color: #d97706; }
+        .risk-alto    { background: rgba(249,115,22,.12); color: #ea580c; }
+        .risk-critico { background: rgba(220,53,69,.12);  color: var(--danger); }
+
+        .bar-baixo   { background: linear-gradient(90deg, #22c55e, #4ade80); }
+        .bar-medio   { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .bar-alto    { background: linear-gradient(90deg, #f97316, #fb923c); }
+        .bar-critico { background: linear-gradient(90deg, #dc3545, #ef4444); }
+
         /* Charts */
         .charts-grid {
             display: grid;
@@ -725,6 +736,15 @@
                         <label>Telefone</label>
                         <value id="info-telefone">--</value>
                     </div>
+                    <!-- DRPS: ocultos por padrão, revelados via JS -->
+                    <div class="info-item" id="info-item-funcao" style="display:none">
+                        <label>Função</label>
+                        <value id="info-funcao">--</value>
+                    </div>
+                    <div class="info-item" id="info-item-setor" style="display:none">
+                        <label>Setor</label>
+                        <value id="info-setor">--</value>
+                    </div>
                 </div>
             </div>
 
@@ -763,6 +783,8 @@
 
     <script type="module">
         import { checkAdminAuth, getDiagnosticoById, logout, marcarComoVisualizado, updateDiagnosticoStatus, gerarMensagemWhatsApp, formatarData } from './js/admin.js';
+        import { db } from '../js/firebase-config.js';
+        import { doc, getDoc, updateDoc, collection } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
         // Verificar autenticação
         try {
@@ -771,9 +793,11 @@
             console.error('Erro na autenticação:', error);
         }
 
-        // Pegar ID da URL
+        // Pegar ID e tipo da URL
+        // tipo=drps → lê de diagnosticos_drps; omitido → comportamento original
         const urlParams = new URLSearchParams(window.location.search);
         const diagnosticoId = urlParams.get('id');
+        const isDRPS = urlParams.get('tipo') === 'drps';
 
         if (!diagnosticoId) {
             alert('ID do diagnóstico não fornecido');
@@ -785,43 +809,66 @@
         // Carregar diagnóstico
         async function loadDiagnostico() {
             try {
-                diagnostico = await getDiagnosticoById(diagnosticoId);
+                if (isDRPS) {
+                    /* ── DRPS: lê de diagnosticos_drps ── */
+                    const snap = await getDoc(doc(db, 'diagnosticos_drps', diagnosticoId));
+                    if (!snap.exists()) throw new Error('Documento DRPS não encontrado.');
+                    diagnostico = { id: snap.id, ...snap.data() };
 
-                // Marcar como visualizado
-                if (!diagnostico.visualizadoAdmin) {
-                    await marcarComoVisualizado(diagnosticoId);
-                }
+                    // Preencher cabeçalho
+                    const dataStr = diagnostico.criadoEm?.toDate?.()?.toLocaleDateString('pt-BR') || '--/--/----';
+                    document.getElementById('page-title').textContent = diagnostico.nomeEmpresa || 'Empresa não informada';
+                    document.getElementById('page-subtitle').textContent = `DRPS NR-01 realizado em: ${dataStr}`;
 
-                // Preencher dados da empresa
-                document.getElementById('page-title').textContent = diagnostico.nomeEmpresa || 'Empresa não informada';
-                document.getElementById('page-subtitle').textContent = `Diagnóstico realizado em: ${formatarData(diagnostico.criadoEm)}`;
-                document.getElementById('info-empresa').textContent = diagnostico.nomeEmpresa || 'N/A';
-                document.getElementById('info-respondente').textContent = diagnostico.nomeRespondente || 'N/A';
-                document.getElementById('info-email').textContent = diagnostico.email || '-';
+                    // Campos DRPS no company-card
+                    document.getElementById('info-empresa').textContent   = diagnostico.nomeEmpresa || 'N/A';
+                    document.getElementById('info-respondente').textContent = '—';
+                    document.getElementById('info-email').textContent     = '—';
+                    document.getElementById('info-telefone').textContent  = '—';
+                    document.getElementById('info-funcao').textContent    = diagnostico.funcao || 'N/A';
+                    document.getElementById('info-setor').textContent     = diagnostico.setor  || 'N/A';
+                    document.getElementById('info-item-funcao').style.display = '';
+                    document.getElementById('info-item-setor').style.display  = '';
 
-                // Telefone com link WhatsApp
-                const telefoneEl = document.getElementById('info-telefone');
-                if (diagnostico.telefone) {
-                    const telefoneLimpo = diagnostico.telefone.replace(/\D/g, '');
-                    telefoneEl.innerHTML = `
-                        <a href="https://wa.me/55${telefoneLimpo}" target="_blank"
-                            style="color: var(--verde-oliva); text-decoration: none;"
-                            title="Abrir WhatsApp">
-                            ${diagnostico.telefone} 📱
-                        </a>
-                    `;
+                    // Ocultar campos irrelevantes para DRPS
+                    document.getElementById('btn-whatsapp').style.display = 'none';
+
+                    // Renderizar
+                    renderIndicesDRPS(diagnostico.scores || {});
+                    renderChartsDRPS(diagnostico.scores  || {});
+                    renderAlertasDRPS(diagnostico.scores || {});
+
                 } else {
-                    telefoneEl.textContent = '-';
+                    /* ── Diagnóstico comportamental original ── */
+                    diagnostico = await getDiagnosticoById(diagnosticoId);
+
+                    if (!diagnostico.visualizadoAdmin) {
+                        await marcarComoVisualizado(diagnosticoId);
+                    }
+
+                    document.getElementById('page-title').textContent = diagnostico.nomeEmpresa || 'Empresa não informada';
+                    document.getElementById('page-subtitle').textContent = `Diagnóstico realizado em: ${formatarData(diagnostico.criadoEm)}`;
+                    document.getElementById('info-empresa').textContent    = diagnostico.nomeEmpresa    || 'N/A';
+                    document.getElementById('info-respondente').textContent = diagnostico.nomeRespondente || 'N/A';
+                    document.getElementById('info-email').textContent      = diagnostico.email || '-';
+
+                    const telefoneEl = document.getElementById('info-telefone');
+                    if (diagnostico.telefone) {
+                        const telefoneLimpo = diagnostico.telefone.replace(/\D/g, '');
+                        telefoneEl.innerHTML = `
+                            <a href="https://wa.me/55${telefoneLimpo}" target="_blank"
+                                style="color: var(--verde-oliva); text-decoration: none;"
+                                title="Abrir WhatsApp">
+                                ${diagnostico.telefone} 📱
+                            </a>`;
+                    } else {
+                        telefoneEl.textContent = '-';
+                    }
+
+                    renderIndices(diagnostico.resultados);
+                    renderCharts(diagnostico.resultados);
+                    renderAlertas(diagnostico.resultados);
                 }
-
-                // Renderizar índices
-                renderIndices(diagnostico.resultados);
-
-                // Renderizar gráficos
-                renderCharts(diagnostico.resultados);
-
-                // Renderizar alertas
-                renderAlertas(diagnostico.resultados);
 
             } catch (error) {
                 console.error('Erro ao carregar diagnóstico:', error);
@@ -1033,6 +1080,184 @@
             `).join('');
         }
 
+        /* ── DRPS: Renderizar índices (escala 0–4, 4 níveis de risco) ── */
+        function renderIndicesDRPS(scores) {
+            const topicos = [
+                { key: 't1', label: 'Assédio Moral' },
+                { key: 't2', label: 'Carga de Trabalho' },
+                { key: 't3', label: 'Reconhecimento' },
+                { key: 't4', label: 'Clima Organizacional' },
+                { key: 't5', label: 'Autonomia' },
+                { key: 't6', label: 'Pressão por Metas' },
+                { key: 't7', label: 'Insegurança no Trabalho' },
+                { key: 't8', label: 'Conflitos Interpessoais' },
+                { key: 't9', label: 'Equilíbrio Vida–Trabalho' }
+            ];
+
+            const getRisk = (s) => {
+                if (s <= 1.0) return { label: 'Baixo',   statusClass: 'risk-baixo',   barClass: 'bar-baixo'   };
+                if (s <= 2.0) return { label: 'Médio',   statusClass: 'risk-medio',   barClass: 'bar-medio'   };
+                if (s <= 3.0) return { label: 'Alto',    statusClass: 'risk-alto',    barClass: 'bar-alto'    };
+                return          { label: 'Crítico', statusClass: 'risk-critico', barClass: 'bar-critico' };
+            };
+
+            const container = document.getElementById('indices-container');
+            container.innerHTML = topicos.map(t => {
+                const score = parseFloat(scores[t.key] || 0);
+                const pct   = (score / 4) * 100;
+                const risk  = getRisk(score);
+                return `
+                    <div class="index-card">
+                        <div class="index-card-header">
+                            <span class="index-name">${t.label}</span>
+                            <span class="index-status ${risk.statusClass}">${risk.label}</span>
+                        </div>
+                        <div class="index-score">
+                            <span class="index-score-value">${score.toFixed(2)}</span>
+                            <span class="index-score-max">/ 4.0</span>
+                        </div>
+                        <div class="index-bar">
+                            <div class="index-bar-fill ${risk.barClass}" style="width: ${pct}%;"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /* ── DRPS: Gráficos (escala 0–4, 9 tópicos) ── */
+        function renderChartsDRPS(scores) {
+            Chart.defaults.font.family = "'Source Sans 3', sans-serif";
+            Chart.defaults.color = '#6c757d';
+
+            const labels = ['Assédio', 'Carga de Trab.', 'Reconhecimento', 'Clima Org.', 'Autonomia', 'Pressão Metas', 'Insegurança', 'Conflitos', 'Vida–Trabalho'];
+            const data   = ['t1','t2','t3','t4','t5','t6','t7','t8','t9'].map(k => parseFloat(scores[k] || 0));
+
+            const radarCtx = document.getElementById('radarChart').getContext('2d');
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Risco',
+                        data,
+                        backgroundColor: 'rgba(220,53,69,0.15)',
+                        borderColor: '#dc3545',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#dc3545',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#dc3545'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 4,
+                            ticks: { stepSize: 1, font: { size: 11 } },
+                            pointLabels: { font: { size: 10, weight: '500' }, color: '#1E2C36' }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            const barColors = data.map(v => {
+                if (v <= 1.0) return '#22c55e';
+                if (v <= 2.0) return '#f59e0b';
+                if (v <= 3.0) return '#f97316';
+                return '#dc3545';
+            });
+
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Score de Risco',
+                        data,
+                        backgroundColor: barColors,
+                        borderRadius: 6,
+                        barThickness: 22
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+                        y: { beginAtZero: true, max: 4, ticks: { stepSize: 1 } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        /* ── DRPS: Alertas para tópicos Alto ou Crítico ── */
+        function renderAlertasDRPS(scores) {
+            const topicos = [
+                { key: 't1', label: 'Assédio Moral' },
+                { key: 't2', label: 'Carga de Trabalho' },
+                { key: 't3', label: 'Reconhecimento' },
+                { key: 't4', label: 'Clima Organizacional' },
+                { key: 't5', label: 'Autonomia' },
+                { key: 't6', label: 'Pressão por Metas' },
+                { key: 't7', label: 'Insegurança no Trabalho' },
+                { key: 't8', label: 'Conflitos Interpessoais' },
+                { key: 't9', label: 'Equilíbrio Vida–Trabalho' }
+            ];
+
+            const alertas = [];
+            topicos.forEach(t => {
+                const score = parseFloat(scores[t.key] || 0);
+                if (score > 3.0) {
+                    alertas.push({
+                        type: 'critical',
+                        title: `Risco Crítico: ${t.label}`,
+                        description: `Score de ${score.toFixed(2)}/4.0. Nível crítico de risco psicossocial identificado. Intervenção imediata recomendada conforme NR-01.`
+                    });
+                } else if (score > 2.0) {
+                    alertas.push({
+                        type: 'warning',
+                        title: `Risco Alto: ${t.label}`,
+                        description: `Score de ${score.toFixed(2)}/4.0. Fator de risco elevado que requer ação preventiva e inclusão no PGR da empresa.`
+                    });
+                }
+            });
+
+            const geralScore = parseFloat(scores.geral || 0);
+            if (alertas.length === 0 && geralScore > 2.0) {
+                alertas.push({
+                    type: 'warning',
+                    title: 'Score Geral Elevado',
+                    description: `Score geral de ${geralScore.toFixed(2)}/4.0. Múltiplos fatores de risco psicossocial identificados. Recomenda-se revisão completa do ambiente de trabalho.`
+                });
+            }
+
+            const container = document.getElementById('alertas-container');
+            if (alertas.length === 0) {
+                container.innerHTML = '<p style="color: #6c757d; text-align: center; padding: 2rem;">Nenhum fator de risco crítico ou alto identificado.</p>';
+                return;
+            }
+
+            container.innerHTML = alertas.map(alerta => `
+                <div class="alert-item ${alerta.type}">
+                    <div class="alert-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <div class="alert-content">
+                        <h4 class="alert-title">${alerta.title}</h4>
+                        <p class="alert-description">${alerta.description}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
         // Botão WhatsApp
         document.getElementById('btn-whatsapp').addEventListener('click', () => {
             const url = gerarMensagemWhatsApp(diagnostico);
@@ -1042,7 +1267,11 @@
         // Botão Marcar como Contatado
         document.getElementById('btn-marcar-contatado').addEventListener('click', async () => {
             try {
-                await updateDiagnosticoStatus(diagnosticoId, 'contatado');
+                if (isDRPS) {
+                    await updateDoc(doc(db, 'diagnosticos_drps', diagnosticoId), { status: 'contatado' });
+                } else {
+                    await updateDiagnosticoStatus(diagnosticoId, 'contatado');
+                }
                 alert('Diagnóstico marcado como contatado!');
             } catch (error) {
                 console.error('Erro ao marcar como contatado:', error);
@@ -1062,142 +1291,232 @@
 
                 console.log('📄 Iniciando geração de PDF...');
 
-                // Pegar dados
                 const empresa = diagnostico?.nomeEmpresa || 'Empresa';
-                const respondente = diagnostico?.nomeRespondente || 'Respondente';
-                const email = diagnostico?.email || '-';
-                const telefone = diagnostico?.telefone || '-';
                 const data = diagnostico?.criadoEm?.toDate?.()?.toLocaleDateString('pt-BR') || new Date().toLocaleDateString('pt-BR');
 
-                // Coletar índices
-                const indices = [
-                    { key: 'sobrecarga_lider', nome: 'Sobrecarga do Líder' },
-                    { key: 'dependencia_dono', nome: 'Dependência do Dono' },
-                    { key: 'maturidade_emocional', nome: 'Maturidade Emocional' },
-                    { key: 'risco_psicossocial', nome: 'Risco Psicossocial (NR-1)' },
-                    { key: 'conflito_geracional', nome: 'Conflito Geracional' },
-                    { key: 'escalabilidade_humana', nome: 'Escalabilidade Humana' }
-                ];
-
-                const getStatus = (valor) => {
-                    if (valor >= 7) return { texto: 'CRÍTICO', cor: '#F44336', bg: 'rgba(244,67,54,0.1)' };
-                    if (valor >= 4) return { texto: 'ATENÇÃO', cor: '#FF9800', bg: 'rgba(255,152,0,0.1)' };
-                    return { texto: 'BOM', cor: '#4CAF50', bg: 'rgba(76,175,80,0.1)' };
-                };
-
                 let indicesHTML = '';
-                indices.forEach(ind => {
-                    const valor = parseFloat(diagnostico?.resultados?.[ind.key] || 0);
-                    const status = getStatus(valor);
-                    const porcentagem = (valor / 10) * 100;
+                let overlay, pdfContainer;
 
-                    indicesHTML += `
-                        <div style="display:table;width:100%;padding:7px 0;border-bottom:1px solid #eee;">
-                            <div style="display:table-cell;vertical-align:middle;">
-                                <div style="font-weight:600;color:#1E2C36;font-size:12px;">${ind.nome}</div>
-                                <div style="margin-top:5px;height:5px;background:#e9ecef;border-radius:3px;overflow:hidden;width:95%;">
-                                    <div style="width:${porcentagem}%;height:100%;background:${status.cor};border-radius:3px;"></div>
+                if (isDRPS) {
+                    /* ── DRPS PDF ── */
+                    const funcao = diagnostico?.funcao || '-';
+                    const setor  = diagnostico?.setor  || '-';
+                    const scores = diagnostico?.scores || {};
+
+                    const drpsTopicos = [
+                        { key: 't1', nome: 'Assédio Moral' },
+                        { key: 't2', nome: 'Carga de Trabalho' },
+                        { key: 't3', nome: 'Reconhecimento' },
+                        { key: 't4', nome: 'Clima Organizacional' },
+                        { key: 't5', nome: 'Autonomia' },
+                        { key: 't6', nome: 'Pressão por Metas' },
+                        { key: 't7', nome: 'Insegurança no Trabalho' },
+                        { key: 't8', nome: 'Conflitos Interpessoais' },
+                        { key: 't9', nome: 'Equilíbrio Vida–Trabalho' }
+                    ];
+
+                    const getRiskDRPS = (s) => {
+                        if (s <= 1.0) return { texto: 'BAIXO',   cor: '#16a34a', bg: 'rgba(34,197,94,0.12)'  };
+                        if (s <= 2.0) return { texto: 'MÉDIO',   cor: '#d97706', bg: 'rgba(245,158,11,0.12)' };
+                        if (s <= 3.0) return { texto: 'ALTO',    cor: '#ea580c', bg: 'rgba(249,115,22,0.12)' };
+                        return          { texto: 'CRÍTICO', cor: '#dc3545', bg: 'rgba(220,53,69,0.12)'  };
+                    };
+
+                    drpsTopicos.forEach(t => {
+                        const score = parseFloat(scores[t.key] || 0);
+                        const risk  = getRiskDRPS(score);
+                        const pct   = (score / 4) * 100;
+                        indicesHTML += `
+                            <div style="display:table;width:100%;padding:7px 0;border-bottom:1px solid #eee;">
+                                <div style="display:table-cell;vertical-align:middle;">
+                                    <div style="font-weight:600;color:#1E2C36;font-size:12px;">${t.nome}</div>
+                                    <div style="margin-top:5px;height:5px;background:#e9ecef;border-radius:3px;overflow:hidden;width:95%;">
+                                        <div style="width:${pct}%;height:100%;background:${risk.cor};border-radius:3px;"></div>
+                                    </div>
+                                </div>
+                                <div style="display:table-cell;vertical-align:middle;text-align:right;width:90px;">
+                                    <span style="font-size:20px;font-weight:700;color:${risk.cor};">${score.toFixed(2)}</span>
+                                    <span style="display:block;font-size:10px;font-weight:600;color:${risk.cor};background:${risk.bg};padding:1px 6px;border-radius:8px;">${risk.texto}</span>
                                 </div>
                             </div>
-                            <div style="display:table-cell;vertical-align:middle;text-align:right;width:90px;">
-                                <span style="font-size:20px;font-weight:700;color:${status.cor};">${valor.toFixed(1)}</span>
-                                <span style="display:block;font-size:10px;font-weight:600;color:${status.cor};background:${status.bg};padding:1px 6px;border-radius:8px;">${status.texto}</span>
+                        `;
+                    });
+
+                    // Criar overlay
+                    overlay = document.createElement('div');
+                    overlay.id = 'pdf-overlay';
+                    overlay.style.cssText = `position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;`;
+                    overlay.innerHTML = '<div style="color:white;font-size:18px;font-family:Arial,sans-serif;">Gerando PDF...</div>';
+                    document.body.appendChild(overlay);
+
+                    pdfContainer = document.createElement('div');
+                    pdfContainer.id = 'temp-pdf-container';
+                    pdfContainer.style.cssText = `position:fixed;top:0;left:0;width:800px;background:white;z-index:99999;overflow:hidden;`;
+                    pdfContainer.innerHTML = `
+                        <div style="width:800px;padding:22px 28px;background:white;font-family:Arial,sans-serif;color:#1E2C36;box-sizing:border-box;">
+                            <div style="display:table;width:100%;margin-bottom:14px;padding-bottom:12px;border-bottom:2px solid #1a3a5c;">
+                                <div style="display:table-cell;vertical-align:middle;">
+                                    <div style="font-size:22px;font-weight:bold;color:#1a3a5c;letter-spacing:1px;">GLOBALMIND</div>
+                                    <div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:2px;margin-top:2px;">Diagnóstico DRPS NR-01</div>
+                                </div>
+                                <div style="display:table-cell;vertical-align:middle;text-align:right;">
+                                    <div style="font-size:15px;color:#1E2C36;font-weight:600;">Avaliação de Riscos Psicossociais</div>
+                                    <div style="font-size:11px;color:#888;margin-top:2px;">Realizado em: ${data}</div>
+                                </div>
+                            </div>
+                            <div style="background:#1a3a5c;color:white;padding:14px 18px;border-radius:8px;margin-bottom:14px;">
+                                <table style="width:100%;border-collapse:collapse;">
+                                    <tr>
+                                        <td style="width:50%;padding:4px 8px 4px 0;">
+                                            <div style="font-size:9px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;">Empresa</div>
+                                            <div style="font-size:14px;font-weight:600;margin-top:1px;">${empresa}</div>
+                                        </td>
+                                        <td style="width:50%;padding:4px 0;">
+                                            <div style="font-size:9px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;">Setor</div>
+                                            <div style="font-size:14px;font-weight:600;margin-top:1px;">${setor}</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:4px 8px 0 0;">
+                                            <div style="font-size:9px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;">Função</div>
+                                            <div style="font-size:12px;font-weight:500;margin-top:1px;">${funcao}</div>
+                                        </td>
+                                        <td style="padding:4px 0 0 0;">
+                                            <div style="font-size:9px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;">Score Geral</div>
+                                            <div style="font-size:12px;font-weight:500;margin-top:1px;">${parseFloat(scores.geral || 0).toFixed(2)} / 4.0</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div style="font-size:13px;font-weight:700;color:#1E2C36;margin-bottom:8px;padding-left:10px;border-left:3px solid #1a3a5c;">
+                                Scores por Tópico
+                            </div>
+                            <div style="background:#fafafa;padding:10px 14px;border-radius:8px;margin-bottom:12px;">
+                                ${indicesHTML}
+                            </div>
+                            <div style="background:#fff8e1;padding:8px 14px;border-radius:6px;border-left:3px solid #ffc107;margin-bottom:12px;">
+                                <span style="font-size:10px;color:#856404;">
+                                    <strong>Legenda:</strong>&nbsp;&nbsp;
+                                    <span style="color:#16a34a;">● Baixo (0–1.0)</span>&nbsp;&nbsp;
+                                    <span style="color:#d97706;">● Médio (1.1–2.0)</span>&nbsp;&nbsp;
+                                    <span style="color:#ea580c;">● Alto (2.1–3.0)</span>&nbsp;&nbsp;
+                                    <span style="color:#dc3545;">● Crítico (3.1–4.0)</span>
+                                </span>
+                            </div>
+                            <div style="text-align:center;padding-top:10px;border-top:1px solid #eee;font-size:10px;color:#bbb;">
+                                <strong style="color:#1a3a5c;">GlobalMind</strong> — DRPS NR-01 &nbsp;|&nbsp; gminds.com.br &nbsp;|&nbsp; ${new Date().toLocaleDateString('pt-BR')}
                             </div>
                         </div>
                     `;
-                });
 
-                // Criar overlay de carregamento
-                const overlay = document.createElement('div');
-                overlay.id = 'pdf-overlay';
-                overlay.style.cssText = `
-                    position: fixed; inset: 0; z-index: 99998;
-                    background: rgba(0,0,0,0.6);
-                    display: flex; align-items: center; justify-content: center;
-                `;
-                overlay.innerHTML = '<div style="color:white;font-size:18px;font-family:Arial,sans-serif;">Gerando PDF...</div>';
-                document.body.appendChild(overlay);
+                } else {
+                    /* ── Diagnóstico Comportamental PDF ── */
+                    const respondente = diagnostico?.nomeRespondente || 'Respondente';
+                    const email = diagnostico?.email || '-';
+                    const telefone = diagnostico?.telefone || '-';
 
-                // Criar container do PDF (visível no topo, capturável pelo html2canvas)
-                const pdfContainer = document.createElement('div');
-                pdfContainer.id = 'temp-pdf-container';
-                pdfContainer.style.cssText = `
-                    position: fixed;
-                    top: 0;
-                    left: 0;
-                    width: 800px;
-                    background: white;
-                    z-index: 99999;
-                    overflow: hidden;
-                `;
+                    const indices = [
+                        { key: 'sobrecarga_lider', nome: 'Sobrecarga do Líder' },
+                        { key: 'dependencia_dono', nome: 'Dependência do Dono' },
+                        { key: 'maturidade_emocional', nome: 'Maturidade Emocional' },
+                        { key: 'risco_psicossocial', nome: 'Risco Psicossocial (NR-1)' },
+                        { key: 'conflito_geracional', nome: 'Conflito Geracional' },
+                        { key: 'escalabilidade_humana', nome: 'Escalabilidade Humana' }
+                    ];
 
-                pdfContainer.innerHTML = `
-                    <div style="width:800px;padding:22px 28px;background:white;font-family:Arial,sans-serif;color:#1E2C36;box-sizing:border-box;">
+                    const getStatus = (valor) => {
+                        if (valor >= 7) return { texto: 'CRÍTICO', cor: '#F44336', bg: 'rgba(244,67,54,0.1)' };
+                        if (valor >= 4) return { texto: 'ATENÇÃO', cor: '#FF9800', bg: 'rgba(255,152,0,0.1)' };
+                        return { texto: 'BOM', cor: '#4CAF50', bg: 'rgba(76,175,80,0.1)' };
+                    };
 
-                        <!-- Header compacto -->
-                        <div style="display:table;width:100%;margin-bottom:14px;padding-bottom:12px;border-bottom:2px solid #6D7141;">
-                            <div style="display:table-cell;vertical-align:middle;">
-                                <div style="font-size:22px;font-weight:bold;color:#6D7141;letter-spacing:1px;">GLOBALMIND</div>
-                                <div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:2px;margin-top:2px;">Identidade Corporativa</div>
+                    indices.forEach(ind => {
+                        const valor = parseFloat(diagnostico?.resultados?.[ind.key] || 0);
+                        const status = getStatus(valor);
+                        const porcentagem = (valor / 10) * 100;
+                        indicesHTML += `
+                            <div style="display:table;width:100%;padding:7px 0;border-bottom:1px solid #eee;">
+                                <div style="display:table-cell;vertical-align:middle;">
+                                    <div style="font-weight:600;color:#1E2C36;font-size:12px;">${ind.nome}</div>
+                                    <div style="margin-top:5px;height:5px;background:#e9ecef;border-radius:3px;overflow:hidden;width:95%;">
+                                        <div style="width:${porcentagem}%;height:100%;background:${status.cor};border-radius:3px;"></div>
+                                    </div>
+                                </div>
+                                <div style="display:table-cell;vertical-align:middle;text-align:right;width:90px;">
+                                    <span style="font-size:20px;font-weight:700;color:${status.cor};">${valor.toFixed(1)}</span>
+                                    <span style="display:block;font-size:10px;font-weight:600;color:${status.cor};background:${status.bg};padding:1px 6px;border-radius:8px;">${status.texto}</span>
+                                </div>
                             </div>
-                            <div style="display:table-cell;vertical-align:middle;text-align:right;">
-                                <div style="font-size:15px;color:#1E2C36;font-weight:600;">Diagnóstico Comportamental</div>
-                                <div style="font-size:11px;color:#888;margin-top:2px;">Realizado em: ${data}</div>
+                        `;
+                    });
+
+                    // Criar overlay
+                    overlay = document.createElement('div');
+                    overlay.id = 'pdf-overlay';
+                    overlay.style.cssText = `position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;`;
+                    overlay.innerHTML = '<div style="color:white;font-size:18px;font-family:Arial,sans-serif;">Gerando PDF...</div>';
+                    document.body.appendChild(overlay);
+
+                    pdfContainer = document.createElement('div');
+                    pdfContainer.id = 'temp-pdf-container';
+                    pdfContainer.style.cssText = `position:fixed;top:0;left:0;width:800px;background:white;z-index:99999;overflow:hidden;`;
+
+                    pdfContainer.innerHTML = `
+                        <div style="width:800px;padding:22px 28px;background:white;font-family:Arial,sans-serif;color:#1E2C36;box-sizing:border-box;">
+                            <div style="display:table;width:100%;margin-bottom:14px;padding-bottom:12px;border-bottom:2px solid #6D7141;">
+                                <div style="display:table-cell;vertical-align:middle;">
+                                    <div style="font-size:22px;font-weight:bold;color:#6D7141;letter-spacing:1px;">GLOBALMIND</div>
+                                    <div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:2px;margin-top:2px;">Identidade Corporativa</div>
+                                </div>
+                                <div style="display:table-cell;vertical-align:middle;text-align:right;">
+                                    <div style="font-size:15px;color:#1E2C36;font-weight:600;">Diagnóstico Comportamental</div>
+                                    <div style="font-size:11px;color:#888;margin-top:2px;">Realizado em: ${data}</div>
+                                </div>
+                            </div>
+                            <div style="background:#1E2C36;color:white;padding:14px 18px;border-radius:8px;margin-bottom:14px;">
+                                <table style="width:100%;border-collapse:collapse;">
+                                    <tr>
+                                        <td style="width:50%;padding:4px 8px 4px 0;">
+                                            <div style="font-size:9px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;">Empresa</div>
+                                            <div style="font-size:14px;font-weight:600;margin-top:1px;">${empresa}</div>
+                                        </td>
+                                        <td style="width:50%;padding:4px 0;">
+                                            <div style="font-size:9px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;">Respondente</div>
+                                            <div style="font-size:14px;font-weight:600;margin-top:1px;">${respondente}</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding:4px 8px 0 0;">
+                                            <div style="font-size:9px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;">Email</div>
+                                            <div style="font-size:12px;font-weight:500;margin-top:1px;">${email}</div>
+                                        </td>
+                                        <td style="padding:4px 0 0 0;">
+                                            <div style="font-size:9px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;">Telefone</div>
+                                            <div style="font-size:12px;font-weight:500;margin-top:1px;">${telefone}</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div style="font-size:13px;font-weight:700;color:#1E2C36;margin-bottom:8px;padding-left:10px;border-left:3px solid #6D7141;">
+                                Índices de Diagnóstico
+                            </div>
+                            <div style="background:#fafafa;padding:10px 14px;border-radius:8px;margin-bottom:12px;">
+                                ${indicesHTML}
+                            </div>
+                            <div style="background:#fff8e1;padding:8px 14px;border-radius:6px;border-left:3px solid #ffc107;margin-bottom:12px;">
+                                <span style="font-size:10px;color:#856404;">
+                                    <strong>Legenda:</strong>&nbsp;&nbsp;
+                                    <span style="color:#4CAF50;">● Bom (0–3.9)</span>&nbsp;&nbsp;
+                                    <span style="color:#FF9800;">● Atenção (4–6.9)</span>&nbsp;&nbsp;
+                                    <span style="color:#F44336;">● Crítico (7–10)</span>
+                                </span>
+                            </div>
+                            <div style="text-align:center;padding-top:10px;border-top:1px solid #eee;font-size:10px;color:#bbb;">
+                                <strong style="color:#6D7141;">GlobalMind</strong> — Diagnóstico Comportamental &nbsp;|&nbsp; gminds.com.br &nbsp;|&nbsp; ${new Date().toLocaleDateString('pt-BR')}
                             </div>
                         </div>
-
-                        <!-- Info da empresa -->
-                        <div style="background:#1E2C36;color:white;padding:14px 18px;border-radius:8px;margin-bottom:14px;">
-                            <table style="width:100%;border-collapse:collapse;">
-                                <tr>
-                                    <td style="width:50%;padding:4px 8px 4px 0;">
-                                        <div style="font-size:9px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;">Empresa</div>
-                                        <div style="font-size:14px;font-weight:600;margin-top:1px;">${empresa}</div>
-                                    </td>
-                                    <td style="width:50%;padding:4px 0;">
-                                        <div style="font-size:9px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;">Respondente</div>
-                                        <div style="font-size:14px;font-weight:600;margin-top:1px;">${respondente}</div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="padding:4px 8px 0 0;">
-                                        <div style="font-size:9px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;">Email</div>
-                                        <div style="font-size:12px;font-weight:500;margin-top:1px;">${email}</div>
-                                    </td>
-                                    <td style="padding:4px 0 0 0;">
-                                        <div style="font-size:9px;opacity:0.6;text-transform:uppercase;letter-spacing:1px;">Telefone</div>
-                                        <div style="font-size:12px;font-weight:500;margin-top:1px;">${telefone}</div>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <!-- Título índices -->
-                        <div style="font-size:13px;font-weight:700;color:#1E2C36;margin-bottom:8px;padding-left:10px;border-left:3px solid #6D7141;">
-                            Índices de Diagnóstico
-                        </div>
-
-                        <!-- Índices -->
-                        <div style="background:#fafafa;padding:10px 14px;border-radius:8px;margin-bottom:12px;">
-                            ${indicesHTML}
-                        </div>
-
-                        <!-- Legenda -->
-                        <div style="background:#fff8e1;padding:8px 14px;border-radius:6px;border-left:3px solid #ffc107;margin-bottom:12px;">
-                            <span style="font-size:10px;color:#856404;">
-                                <strong>Legenda:</strong>&nbsp;&nbsp;
-                                <span style="color:#4CAF50;">● Bom (0–3.9)</span>&nbsp;&nbsp;
-                                <span style="color:#FF9800;">● Atenção (4–6.9)</span>&nbsp;&nbsp;
-                                <span style="color:#F44336;">● Crítico (7–10)</span>
-                            </span>
-                        </div>
-
-                        <!-- Footer -->
-                        <div style="text-align:center;padding-top:10px;border-top:1px solid #eee;font-size:10px;color:#bbb;">
-                            <strong style="color:#6D7141;">GlobalMind</strong> — Diagnóstico Comportamental &nbsp;|&nbsp; gminds.com.br &nbsp;|&nbsp; ${new Date().toLocaleDateString('pt-BR')}
-                        </div>
-                    </div>
-                `;
+                    `;
+                }
 
                 document.body.appendChild(pdfContainer);
 
