@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empresas - GlobalMind Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --verde-oliva: #6D7141;
+            --verde-oliva-light: #8a8f5a;
+            --verde-oliva-dark: #565a34;
+            --azul-petroleo: #1E2C36;
+            --azul-petroleo-light: #2d4251;
+            --bege: #F6F3ED;
+            --bege-dark: #E8E4DB;
+            --white: #FFFFFF;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --success: #22c55e;
+            --danger: #dc3545;
+
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Source Sans 3', -apple-system, sans-serif;
+
+            --shadow-sm: 0 1px 2px rgba(30, 44, 54, 0.05);
+            --shadow-md: 0 4px 12px rgba(30, 44, 54, 0.08);
+            --shadow-lg: 0 8px 30px rgba(30, 44, 54, 0.12);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 20px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bege);
+            color: var(--azul-petroleo);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .app-container { display: flex; min-height: 100vh; }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 280px;
+            background: var(--azul-petroleo);
+            color: var(--white);
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .logo { display: flex; align-items: center; gap: 0.75rem; }
+
+        .logo-icon {
+            width: 45px; height: 45px;
+            background: var(--verde-oliva);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .logo-icon svg { width: 28px; height: 28px; fill: var(--white); }
+
+        .logo-text {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.4);
+            padding: 0 1.5rem;
+            margin-bottom: 0.75rem;
+            margin-top: 1.5rem;
+            font-weight: 600;
+        }
+
+        .nav-item {
+            display: flex; align-items: center; gap: 0.875rem;
+            padding: 0.875rem 1.5rem;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--white); }
+
+        .nav-item.active {
+            background: rgba(109, 113, 65, 0.3);
+            color: var(--white);
+            border-left: 3px solid var(--verde-oliva);
+        }
+
+        .nav-item svg { width: 20px; height: 20px; opacity: 0.8; }
+        .nav-item.active svg { opacity: 1; }
+
+        /* ── Main Content ── */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem 2.5rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--bege-dark);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle { color: var(--gray-600); font-size: 1rem; }
+
+        .user-info { text-align: right; }
+        .user-name { font-weight: 600; color: var(--azul-petroleo); }
+
+        .btn-logout {
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--white);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            color: var(--azul-petroleo);
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout:hover { background: var(--gray-100); }
+
+        /* ── Toolbar ── */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px; height: 24px;
+            background: var(--verde-oliva);
+            border-radius: 2px;
+        }
+
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            background: var(--verde-oliva);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover { background: var(--verde-oliva-dark); transform: translateY(-1px); }
+
+        .btn-primary svg { width: 18px; height: 18px; }
+
+        /* ── Card / Table ── */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table thead th {
+            text-align: left;
+            padding: 0.875rem 1.25rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid var(--gray-200);
+            background: var(--gray-100);
+        }
+
+        .table tbody td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--gray-200);
+            vertical-align: middle;
+        }
+
+        .table tbody tr:last-child td { border-bottom: none; }
+
+        .table tbody tr { transition: background 0.15s ease; }
+        .table tbody tr:hover { background: var(--gray-100); }
+
+        .company-name { font-weight: 600; color: var(--azul-petroleo); }
+
+        .setor-count {
+            display: inline-flex; align-items: center;
+            padding: 0.2rem 0.65rem;
+            background: rgba(109, 113, 65, 0.1);
+            color: var(--verde-oliva-dark);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .acoes { display: flex; gap: 0.5rem; align-items: center; }
+
+        .btn-acao {
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            padding: 0.4rem 0.875rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-acao svg { width: 14px; height: 14px; }
+
+        .btn-copiar { background: #E3F2FD; color: #1565C0; }
+        .btn-copiar:hover { background: #BBDEFB; }
+
+        .btn-editar { background: #FFF3E0; color: #E65100; }
+        .btn-editar:hover { background: #FFE0B2; }
+
+        /* ── Empty State ── */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--gray-500);
+        }
+
+        .empty-state svg { width: 56px; height: 56px; margin-bottom: 1rem; opacity: 0.3; }
+        .empty-state p { font-size: 1rem; }
+
+        /* ── Loading ── */
+        .loading {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--gray-500);
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 2rem; right: 2rem;
+            background: var(--azul-petroleo);
+            color: var(--white);
+            padding: 0.875rem 1.5rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 9999;
+        }
+
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(30, 44, 54, 0.6);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+        .modal {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 520px;
+            box-shadow: var(--shadow-lg);
+            transform: scale(0.95) translateY(-10px);
+            transition: transform 0.25s ease;
+        }
+
+        .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+        }
+
+        .modal-close {
+            width: 32px; height: 32px;
+            border: none;
+            background: var(--gray-100);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--gray-600);
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover { background: var(--gray-200); color: var(--azul-petroleo); }
+        .modal-close svg { width: 18px; height: 18px; }
+
+        .modal-body { padding: 1.5rem; }
+
+        .modal-footer {
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            display: flex; justify-content: flex-end; gap: 0.75rem;
+        }
+
+        /* ── Form ── */
+        .form-group { margin-bottom: 1.25rem; }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--azul-petroleo);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-label span { color: var(--danger); margin-left: 2px; }
+
+        .form-control {
+            width: 100%;
+            padding: 0.6875rem 1rem;
+            border: 1.5px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            color: var(--azul-petroleo);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--verde-oliva);
+            box-shadow: 0 0 0 3px rgba(109, 113, 65, 0.12);
+        }
+
+        /* ── Setor Input Row ── */
+        .setor-input-row {
+            display: flex; gap: 0.5rem;
+        }
+
+        .setor-input-row .form-control { flex: 1; }
+
+        .btn-add-setor {
+            padding: 0.6875rem 1rem;
+            background: var(--azul-petroleo);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s ease;
+        }
+
+        .btn-add-setor:hover { background: var(--azul-petroleo-light); }
+
+        /* ── Chips ── */
+        .chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            min-height: 36px;
+            margin-top: 0.75rem;
+            padding: 0.5rem;
+            background: var(--gray-100);
+            border-radius: var(--radius-sm);
+        }
+
+        .chips-container:empty::before {
+            content: 'Nenhum setor adicionado';
+            color: var(--gray-500);
+            font-size: 0.85rem;
+            align-self: center;
+        }
+
+        .chip {
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            padding: 0.25rem 0.5rem 0.25rem 0.75rem;
+            background: var(--azul-petroleo);
+            color: var(--white);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .chip-remove {
+            width: 18px; height: 18px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 50%;
+            color: var(--white);
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s ease;
+            padding: 0;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .chip-remove:hover { background: rgba(255,255,255,0.4); }
+
+        /* ── Btn Outline ── */
+        .btn-outline {
+            padding: 0.625rem 1.25rem;
+            background: transparent;
+            border: 1.5px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline:hover { border-color: var(--azul-petroleo); color: var(--azul-petroleo); }
+
+        .btn-save {
+            padding: 0.625rem 1.5rem;
+            background: var(--verde-oliva);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-save:hover { background: var(--verde-oliva-dark); }
+        .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* ── Responsive ── */
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .main-content { padding: 1.5rem 1rem; }
+            .toolbar { flex-direction: column; align-items: flex-start; }
+            .modal { margin: 1rem; }
+            .acoes { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    </svg>
+                </div>
+                <span class="logo-text">GLOBALMIND</span>
+            </div>
+        </div>
+
+        <nav>
+            <div class="nav-section-title">Menu</div>
+            <a href="dashboard.html" class="nav-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                </svg>
+                Dashboard
+            </a>
+            <a href="diagnosticos.html" class="nav-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                Diagnósticos
+            </a>
+            <a href="nr1-resultados.html" class="nav-item">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                </svg>
+                Avaliações NR-1
+            </a>
+            <a href="empresas.html" class="nav-item active">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                </svg>
+                Empresas
+            </a>
+
+            <div class="nav-section-title">Configurações</div>
+            <a href="#" class="nav-item" id="logout-link">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                Sair
+            </a>
+        </nav>
+    </aside>
+
+    <!-- ── Main Content ── -->
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <h1 class="page-title">Empresas</h1>
+                <p class="page-subtitle">Cadastro de empresas para o fluxo DRPS</p>
+            </div>
+            <div class="user-info">
+                <div class="user-name" id="admin-name">Admin</div>
+                <button class="btn-logout" id="logout-btn">Sair</button>
+            </div>
+        </header>
+
+        <div class="toolbar">
+            <h2 class="section-title">Empresas Cadastradas</h2>
+            <button class="btn-primary" id="btn-nova-empresa">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Nova Empresa
+            </button>
+        </div>
+
+        <div class="card">
+            <table class="table" id="empresas-table">
+                <thead>
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Setores</th>
+                        <th>Criado em</th>
+                        <th style="width: 180px;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="empresas-tbody">
+                    <tr>
+                        <td colspan="4">
+                            <div class="loading">Carregando empresas...</div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<!-- ── Toast ── -->
+<div class="toast" id="toast"></div>
+
+<!-- ── Modal Nova/Editar Empresa ── -->
+<div class="modal-overlay" id="modal-overlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-header">
+            <span class="modal-title" id="modal-title">Nova Empresa</span>
+            <button class="modal-close" id="modal-close" aria-label="Fechar">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label" for="input-nome">Nome da empresa <span>*</span></label>
+                <input type="text" id="input-nome" class="form-control" placeholder="Ex: Acme Ltda" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Setores</label>
+                <div class="setor-input-row">
+                    <input type="text" id="input-setor" class="form-control" placeholder="Ex: Administrativo" autocomplete="off">
+                    <button class="btn-add-setor" id="btn-add-setor">Adicionar</button>
+                </div>
+                <div class="chips-container" id="chips-container"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-outline" id="btn-cancelar">Cancelar</button>
+            <button class="btn-save" id="btn-salvar">Salvar empresa</button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { checkAdminAuth, logout } from './js/admin.js';
+    import { db } from '../js/firebase-config.js';
+    import {
+        collection, getDocs, addDoc, updateDoc, doc,
+        orderBy, query, Timestamp
+    } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+    // ── Auth ──────────────────────────────────────────────────────────────────
+    try {
+        await checkAdminAuth();
+    } catch {
+        // checkAdminAuth already redirects
+    }
+
+    // ── State ─────────────────────────────────────────────────────────────────
+    let setores = [];          // chips currently in modal
+    let editingId = null;      // null = create, string = update
+
+    // ── DOM refs ─────────────────────────────────────────────────────────────
+    const tbody         = document.getElementById('empresas-tbody');
+    const modalOverlay  = document.getElementById('modal-overlay');
+    const modalTitle    = document.getElementById('modal-title');
+    const inputNome     = document.getElementById('input-nome');
+    const inputSetor    = document.getElementById('input-setor');
+    const chipsContainer = document.getElementById('chips-container');
+    const btnSalvar     = document.getElementById('btn-salvar');
+    const toast         = document.getElementById('toast');
+
+    // ── Toast ─────────────────────────────────────────────────────────────────
+    function showToast(msg, type = 'success') {
+        toast.textContent = msg;
+        toast.className = `toast ${type} show`;
+        setTimeout(() => { toast.classList.remove('show'); }, 3000);
+    }
+
+    // ── Chips ─────────────────────────────────────────────────────────────────
+    function renderChips() {
+        chipsContainer.innerHTML = setores.map((s, i) => `
+            <span class="chip">
+                ${s}
+                <button class="chip-remove" data-index="${i}" aria-label="Remover ${s}">×</button>
+            </span>
+        `).join('');
+
+        chipsContainer.querySelectorAll('.chip-remove').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setores.splice(Number(btn.dataset.index), 1);
+                renderChips();
+            });
+        });
+    }
+
+    function addSetor() {
+        const val = inputSetor.value.trim();
+        if (!val) return;
+        if (setores.includes(val)) {
+            showToast('Setor já adicionado', 'error');
+            return;
+        }
+        setores.push(val);
+        inputSetor.value = '';
+        renderChips();
+        inputSetor.focus();
+    }
+
+    document.getElementById('btn-add-setor').addEventListener('click', addSetor);
+    inputSetor.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); addSetor(); } });
+
+    // ── Modal open/close ─────────────────────────────────────────────────────
+    function openModal(empresa = null) {
+        editingId      = empresa ? empresa.id : null;
+        setores        = empresa ? [...(empresa.setores || [])] : [];
+        inputNome.value = empresa ? empresa.nome : '';
+        inputSetor.value = '';
+        modalTitle.textContent = empresa ? 'Editar Empresa' : 'Nova Empresa';
+        renderChips();
+        modalOverlay.classList.add('open');
+        setTimeout(() => inputNome.focus(), 50);
+    }
+
+    function closeModal() {
+        modalOverlay.classList.remove('open');
+        editingId = null;
+    }
+
+    document.getElementById('btn-nova-empresa').addEventListener('click', () => openModal());
+    document.getElementById('modal-close').addEventListener('click', closeModal);
+    document.getElementById('btn-cancelar').addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+
+    // ── Save ──────────────────────────────────────────────────────────────────
+    btnSalvar.addEventListener('click', async () => {
+        const nome = inputNome.value.trim();
+        if (!nome) {
+            inputNome.focus();
+            showToast('Informe o nome da empresa', 'error');
+            return;
+        }
+
+        btnSalvar.disabled = true;
+        btnSalvar.textContent = 'Salvando...';
+
+        try {
+            if (editingId) {
+                await updateDoc(doc(db, 'empresas', editingId), {
+                    nome,
+                    setores,
+                    atualizadoEm: Timestamp.now()
+                });
+                showToast('Empresa atualizada com sucesso');
+            } else {
+                await addDoc(collection(db, 'empresas'), {
+                    nome,
+                    setores,
+                    criadoEm: Timestamp.now()
+                });
+                showToast('Empresa cadastrada com sucesso');
+            }
+            closeModal();
+            await loadEmpresas();
+        } catch (err) {
+            console.error(err);
+            showToast('Erro ao salvar: ' + err.message, 'error');
+        } finally {
+            btnSalvar.disabled = false;
+            btnSalvar.textContent = 'Salvar empresa';
+        }
+    });
+
+    // ── Copiar Link ───────────────────────────────────────────────────────────
+    function copiarLink(empresaId) {
+        const link = window.location.origin + '/step-identificacao.html?empresaId=' + empresaId;
+        navigator.clipboard.writeText(link).then(() => {
+            showToast('Link copiado para a área de transferência!');
+        }).catch(() => {
+            // fallback para navegadores sem clipboard API
+            const el = document.createElement('textarea');
+            el.value = link;
+            el.style.position = 'fixed';
+            el.style.opacity = '0';
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast('Link copiado!');
+        });
+    }
+
+    // ── Load List ────────────────────────────────────────────────────────────
+    async function loadEmpresas() {
+        tbody.innerHTML = '<tr><td colspan="4"><div class="loading">Carregando empresas...</div></td></tr>';
+
+        try {
+            const snap = await getDocs(query(collection(db, 'empresas'), orderBy('criadoEm', 'desc')));
+
+            if (snap.empty) {
+                tbody.innerHTML = `
+                    <tr><td colspan="4">
+                        <div class="empty-state">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                            <p>Nenhuma empresa cadastrada ainda.</p>
+                        </div>
+                    </td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = snap.docs.map(d => {
+                const emp = { id: d.id, ...d.data() };
+                const data = emp.criadoEm?.toDate?.()?.toLocaleDateString('pt-BR') ?? '—';
+                const qtd  = (emp.setores || []).length;
+
+                return `
+                    <tr>
+                        <td><span class="company-name">${emp.nome}</span></td>
+                        <td><span class="setor-count">${qtd} setor${qtd !== 1 ? 'es' : ''}</span></td>
+                        <td>${data}</td>
+                        <td>
+                            <div class="acoes">
+                                <button class="btn-acao btn-copiar" data-id="${emp.id}" title="Copiar link do questionário">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                    </svg>
+                                    Copiar link
+                                </button>
+                                <button class="btn-acao btn-editar"
+                                    data-id="${emp.id}"
+                                    data-nome="${emp.nome.replace(/"/g, '&quot;')}"
+                                    data-setores='${JSON.stringify(emp.setores || [])}'
+                                    title="Editar empresa">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                    Editar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+            }).join('');
+
+            // Attach button events after render
+            tbody.querySelectorAll('.btn-copiar').forEach(btn => {
+                btn.addEventListener('click', () => copiarLink(btn.dataset.id));
+            });
+
+            tbody.querySelectorAll('.btn-editar').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    openModal({
+                        id:      btn.dataset.id,
+                        nome:    btn.dataset.nome,
+                        setores: JSON.parse(btn.dataset.setores)
+                    });
+                });
+            });
+
+        } catch (err) {
+            console.error(err);
+            tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><p>Erro ao carregar empresas: ${err.message}</p></div></td></tr>`;
+        }
+    }
+
+    // ── Logout ────────────────────────────────────────────────────────────────
+    document.getElementById('logout-btn').addEventListener('click', logout);
+    document.getElementById('logout-link').addEventListener('click', e => { e.preventDefault(); logout(); });
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    loadEmpresas();
+</script>
+</body>
+</html>
