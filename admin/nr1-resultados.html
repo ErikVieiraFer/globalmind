@@ -513,18 +513,6 @@
         }
 
         /* PDF Content Styles */
-        #pdf-content-nr1 {
-            display: none;
-            width: 210mm;
-            padding: 15mm;
-            background: white;
-            font-family: 'Source Sans 3', Arial, sans-serif;
-            color: #1E2C36;
-        }
-
-        #pdf-content-nr1.visible {
-            display: block;
-        }
 
         .pdf-header {
             text-align: center;
@@ -821,85 +809,6 @@
                 </div>
             </div>
         </main>
-    </div>
-
-    <!-- PDF Content (Hidden) -->
-    <div id="pdf-content-nr1">
-        <div class="pdf-header">
-            <div class="pdf-logo">GLOBALMIND</div>
-            <div class="pdf-logo-subtitle">Relatório de Avaliação NR-1</div>
-            <div class="pdf-title" id="pdf-nr1-title"></div>
-            <div class="pdf-subtitle" id="pdf-nr1-subtitle"></div>
-        </div>
-
-        <div class="pdf-metrics-grid">
-            <div class="pdf-metric-box">
-                <div class="pdf-metric-value" id="pdf-total-respostas"></div>
-                <div class="pdf-metric-label">Total de Respostas</div>
-            </div>
-            <div class="pdf-metric-box">
-                <div class="pdf-metric-value" id="pdf-risco-geral"></div>
-                <div class="pdf-metric-label">Risco Geral</div>
-            </div>
-            <div class="pdf-metric-box">
-                <div class="pdf-metric-value" id="pdf-primeira-resposta"></div>
-                <div class="pdf-metric-label">Primeira Resposta</div>
-            </div>
-            <div class="pdf-metric-box">
-                <div class="pdf-metric-value" id="pdf-ultima-resposta"></div>
-                <div class="pdf-metric-label">Última Resposta</div>
-            </div>
-        </div>
-
-        <div class="pdf-risk-summary">
-            <div class="pdf-risk-summary-label">Classificação de Risco Geral</div>
-            <div class="pdf-risk-summary-value" id="pdf-risco-valor"></div>
-            <div class="pdf-risk-summary-classification" id="pdf-risco-class"></div>
-        </div>
-
-        <div class="pdf-section-title">Análise por Tópico</div>
-        <table class="pdf-table">
-            <thead>
-                <tr>
-                    <th>Tópico</th>
-                    <th>Média</th>
-                    <th>Visualização</th>
-                    <th>Classificação</th>
-                </tr>
-            </thead>
-            <tbody id="pdf-topicos-tbody"></tbody>
-        </table>
-
-        <div class="pdf-section-title">Visão Geral dos Riscos</div>
-        <div class="pdf-charts-row">
-            <div class="pdf-chart-box">
-                <img id="pdf-radar-img" src="" alt="Gráfico Radar" />
-                <div class="pdf-chart-caption">Gráfico Radar - Distribuição por Tópico</div>
-            </div>
-            <div class="pdf-chart-box">
-                <img id="pdf-bar-img" src="" alt="Gráfico de Barras" />
-                <div class="pdf-chart-caption">Gráfico de Barras - Pontuação por Tópico</div>
-            </div>
-        </div>
-
-        <div class="pdf-section-title">Detalhamento por Setor</div>
-        <table class="pdf-table">
-            <thead>
-                <tr>
-                    <th>Setor</th>
-                    <th>Respostas</th>
-                    <th>Risco Geral</th>
-                    <th>Tópico Crítico</th>
-                    <th>Classificação</th>
-                </tr>
-            </thead>
-            <tbody id="pdf-setores-tbody"></tbody>
-        </table>
-
-        <div class="pdf-footer">
-            <span class="pdf-footer-brand">GlobalMind</span> - Avaliação de Riscos Psicossociais NR-1 | globalmind-db762.web.app
-            <br>Relatório gerado em <span id="pdf-nr1-generation-date"></span>
-        </div>
     </div>
 
     <!-- Toast -->
@@ -1428,25 +1337,20 @@
             btn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="10" stroke-width="4" stroke-opacity="0.25"></circle><path d="M4 12a8 8 0 018-8" stroke-width="4"></path></svg> Gerando...';
             btn.disabled = true;
 
+            const pdfEl = document.createElement('div');
+
             try {
                 const primeiraResposta = currentQuestionarios[currentQuestionarios.length - 1];
                 const ultimaResposta = currentQuestionarios[0];
                 const riscoGeral = classificarRisco(currentMedias.risco_geral);
 
-                // Preencher dados do PDF
-                document.getElementById('pdf-nr1-title').textContent = `Empresa: ${currentEmpresaNome}`;
-                document.getElementById('pdf-nr1-subtitle').textContent = `Avaliação de Riscos Psicossociais conforme NR-1`;
-                document.getElementById('pdf-total-respostas').textContent = currentQuestionarios.length;
-                document.getElementById('pdf-risco-geral').textContent = currentMedias.risco_geral;
-                document.getElementById('pdf-primeira-resposta').textContent = formatarData(primeiraResposta.criadoEm);
-                document.getElementById('pdf-ultima-resposta').textContent = formatarData(ultimaResposta.criadoEm);
-                document.getElementById('pdf-nr1-generation-date').textContent = new Date().toLocaleDateString('pt-BR');
+                // Capturar gráficos como imagens antes de montar o HTML
+                const radarCanvas = document.getElementById('radar-chart');
+                const barCanvas = document.getElementById('bar-chart');
+                const radarImgSrc = radarCanvas ? radarCanvas.toDataURL('image/png', 1.0) : '';
+                const barImgSrc = barCanvas ? barCanvas.toDataURL('image/png', 1.0) : '';
 
-                // Risco geral resumo
-                document.getElementById('pdf-risco-valor').textContent = currentMedias.risco_geral + '/10';
-                document.getElementById('pdf-risco-class').innerHTML = `<span class="pdf-risk-badge pdf-risk-${riscoGeral.nivel}">${riscoGeral.label}</span>`;
-
-                // Preencher tabela de tópicos
+                // Montar tabela de tópicos
                 const topicosData = [
                     { key: 'assedio', nome: 'Assédio' },
                     { key: 'carga_trabalho', nome: 'Carga de Trabalho' },
@@ -1459,58 +1363,30 @@
                     { key: 'vida_pessoal', nome: 'Vida Pessoal' }
                 ];
 
-                const topicosTbody = document.getElementById('pdf-topicos-tbody');
-                topicosTbody.innerHTML = topicosData.map(t => {
+                const topicosHtml = topicosData.map(t => {
                     const valor = parseFloat(currentMedias[t.key]);
                     const risco = classificarRisco(valor);
                     const porcentagem = (valor / 10) * 100;
-
                     let barColor;
                     if (valor <= 2.5) barColor = '#4CAF50';
                     else if (valor <= 5.0) barColor = '#FFC107';
                     else if (valor <= 7.5) barColor = '#FF9800';
                     else barColor = '#F44336';
-
                     return `
                         <tr>
                             <td><strong>${t.nome}</strong></td>
                             <td><span class="pdf-score">${valor.toFixed(1)}</span></td>
-                            <td>
-                                <div class="pdf-bar-container">
-                                    <div class="pdf-bar" style="width: ${porcentagem}%; background: ${barColor};"></div>
-                                </div>
-                            </td>
+                            <td><div class="pdf-bar-container"><div class="pdf-bar" style="width:${porcentagem}%;background:${barColor};"></div></div></td>
                             <td><span class="pdf-risk-badge pdf-risk-${risco.nivel}">${risco.label}</span></td>
-                        </tr>
-                    `;
+                        </tr>`;
                 }).join('');
 
-                // Capturar gráficos como imagens
-                const radarCanvas = document.getElementById('radar-chart');
-                const barCanvas = document.getElementById('bar-chart');
-
-                if (radarCanvas) {
-                    document.getElementById('pdf-radar-img').src = radarCanvas.toDataURL('image/png', 1.0);
-                }
-                if (barCanvas) {
-                    document.getElementById('pdf-bar-img').src = barCanvas.toDataURL('image/png', 1.0);
-                }
-
-                // Preencher tabela de setores
-                const setoresTbody = document.getElementById('pdf-setores-tbody');
+                // Montar tabela de setores
                 const setores = {};
-
                 currentQuestionarios.forEach(q => {
                     const setor = q.setor || 'Não informado';
                     if (!setores[setor]) {
-                        setores[setor] = {
-                            count: 0,
-                            somas: {
-                                assedio: 0, carga_trabalho: 0, reconhecimento: 0,
-                                clima_organizacional: 0, autonomia: 0, pressao_metas: 0,
-                                inseguranca: 0, conflitos: 0, vida_pessoal: 0, risco_geral: 0
-                            }
-                        };
+                        setores[setor] = { count: 0, somas: { assedio: 0, carga_trabalho: 0, reconhecimento: 0, clima_organizacional: 0, autonomia: 0, pressao_metas: 0, inseguranca: 0, conflitos: 0, vida_pessoal: 0, risco_geral: 0 } };
                     }
                     setores[setor].count++;
                     const r = q.resultados;
@@ -1526,11 +1402,10 @@
                     setores[setor].somas.risco_geral += r.risco_geral || 0;
                 });
 
-                setoresTbody.innerHTML = Object.entries(setores).map(([setor, data]) => {
+                const setoresHtml = Object.entries(setores).map(([setor, data]) => {
                     const count = data.count;
                     const riscoSetorGeral = (data.somas.risco_geral / count).toFixed(1);
                     const riscoSetor = classificarRisco(riscoSetorGeral);
-
                     const topicosSetor = {
                         'Assédio': data.somas.assedio / count,
                         'Carga de Trabalho': data.somas.carga_trabalho / count,
@@ -1542,9 +1417,7 @@
                         'Conflitos': data.somas.conflitos / count,
                         'Vida Pessoal': data.somas.vida_pessoal / count
                     };
-
                     const topicoCritico = Object.entries(topicosSetor).reduce((a, b) => a[1] > b[1] ? a : b);
-
                     return `
                         <tr>
                             <td><strong>${setor}</strong></td>
@@ -1552,29 +1425,68 @@
                             <td>${riscoSetorGeral}</td>
                             <td>${topicoCritico[0]} (${topicoCritico[1].toFixed(1)})</td>
                             <td><span class="pdf-risk-badge pdf-risk-${riscoSetor.nivel}">${riscoSetor.label}</span></td>
-                        </tr>
-                    `;
+                        </tr>`;
                 }).join('');
 
-                // Mostrar conteúdo do PDF
-                const pdfContent = document.getElementById('pdf-content-nr1');
-                pdfContent.classList.add('visible');
+                // Criar elemento temporário com todo o HTML já preenchido
+                // Container externo: position:fixed para ficar visível ao html2canvas
+                // Conteúdo em firstElementChild (div normal) para captura correta
+                pdfEl.style.cssText = 'position:fixed;top:0;left:0;width:800px;background:white;z-index:99999;overflow:hidden;';
+                pdfEl.innerHTML = `<div style="width:800px;padding:30px;background:white;box-sizing:border-box;font-family:'Source Sans 3',Arial,sans-serif;color:#1E2C36;">
+                    <div class="pdf-header">
+                        <div class="pdf-logo">GLOBALMIND</div>
+                        <div class="pdf-logo-subtitle">Relatório de Avaliação NR-1</div>
+                        <div class="pdf-title">Empresa: ${currentEmpresaNome}</div>
+                        <div class="pdf-subtitle">Avaliação de Riscos Psicossociais conforme NR-1</div>
+                    </div>
+                    <div class="pdf-metrics-grid">
+                        <div class="pdf-metric-box"><div class="pdf-metric-value">${currentQuestionarios.length}</div><div class="pdf-metric-label">Total de Respostas</div></div>
+                        <div class="pdf-metric-box"><div class="pdf-metric-value">${currentMedias.risco_geral}</div><div class="pdf-metric-label">Risco Geral</div></div>
+                        <div class="pdf-metric-box"><div class="pdf-metric-value">${formatarData(primeiraResposta.criadoEm)}</div><div class="pdf-metric-label">Primeira Resposta</div></div>
+                        <div class="pdf-metric-box"><div class="pdf-metric-value">${formatarData(ultimaResposta.criadoEm)}</div><div class="pdf-metric-label">Última Resposta</div></div>
+                    </div>
+                    <div class="pdf-risk-summary">
+                        <div class="pdf-risk-summary-label">Classificação de Risco Geral</div>
+                        <div class="pdf-risk-summary-value">${currentMedias.risco_geral}/10</div>
+                        <div class="pdf-risk-summary-classification"><span class="pdf-risk-badge pdf-risk-${riscoGeral.nivel}">${riscoGeral.label}</span></div>
+                    </div>
+                    <div class="pdf-section-title">Análise por Tópico</div>
+                    <table class="pdf-table">
+                        <thead><tr><th>Tópico</th><th>Média</th><th>Visualização</th><th>Classificação</th></tr></thead>
+                        <tbody>${topicosHtml}</tbody>
+                    </table>
+                    <div class="pdf-section-title">Visão Geral dos Riscos</div>
+                    <div class="pdf-charts-row">
+                        <div class="pdf-chart-box"><img src="${radarImgSrc}" alt="Gráfico Radar" /><div class="pdf-chart-caption">Gráfico Radar - Distribuição por Tópico</div></div>
+                        <div class="pdf-chart-box"><img src="${barImgSrc}" alt="Gráfico de Barras" /><div class="pdf-chart-caption">Gráfico de Barras - Pontuação por Tópico</div></div>
+                    </div>
+                    <div class="pdf-section-title">Detalhamento por Setor</div>
+                    <table class="pdf-table">
+                        <thead><tr><th>Setor</th><th>Respostas</th><th>Risco Geral</th><th>Tópico Crítico</th><th>Classificação</th></tr></thead>
+                        <tbody>${setoresHtml}</tbody>
+                    </table>
+                    <div class="pdf-footer">
+                        <span class="pdf-footer-brand">GlobalMind</span> - Avaliação de Riscos Psicossociais NR-1 | globalmind-db762.web.app
+                        <br>Relatório gerado em ${new Date().toLocaleDateString('pt-BR')}
+                    </div>
+                </div>`;
 
-                // Gerar PDF
+                document.body.appendChild(pdfEl);
+
+                // Aguardar o browser renderizar antes de capturar
+                await new Promise(resolve => setTimeout(resolve, 800));
+
                 const nomeArquivo = `relatorio-nr1-${currentEmpresaNome.toLowerCase().replace(/\s+/g, '-')}.pdf`;
-
                 const opt = {
-                    margin: 10,
+                    margin: 0,
                     filename: nomeArquivo,
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { scale: 2, useCORS: true, logging: false },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 };
 
-                await html2pdf().set(opt).from(pdfContent).save();
-
-                // Esconder conteúdo do PDF
-                pdfContent.classList.remove('visible');
+                // Capturar firstElementChild (div normal dentro do container fixo)
+                await html2pdf().set(opt).from(pdfEl.firstElementChild).save();
 
                 showToast('PDF gerado com sucesso!');
                 console.log('✅ PDF NR-1 gerado:', nomeArquivo);
@@ -1583,6 +1495,7 @@
                 console.error('❌ Erro ao gerar PDF:', error);
                 alert('Erro ao gerar PDF. Por favor, tente novamente.');
             } finally {
+                if (pdfEl.parentNode) document.body.removeChild(pdfEl);
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
