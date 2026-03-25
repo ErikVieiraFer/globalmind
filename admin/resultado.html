@@ -25,7 +25,7 @@
             --gray-600: #6c757d;
             --success: #22c55e;
             --info: #3b82f6;
-            --warning: #f59e0b;
+            --warning: #FACC15;
             --danger: #dc3545;
 
             --font-display: 'Playfair Display', Georgia, serif;
@@ -379,7 +379,7 @@
         }
 
         .index-bar-fill.warning {
-            background: linear-gradient(90deg, var(--warning), #fbbf24);
+            background: linear-gradient(90deg, var(--warning), #FACC15);
         }
 
         .index-bar-fill.good {
@@ -393,7 +393,7 @@
         .risk-critico { background: rgba(220,53,69,.12);  color: var(--danger); }
 
         .bar-baixo   { background: linear-gradient(90deg, #22c55e, #4ade80); }
-        .bar-medio   { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .bar-medio   { background: linear-gradient(90deg, #FACC15, #fde047); }
         .bar-alto    { background: linear-gradient(90deg, #f97316, #fb923c); }
         .bar-critico { background: linear-gradient(90deg, #dc3545, #ef4444); }
 
@@ -620,7 +620,7 @@
         }
 
         #pdf-export-area .pdf-indice-bom { color: #4CAF50; }
-        #pdf-export-area .pdf-indice-atencao { color: #FFC107; }
+        #pdf-export-area .pdf-indice-atencao { color: #FACC15; }
         #pdf-export-area .pdf-indice-critico { color: #F44336; }
 
         #pdf-export-area .pdf-footer {
@@ -1166,7 +1166,7 @@
 
             const barColors = data.map(v => {
                 if (v <= 1.0) return '#22c55e';
-                if (v <= 2.0) return '#f59e0b';
+                if (v <= 2.0) return '#FACC15';
                 if (v <= 3.0) return '#f97316';
                 return '#dc3545';
             });
@@ -1394,7 +1394,7 @@
                             <div style="background:#fafafa;padding:10px 14px;border-radius:8px;margin-bottom:12px;">
                                 ${indicesHTML}
                             </div>
-                            <div style="background:#fff8e1;padding:8px 14px;border-radius:6px;border-left:3px solid #ffc107;margin-bottom:12px;">
+                            <div style="background:#fff8e1;padding:8px 14px;border-radius:6px;border-left:3px solid #FACC15;margin-bottom:12px;">
                                 <span style="font-size:10px;color:#856404;">
                                     <strong>Legenda:</strong>&nbsp;&nbsp;
                                     <span style="color:#16a34a;">● Baixo (0–1.0)</span>&nbsp;&nbsp;
@@ -1426,7 +1426,7 @@
 
                     const getStatus = (valor) => {
                         if (valor >= 7) return { texto: 'CRÍTICO', cor: '#F44336', bg: 'rgba(244,67,54,0.1)' };
-                        if (valor >= 4) return { texto: 'ATENÇÃO', cor: '#FF9800', bg: 'rgba(255,152,0,0.1)' };
+                        if (valor >= 4) return { texto: 'ATENÇÃO', cor: '#EA580C', bg: 'rgba(234,88,12,0.1)' };
                         return { texto: 'BOM', cor: '#4CAF50', bg: 'rgba(76,175,80,0.1)' };
                     };
 
@@ -1503,11 +1503,11 @@
                             <div style="background:#fafafa;padding:10px 14px;border-radius:8px;margin-bottom:12px;">
                                 ${indicesHTML}
                             </div>
-                            <div style="background:#fff8e1;padding:8px 14px;border-radius:6px;border-left:3px solid #ffc107;margin-bottom:12px;">
+                            <div style="background:#fff8e1;padding:8px 14px;border-radius:6px;border-left:3px solid #FACC15;margin-bottom:12px;">
                                 <span style="font-size:10px;color:#856404;">
                                     <strong>Legenda:</strong>&nbsp;&nbsp;
                                     <span style="color:#4CAF50;">● Bom (0–3.9)</span>&nbsp;&nbsp;
-                                    <span style="color:#FF9800;">● Atenção (4–6.9)</span>&nbsp;&nbsp;
+                                    <span style="color:#EA580C;">● Atenção (4–6.9)</span>&nbsp;&nbsp;
                                     <span style="color:#F44336;">● Crítico (7–10)</span>
                                 </span>
                             </div>

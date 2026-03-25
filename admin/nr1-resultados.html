@@ -25,8 +25,8 @@
             --gray-500: #adb5bd;
             --gray-600: #6c757d;
             --success: #4CAF50;
-            --warning: #FFC107;
-            --orange: #FF9800;
+            --warning: #FACC15;
+            --orange: #EA580C;
             --danger: #F44336;
             --info: #3b82f6;
 
@@ -366,12 +366,12 @@
         }
 
         .risk-moderado {
-            background: rgba(255, 193, 7, 0.15);
-            color: #F57C00;
+            background: rgba(250, 204, 21, 0.15);
+            color: #A16207;
         }
 
         .risk-alto {
-            background: rgba(255, 152, 0, 0.15);
+            background: rgba(234, 88, 12, 0.15);
             color: var(--orange);
         }
 
@@ -499,16 +499,79 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Sidebar overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+        .sidebar-overlay.active { display: block; }
+
+        /* Mobile header */
+        .mobile-header {
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            background: var(--white);
+            border-bottom: 1px solid var(--bege-dark);
+            margin-bottom: 1.5rem;
+        }
+        .menu-toggle {
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: var(--white);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+        }
+        .menu-toggle span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: var(--azul-petroleo);
+            border-radius: 2px;
+        }
+        .mobile-header-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+        }
+
         @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 200;
             }
+            .sidebar.open { transform: translateX(0); }
             .main-content {
                 margin-left: 0;
             }
+            .mobile-header { display: flex; }
             .charts-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
+        @media (max-width: 768px) {
+            .main-content { padding: 1rem; }
+            .page-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .metrics-row { flex-direction: column; }
+            .metric-card { width: 100%; }
+        }
+
+        @media (max-width: 480px) {
+            .actions-bar { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
         }
 
         /* PDF Content Styles */
@@ -650,13 +713,13 @@
         }
 
         .pdf-risk-moderado {
-            background: rgba(255, 193, 7, 0.15);
-            color: #F57C00;
+            background: rgba(250, 204, 21, 0.15);
+            color: #A16207;
         }
 
         .pdf-risk-alto {
-            background: rgba(255, 152, 0, 0.15);
-            color: #FF9800;
+            background: rgba(234, 88, 12, 0.15);
+            color: #EA580C;
         }
 
         .pdf-risk-critico {
@@ -825,8 +888,11 @@
 </head>
 <body>
     <div class="app-container">
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
                     <div class="logo-icon">
@@ -858,6 +924,12 @@
                     </svg>
                     Avaliações NR-1
                 </a>
+                <a href="empresas.html" class="nav-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    Empresas
+                </a>
 
                 <div class="nav-section-title">Configurações</div>
                 <a href="#" class="nav-item" id="logout-link">
@@ -871,6 +943,14 @@
 
         <!-- Main Content -->
         <main class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <button class="menu-toggle" id="menu-toggle" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+                <span class="mobile-header-title">Avaliações NR-1</span>
+            </div>
+
             <!-- Header -->
             <header class="page-header">
                 <div>
@@ -1359,11 +1439,11 @@
                         data: [baixo, moderado, alto, critico],
                         backgroundColor: [
                             'rgba(76, 175, 80, 0.8)',
-                            'rgba(255, 193, 7, 0.8)',
-                            'rgba(255, 152, 0, 0.8)',
+                            'rgba(250, 204, 21, 0.8)',
+                            'rgba(234, 88, 12, 0.8)',
                             'rgba(244, 67, 54, 0.8)'
                         ],
-                        borderColor: ['#4CAF50', '#FFC107', '#FF9800', '#F44336'],
+                        borderColor: ['#4CAF50', '#FACC15', '#EA580C', '#F44336'],
                         borderWidth: 2
                     }]
                 },
@@ -1588,7 +1668,7 @@
                         )
                     });
 
-                    const COR = { baixo: '4CAF50', moderado: 'F57C00', alto: 'FF9800', critico: 'F44336' };
+                    const COR = { baixo: '4CAF50', moderado: 'FACC15', alto: 'EA580C', critico: 'F44336' };
                     const dataRows = TOPICOS_LISTA.map(t => {
                         const val = parseFloat(medias[t.key]);
                         const r = classificarRisco(val);
@@ -1743,141 +1823,23 @@
         };
 
         // Exportar PDF de um setor específico
-        window.gerarPDFSetor = async function(slug) {
+        window.gerarPDFSetor = function(slug) {
             const data = window.setoresData[slug];
             if (!data) return;
-
-            const btn = document.getElementById('btn-pdf-setor-' + slug);
-            if (btn) { btn.textContent = '...'; btn.disabled = true; }
-
-            try {
-                const { setor, medias, qs } = data;
-                const riscoGeral = classificarRisco(medias.risco_geral);
-
-                const psicologo = document.getElementById('input-psicologo') ? document.getElementById('input-psicologo').value.trim() : '';
-                const crp       = document.getElementById('input-crp') ? document.getElementById('input-crp').value.trim() : '';
-                const mesAno    = document.getElementById('input-mesano') ? document.getElementById('input-mesano').value.trim() : '';
-                const dataLabel = mesAno || new Date().toLocaleDateString('pt-BR');
-
-                // Contagem de tópicos por nível de risco
-                const contagem = { baixo: 0, moderado: 0, alto: 0, critico: 0 };
-                TOPICOS_LISTA.forEach(function(t) { contagem[classificarRisco(parseFloat(medias[t.key])).nivel]++; });
-
-                // Linhas da tabela de tópicos
-                const topicosHtml = TOPICOS_LISTA.map(function(t, idx) {
-                    const val = parseFloat(medias[t.key]);
-                    const r = classificarRisco(val);
-                    const pct = (val / 10) * 100;
-                    const cor = val <= 2.5 ? '#4CAF50' : val <= 5.0 ? '#FFC107' : val <= 7.5 ? '#FF9800' : '#F44336';
-                    const corTexto = val <= 2.5 ? '#2e7d32' : val <= 5.0 ? '#e65100' : val <= 7.5 ? '#e65100' : '#c62828';
-                    return '<tr style="background:' + (idx % 2 === 0 ? '#f8f9fa' : 'white') + ';">'
-                        + '<td style="padding:9px 12px;border-bottom:1px solid #e9ecef;font-size:11px;"><strong>' + t.nome + '</strong></td>'
-                        + '<td style="padding:9px 12px;border-bottom:1px solid #e9ecef;font-size:13px;font-weight:700;text-align:center;">' + val.toFixed(1) + '</td>'
-                        + '<td style="padding:9px 12px;border-bottom:1px solid #e9ecef;">'
-                        +   '<div style="width:90px;height:8px;background:#e9ecef;border-radius:4px;overflow:hidden;">'
-                        +     '<div style="width:' + pct + '%;height:100%;background:' + cor + ';border-radius:4px;"></div>'
-                        +   '</div>'
-                        + '</td>'
-                        + '<td style="padding:9px 12px;border-bottom:1px solid #e9ecef;">'
-                        +   '<span style="display:inline-block;padding:3px 9px;border-radius:10px;font-size:9px;font-weight:700;text-transform:uppercase;background:' + cor + '22;color:' + corTexto + ';">' + r.label + '</span>'
-                        + '</td>'
-                        + '</tr>';
-                }).join('');
-
-                const psicologoHtml = psicologo
-                    ? '<div style="font-size:13px;color:#1E2C36;margin-bottom:6px;">Psic\u00f3logo(a): <strong>' + psicologo + '</strong>' + (crp ? ' \u2014 CRP ' + crp : '') + '</div>'
-                    : '';
-
-                const html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'
-                    + '<style>'
-                    + '@page { size: A4; margin: 15mm; }'
-                    + 'body { margin:0; padding:0; font-family:Arial,sans-serif; color:#1E2C36; }'
-                    + '.pagina-capa { min-height: calc(297mm - 30mm); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; page-break-after:always; border-bottom:3px solid #6D7141; padding:40px; box-sizing:border-box; }'
-                    + 'table { width:100%; border-collapse:collapse; }'
-                    + '@media print { .pagina-capa { min-height:calc(297mm - 30mm); } }'
-                    + '</style></head><body>'
-
-                    // CAPA
-                    + '<div class="pagina-capa">'
-                    +   '<div style="font-size:36px;font-weight:700;color:#6D7141;letter-spacing:4px;margin-bottom:8px;">GLOBALMIND</div>'
-                    +   '<div style="font-size:11px;color:#6c757d;text-transform:uppercase;letter-spacing:3px;margin-bottom:40px;">DRPS \u2013 Diagn\u00f3stico de Riscos Psicossociais</div>'
-                    +   '<div style="width:60px;height:3px;background:#6D7141;margin:0 auto 40px;"></div>'
-                    +   '<div style="font-size:20px;font-weight:700;color:#1E2C36;margin-bottom:10px;">' + currentEmpresaNome + '</div>'
-                    +   '<div style="font-size:15px;color:#6c757d;margin-bottom:6px;">Setor: <strong style="color:#1E2C36;">' + setor + '</strong></div>'
-                    +   '<div style="font-size:13px;color:#6c757d;margin-bottom:28px;">' + qs.length + ' respondente' + (qs.length !== 1 ? 's' : '') + '</div>'
-                    +   psicologoHtml
-                    +   '<div style="font-size:12px;color:#6c757d;margin-top:20px;">' + dataLabel + '</div>'
-                    + '</div>'
-
-                    // CONTEÚDO
-                    // MÉTRICAS
-                    + '<table style="margin-bottom:16px;table-layout:fixed;">'
-                    +   '<tr>'
-                    +     '<td style="width:25%;padding:0 6px 0 0;"><div style="background:#f8f9fa;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:20px;font-weight:700;color:#1E2C36;">' + qs.length + '</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#6c757d;margin-top:3px;">Respondentes</div></div></td>'
-                    +     '<td style="width:25%;padding:0 6px;"><div style="background:#f8f9fa;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:20px;font-weight:700;color:#1E2C36;">' + medias.risco_geral + '</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#6c757d;margin-top:3px;">Risco Geral</div></div></td>'
-                    +     '<td style="width:25%;padding:0 6px;"><div style="background:#f8f9fa;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:13px;font-weight:700;color:#1E2C36;">' + (psicologo || '&mdash;') + '</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#6c757d;margin-top:3px;">Psic\u00f3logo(a)</div></div></td>'
-                    +     '<td style="width:25%;padding:0 0 0 6px;"><div style="background:#f8f9fa;border-radius:8px;padding:12px;text-align:center;"><div style="font-size:20px;font-weight:700;color:#1E2C36;">' + (crp || '&mdash;') + '</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:0.5px;color:#6c757d;margin-top:3px;">CRP</div></div></td>'
-                    +   '</tr>'
-                    + '</table>'
-
-                    // RISCO GERAL
-                    + '<div style="background:#1E2C36;color:white;border-radius:10px;padding:18px;text-align:center;margin-bottom:20px;">'
-                    +   '<div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:0.8;margin-bottom:8px;">Classifica\u00e7\u00e3o de Risco Geral \u2014 ' + dataLabel + '</div>'
-                    +   '<div style="font-size:34px;font-weight:700;">' + medias.risco_geral + '/10</div>'
-                    +   '<div style="margin-top:8px;"><span style="display:inline-block;padding:4px 14px;border-radius:12px;font-size:11px;font-weight:700;text-transform:uppercase;background:rgba(255,255,255,0.2);">' + riscoGeral.label + '</span></div>'
-                    + '</div>'
-
-                    // DISTRIBUIÇÃO
-                    + '<div style="font-size:13px;font-weight:600;color:#1E2C36;padding-left:10px;border-left:4px solid #6D7141;margin-bottom:12px;">Distribui\u00e7\u00e3o por N\u00edvel de Risco</div>'
-                    + '<table style="margin-bottom:20px;font-size:11px;">'
-                    +   '<tr style="background:#1E2C36;color:white;">'
-                    +     '<th style="padding:8px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;">N\u00edvel de Risco</th>'
-                    +     '<th style="padding:8px 12px;text-align:center;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;width:120px;">Qtde de T\u00f3picos</th>'
-                    +   '</tr>'
-                    +   '<tr style="background:#f8f9fa;"><td style="padding:8px 12px;border-bottom:1px solid #e9ecef;"><span style="color:#2e7d32;font-weight:700;">&#9632;</span> Baixo Risco (0,0\u20132,5)</td><td style="padding:8px 12px;border-bottom:1px solid #e9ecef;text-align:center;font-weight:700;">' + contagem.baixo + '</td></tr>'
-                    +   '<tr><td style="padding:8px 12px;border-bottom:1px solid #e9ecef;"><span style="color:#b45309;font-weight:700;">&#9632;</span> Risco Moderado (2,6\u20135,0)</td><td style="padding:8px 12px;border-bottom:1px solid #e9ecef;text-align:center;font-weight:700;">' + contagem.moderado + '</td></tr>'
-                    +   '<tr style="background:#f8f9fa;"><td style="padding:8px 12px;border-bottom:1px solid #e9ecef;"><span style="color:#c2410c;font-weight:700;">&#9632;</span> Risco Alto (5,1\u20137,5)</td><td style="padding:8px 12px;border-bottom:1px solid #e9ecef;text-align:center;font-weight:700;">' + contagem.alto + '</td></tr>'
-                    +   '<tr><td style="padding:8px 12px;"><span style="color:#c62828;font-weight:700;">&#9632;</span> Risco Cr\u00edtico (7,6\u201310,0)</td><td style="padding:8px 12px;text-align:center;font-weight:700;">' + contagem.critico + '</td></tr>'
-                    + '</table>'
-
-                    // TABELA DE TÓPICOS
-                    + '<div style="font-size:13px;font-weight:600;color:#1E2C36;padding-left:10px;border-left:4px solid #6D7141;margin-bottom:12px;">An\u00e1lise por T\u00f3pico</div>'
-                    + '<table style="font-size:11px;margin-bottom:24px;">'
-                    +   '<thead><tr>'
-                    +     '<th style="background:#1E2C36;color:white;padding:10px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;">T\u00f3pico</th>'
-                    +     '<th style="background:#1E2C36;color:white;padding:10px 12px;text-align:center;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;width:60px;">M\u00e9dia</th>'
-                    +     '<th style="background:#1E2C36;color:white;padding:10px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;width:110px;">Visualiza\u00e7\u00e3o</th>'
-                    +     '<th style="background:#1E2C36;color:white;padding:10px 12px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;width:120px;">Classifica\u00e7\u00e3o</th>'
-                    +   '</tr></thead>'
-                    +   '<tbody>' + topicosHtml + '</tbody>'
-                    + '</table>'
-
-                    // RODAPÉ
-                    + '<div style="padding-top:12px;border-top:1px solid #e9ecef;text-align:center;font-size:10px;color:#6c757d;">'
-                    +   '<strong style="color:#6D7141;">GlobalMind</strong> \u2014 Avalia\u00e7\u00e3o NR-1 | Setor: ' + setor + ' | ' + dataLabel
-                    + '</div>'
-
-                    + '</body></html>';
-
-                const win = window.open('', '_blank');
-                if (!win) {
-                    alert('O navegador bloqueou o pop-up. Por favor, permita pop-ups para esta p\u00e1gina e tente novamente.');
-                    return;
-                }
-                win.document.write(html);
-                win.document.close();
-                win.onload = function() {
-                    setTimeout(function() { win.print(); }, 600);
-                };
-
-                showToast('PDF do setor "' + setor + '" aberto para impress\u00e3o!');
-            } catch(error) {
-                console.error('Erro ao gerar PDF do setor:', error);
-                alert('Erro ao gerar PDF: ' + error.message);
-            } finally {
-                if (btn) { btn.textContent = 'PDF'; btn.disabled = false; }
-            }
+            const dados = {
+                empresaNome: currentEmpresaNome,
+                medias: data.medias,
+                questionarios: data.qs,
+                tipo: 'setor',
+                setor: data.setor,
+                psicologo: document.getElementById('input-psicologo') ? document.getElementById('input-psicologo').value.trim() : '',
+                crp: document.getElementById('input-crp') ? document.getElementById('input-crp').value.trim() : '',
+                mesAno: document.getElementById('input-mesano') ? document.getElementById('input-mesano').value.trim() : ''
+            };
+            sessionStorage.setItem('nr1_dados', JSON.stringify(dados));
+            window.open('relatorio-nr1.html', '_blank');
         };
+
 
         // Exportar Word de um setor específico
         window.gerarWordSetor = async function(slug) {
@@ -1925,7 +1887,7 @@
                             })
                         )
                     });
-                    const COR = { baixo: '4CAF50', moderado: 'F57C00', alto: 'FF9800', critico: 'F44336' };
+                    const COR = { baixo: '4CAF50', moderado: 'FACC15', alto: 'EA580C', critico: 'F44336' };
                     const dataRows = TOPICOS_LISTA.map(t => {
                         const val = parseFloat(m[t.key]);
                         const r = classificarRisco(val);
@@ -2037,165 +1999,22 @@
         };
 
         // Função para gerar PDF NR-1
-        window.gerarPDFNR1 = async function() {
+        window.gerarPDFNR1 = function() {
             if (!currentQuestionarios || currentQuestionarios.length === 0) {
                 alert('Selecione uma empresa primeiro.');
                 return;
             }
-
-            const btn = document.getElementById('btn-exportar-pdf');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = 'Gerando...';
-            btn.disabled = true;
-
-            try {
-                const primeiraResposta = currentQuestionarios[currentQuestionarios.length - 1];
-                const ultimaResposta = currentQuestionarios[0];
-                const riscoGeral = classificarRisco(currentMedias.risco_geral);
-
-                // Tabela de tópicos
-                const topicosData = [
-                    { key: 'assedio', nome: 'Ass\u00e9dio' },
-                    { key: 'carga_trabalho', nome: 'Carga de Trabalho' },
-                    { key: 'reconhecimento', nome: 'Reconhecimento' },
-                    { key: 'clima_organizacional', nome: 'Clima Organizacional' },
-                    { key: 'autonomia', nome: 'Autonomia' },
-                    { key: 'pressao_metas', nome: 'Press\u00e3o e Metas' },
-                    { key: 'inseguranca', nome: 'Inseguran\u00e7a' },
-                    { key: 'conflitos', nome: 'Conflitos' },
-                    { key: 'vida_pessoal', nome: 'Vida Pessoal' }
-                ];
-
-                const linhasTopicos = topicosData.map(function(t, i) {
-                    const val = parseFloat(currentMedias[t.key]);
-                    const r = classificarRisco(val);
-                    const pct = (val / 10) * 100;
-                    const cor = val <= 2.5 ? '#4CAF50' : val <= 5.0 ? '#FFC107' : val <= 7.5 ? '#FF9800' : '#F44336';
-                    const corTxt = val <= 2.5 ? '#2e7d32' : val <= 5.0 ? '#e65100' : val <= 7.5 ? '#e65100' : '#c62828';
-                    return '<tr style="background:' + (i % 2 === 0 ? '#f8f9fa' : 'white') + ';">'
-                        + '<td style="padding:9px 12px;border-bottom:1px solid #e9ecef;"><strong>' + t.nome + '</strong></td>'
-                        + '<td style="padding:9px 12px;border-bottom:1px solid #e9ecef;text-align:center;font-weight:700;">' + val.toFixed(1) + '</td>'
-                        + '<td style="padding:9px 12px;border-bottom:1px solid #e9ecef;">'
-                        + '<div style="width:90px;height:8px;background:#e9ecef;border-radius:4px;overflow:hidden;">'
-                        + '<div style="width:' + pct + '%;height:100%;background:' + cor + ';border-radius:4px;"></div></div></td>'
-                        + '<td style="padding:9px 12px;border-bottom:1px solid #e9ecef;">'
-                        + '<span style="padding:3px 9px;border-radius:10px;font-size:10px;font-weight:700;background:' + cor + '22;color:' + corTxt + ';">' + r.label + '</span></td>'
-                        + '</tr>';
-                }).join('');
-
-                // Tabela de setores
-                const setores = {};
-                currentQuestionarios.forEach(function(q) {
-                    const s = q.setor || 'N\u00e3o informado';
-                    if (!setores[s]) setores[s] = { count: 0, soma: { risco_geral: 0, assedio: 0, carga_trabalho: 0, reconhecimento: 0, clima_organizacional: 0, autonomia: 0, pressao_metas: 0, inseguranca: 0, conflitos: 0, vida_pessoal: 0 } };
-                    setores[s].count++;
-                    const r = q.resultados;
-                    Object.keys(setores[s].soma).forEach(function(k) { setores[s].soma[k] += (r[k] || 0); });
-                });
-
-                const linhasSetores = Object.entries(setores).map(function(entry) {
-                    const nome = entry[0];
-                    const d = entry[1];
-                    const rg = (d.soma.risco_geral / d.count).toFixed(1);
-                    const rc = classificarRisco(rg);
-                    const tops = { 'Ass\u00e9dio': d.soma.assedio, 'Carga': d.soma.carga_trabalho, 'Reconhecimento': d.soma.reconhecimento, 'Clima': d.soma.clima_organizacional, 'Autonomia': d.soma.autonomia, 'Press\u00e3o': d.soma.pressao_metas, 'Inseguran\u00e7a': d.soma.inseguranca, 'Conflitos': d.soma.conflitos, 'Vida Pessoal': d.soma.vida_pessoal };
-                    const critico = Object.entries(tops).reduce(function(a, b) { return a[1] > b[1] ? a : b; });
-                    const cor = rc.nivel === 'baixo' ? '#4CAF50' : rc.nivel === 'moderado' ? '#FFC107' : rc.nivel === 'alto' ? '#FF9800' : '#F44336';
-                    return '<tr>'
-                        + '<td style="padding:9px 12px;border-bottom:1px solid #e9ecef;"><strong>' + nome + '</strong></td>'
-                        + '<td style="padding:9px 12px;border-bottom:1px solid #e9ecef;text-align:center;">' + d.count + '</td>'
-                        + '<td style="padding:9px 12px;border-bottom:1px solid #e9ecef;text-align:center;font-weight:700;">' + rg + '</td>'
-                        + '<td style="padding:9px 12px;border-bottom:1px solid #e9ecef;">' + critico[0] + ' (' + (critico[1] / d.count).toFixed(1) + ')</td>'
-                        + '<td style="padding:9px 12px;border-bottom:1px solid #e9ecef;"><span style="padding:3px 9px;border-radius:10px;font-size:10px;font-weight:700;background:' + cor + '22;color:' + cor + ';">' + rc.label + '</span></td>'
-                        + '</tr>';
-                }).join('');
-
-                const html = '<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">'
-                    + '<style>'
-                    + '* { margin:0; padding:0; box-sizing:border-box; }'
-                    + 'body { font-family: Arial, sans-serif; color: #1E2C36; background: white; }'
-                    + '@page { size: A4; margin: 15mm; }'
-                    + '.capa { min-height: calc(297mm - 30mm); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; page-break-after:always; border-bottom:3px solid #6D7141; padding:40px; }'
-                    + 'table { width:100%; border-collapse:collapse; }'
-                    + '</style></head><body>'
-
-                    // CAPA
-                    + '<div class="capa">'
-                    + '<div style="font-size:36px;font-weight:700;color:#6D7141;letter-spacing:4px;margin-bottom:8px;">GLOBALMIND</div>'
-                    + '<div style="font-size:11px;color:#6c757d;text-transform:uppercase;letter-spacing:3px;margin-bottom:40px;">Relat\u00f3rio de Avalia\u00e7\u00e3o NR-1</div>'
-                    + '<div style="width:60px;height:3px;background:#6D7141;margin:0 auto 40px;"></div>'
-                    + '<div style="font-size:22px;font-weight:700;margin-bottom:10px;">' + currentEmpresaNome + '</div>'
-                    + '<div style="font-size:14px;color:#6c757d;margin-bottom:40px;">Avalia\u00e7\u00e3o de Riscos Psicossociais conforme NR-1</div>'
-                    + '</div>'
-
-                    // MÉTRICAS
-                    + '<table style="margin-bottom:20px;table-layout:fixed;">'
-                    + '<tr>'
-                    + '<td style="width:25%;padding:0 6px 0 0;"><div style="background:#f8f9fa;border-radius:8px;padding:14px;text-align:center;"><div style="font-size:24px;font-weight:700;">' + currentQuestionarios.length + '</div><div style="font-size:9px;text-transform:uppercase;color:#6c757d;margin-top:4px;">Total de Respostas</div></div></td>'
-                    + '<td style="width:25%;padding:0 6px;"><div style="background:#f8f9fa;border-radius:8px;padding:14px;text-align:center;"><div style="font-size:24px;font-weight:700;">' + currentMedias.risco_geral + '</div><div style="font-size:9px;text-transform:uppercase;color:#6c757d;margin-top:4px;">Risco Geral</div></div></td>'
-                    + '<td style="width:25%;padding:0 6px;"><div style="background:#f8f9fa;border-radius:8px;padding:14px;text-align:center;"><div style="font-size:13px;font-weight:700;">' + formatarData(primeiraResposta.criadoEm) + '</div><div style="font-size:9px;text-transform:uppercase;color:#6c757d;margin-top:4px;">Primeira Resposta</div></div></td>'
-                    + '<td style="width:25%;padding:0 0 0 6px;"><div style="background:#f8f9fa;border-radius:8px;padding:14px;text-align:center;"><div style="font-size:13px;font-weight:700;">' + formatarData(ultimaResposta.criadoEm) + '</div><div style="font-size:9px;text-transform:uppercase;color:#6c757d;margin-top:4px;">\u00daltima Resposta</div></div></td>'
-                    + '</tr></table>'
-
-                    // RISCO GERAL
-                    + '<div style="background:#1E2C36;color:white;border-radius:10px;padding:20px;text-align:center;margin-bottom:24px;">'
-                    + '<div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:.8;margin-bottom:8px;">Classifica\u00e7\u00e3o de Risco Geral</div>'
-                    + '<div style="font-size:38px;font-weight:700;">' + currentMedias.risco_geral + '/10</div>'
-                    + '<div style="margin-top:10px;"><span style="padding:4px 16px;border-radius:12px;font-size:12px;font-weight:700;text-transform:uppercase;background:rgba(255,255,255,.2);">' + riscoGeral.label + '</span></div>'
-                    + '</div>'
-
-                    // TABELA TÓPICOS
-                    + '<div style="font-size:13px;font-weight:600;padding-left:10px;border-left:4px solid #6D7141;margin-bottom:12px;">An\u00e1lise por T\u00f3pico</div>'
-                    + '<table style="font-size:11px;margin-bottom:24px;">'
-                    + '<thead><tr style="background:#1E2C36;color:white;">'
-                    + '<th style="padding:10px 12px;text-align:left;">T\u00f3pico</th>'
-                    + '<th style="padding:10px 12px;text-align:center;width:60px;">M\u00e9dia</th>'
-                    + '<th style="padding:10px 12px;text-align:left;width:110px;">Visualiza\u00e7\u00e3o</th>'
-                    + '<th style="padding:10px 12px;text-align:left;width:120px;">Classifica\u00e7\u00e3o</th>'
-                    + '</tr></thead>'
-                    + '<tbody>' + linhasTopicos + '</tbody>'
-                    + '</table>'
-
-                    // TABELA SETORES
-                    + '<div style="font-size:13px;font-weight:600;padding-left:10px;border-left:4px solid #6D7141;margin-bottom:12px;">Detalhamento por Setor</div>'
-                    + '<table style="font-size:11px;margin-bottom:24px;">'
-                    + '<thead><tr style="background:#1E2C36;color:white;">'
-                    + '<th style="padding:10px 12px;text-align:left;">Setor</th>'
-                    + '<th style="padding:10px 12px;text-align:center;">Respostas</th>'
-                    + '<th style="padding:10px 12px;text-align:center;">Risco Geral</th>'
-                    + '<th style="padding:10px 12px;text-align:left;">T\u00f3pico Cr\u00edtico</th>'
-                    + '<th style="padding:10px 12px;text-align:left;">Classifica\u00e7\u00e3o</th>'
-                    + '</tr></thead>'
-                    + '<tbody>' + linhasSetores + '</tbody>'
-                    + '</table>'
-
-                    // RODAPÉ
-                    + '<div style="padding-top:12px;border-top:1px solid #e9ecef;text-align:center;font-size:10px;color:#6c757d;">'
-                    + '<strong style="color:#6D7141;">GlobalMind</strong>'
-                    + ' \u2014 Avalia\u00e7\u00e3o de Riscos Psicossociais NR-1 | Relat\u00f3rio gerado em ' + new Date().toLocaleDateString('pt-BR')
-                    + '</div>'
-                    + '</body></html>';
-
-                const win = window.open('', '_blank');
-                if (!win) {
-                    alert('O navegador bloqueou o pop-up. Permita pop-ups para este site e tente novamente.');
-                    return;
-                }
-                win.document.write(html);
-                win.document.close();
-                win.onload = function() {
-                    setTimeout(function() { win.print(); }, 600);
-                };
-
-                showToast('Relat\u00f3rio NR-1 aberto para impress\u00e3o!');
-
-            } catch (error) {
-                console.error('Erro ao gerar PDF:', error);
-                alert('Erro ao gerar PDF: ' + error.message);
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
+            const dados = {
+                empresaNome: currentEmpresaNome,
+                medias: currentMedias,
+                questionarios: currentQuestionarios,
+                tipo: 'geral',
+                psicologo: document.getElementById('input-psicologo') ? document.getElementById('input-psicologo').value.trim() : '',
+                crp: document.getElementById('input-crp') ? document.getElementById('input-crp').value.trim() : '',
+                mesAno: document.getElementById('input-mesano') ? document.getElementById('input-mesano').value.trim() : ''
+            };
+            sessionStorage.setItem('nr1_dados', JSON.stringify(dados));
+            window.open('relatorio-nr1.html', '_blank');
         };
 
         // Event listeners
@@ -2211,5 +2030,6 @@
         // Inicializar
         loadEmpresas();
     </script>
+    <script src="js/admin-mobile.js"></script>
 </body>
 </html>

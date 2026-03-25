@@ -26,7 +26,7 @@
             --gray-600: #6c757d;
             --success: #22c55e;
             --info: #3b82f6;
-            --warning: #f59e0b;
+            --warning: #FACC15;
             --purple: #8b5cf6;
 
             --font-display: 'Playfair Display', Georgia, serif;
@@ -235,7 +235,7 @@
 
         .metric-card.card-total { border-left-color: var(--azul-petroleo); }
         .metric-card.card-novo { border-left-color: #2196F3; }
-        .metric-card.card-contatado { border-left-color: #FF9800; }
+        .metric-card.card-contatado { border-left-color: #EA580C; }
         .metric-card.card-convertido { border-left-color: #4CAF50; }
         .metric-card.card-perdido { border-left-color: #F44336; }
 
@@ -272,7 +272,7 @@
 
         .metric-icon.icon-contatado {
             background: rgba(255, 152, 0, 0.1);
-            color: #FF9800;
+            color: #EA580C;
         }
 
         .metric-icon.icon-convertido {
@@ -410,7 +410,7 @@
 
         .badge-contatado {
             background: #FFF3E0;
-            color: #F57C00;
+            color: #EA580C;
         }
 
         .badge-convertido {
@@ -442,13 +442,65 @@
             }
         }
 
+        /* Sidebar overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 99;
+        }
+        .sidebar-overlay.active { display: block; }
+
+        /* Mobile header */
+        .mobile-header {
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            background: var(--white);
+            border-bottom: 1px solid var(--bege-dark);
+            margin-bottom: 1.5rem;
+        }
+        .menu-toggle {
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: var(--white);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+        }
+        .menu-toggle span {
+            display: block;
+            width: 20px;
+            height: 2px;
+            background: var(--azul-petroleo);
+            border-radius: 2px;
+        }
+        .mobile-header-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--azul-petroleo);
+        }
+
         @media (max-width: 1024px) {
             .sidebar {
                 transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 200;
             }
+            .sidebar.open { transform: translateX(0); }
             .main-content {
                 margin-left: 0;
             }
+            .mobile-header { display: flex; }
             .metrics-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -459,7 +511,7 @@
 
         @media (max-width: 768px) {
             .main-content {
-                padding: 1.5rem 1rem;
+                padding: 1rem;
             }
             .metrics-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -490,8 +542,11 @@
 </head>
 <body>
     <div class="app-container">
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
                     <div class="logo-icon">
@@ -542,6 +597,14 @@
 
         <!-- Main Content -->
         <main class="main-content">
+            <!-- Mobile Header -->
+            <div class="mobile-header">
+                <button class="menu-toggle" id="menu-toggle" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+                <span class="mobile-header-title">Dashboard</span>
+            </div>
+
             <!-- Header -->
             <header class="page-header">
                 <div>
@@ -733,5 +796,6 @@
         loadStats();
         loadRecentDiagnosticos();
     </script>
+    <script src="js/admin-mobile.js"></script>
 </body>
 </html>

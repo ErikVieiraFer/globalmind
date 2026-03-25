@@ -26,7 +26,7 @@
             --gray-600: #6c757d;
             --success: #22c55e;
             --info: #3b82f6;
-            --warning: #f59e0b;
+            --warning: #FACC15;
             --danger: #dc3545;
             --purple: #8b5cf6;
 
@@ -458,7 +458,7 @@
         }
 
         .status-novo { background: #E3F2FD; color: #1976D2; }
-        .status-contatado { background: #FFF3E0; color: #F57C00; }
+        .status-contatado { background: #FFF3E0; color: #EA580C; }
         .status-convertido { background: #E8F5E9; color: #388E3C; }
         .status-perdido { background: #FFEBEE; color: #D32F2F; }
 
@@ -852,6 +852,12 @@
                     </svg>
                     Avaliações NR-1
                 </a>
+                <a href="empresas.html" class="nav-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    Empresas
+                </a>
 
                 <div class="nav-section-title">Configurações</div>
                 <a href="#" class="nav-item" id="logout-link">
@@ -970,24 +976,6 @@
         let currentFilter = 'todos';
         let currentSearch = '';
         let diagnosticosCache = [];
-
-        // ===== Mobile sidebar toggle =====
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
-        const menuToggle = document.getElementById('menu-toggle');
-
-        function openSidebar() {
-            sidebar.classList.add('open');
-            overlay.classList.add('active');
-        }
-
-        function closeSidebar() {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-        }
-
-        menuToggle.addEventListener('click', openSidebar);
-        overlay.addEventListener('click', closeSidebar);
 
         // ===== Update filter counts =====
         function updateFilterCounts() {
@@ -1274,5 +1262,6 @@
         // ===== Init =====
         loadDiagnosticos();
     </script>
+    <script src="js/admin-mobile.js"></script>
 </body>
 </html>
