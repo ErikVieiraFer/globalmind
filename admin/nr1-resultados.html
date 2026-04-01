@@ -829,6 +829,23 @@
             border-color: var(--verde-oliva);
         }
 
+        .dados-relatorio-card select {
+            width: 100%;
+            padding: 0.6rem 0.875rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            background: var(--white);
+            cursor: pointer;
+        }
+
+        .dados-relatorio-card select:focus {
+            outline: none;
+            border-color: var(--verde-oliva);
+        }
+
+
         .dados-relatorio-titulo {
             grid-column: 1 / -1;
             font-size: 0.85rem;
@@ -1198,6 +1215,50 @@
             { key: 'conflitos', nome: 'Conflitos' },
             { key: 'vida_pessoal', nome: 'Vida Pessoal' }
         ];
+
+        const FONTE_GERADORA = {
+            assedio: 'Relações de Trabalho Abusivas, comunicação violenta e importunação sexual.',
+            carga_trabalho: 'Metas irrealistas, Jornadas de Trabalho prolongadas, Horas extras excessivas, má distribuição de Cargos.',
+            reconhecimento: 'Gestão Pouco Humanizada, Administração de recursos precária.',
+            clima_organizacional: 'Autoritarismo, Gestão centralizadora, Ausência fiscalização de regras de bom convívio.',
+            autonomia: 'Gestão Não Humanizada, Escassez de Inteligência Emocional.',
+            pressao_metas: 'Gestão não Humanizada, Propósitos financeiros desalinhados com saúde e Bem estar.',
+            inseguranca: 'Gestão Não Humanizada, Escassez de Inteligência Emocional para gerenciar conflitos.',
+            conflitos: 'Falta de treinamentos, Gestão pouco habilitada, Baixas habilidades de oratória.',
+            vida_pessoal: 'Ausência de Propósito pessoal, Falta de tempo, planejamento, incentivo e recursos.'
+        };
+
+        const NOME_TOPICO_COMPLETO = {
+            assedio: 'Assédio Moral e Sexual',
+            carga_trabalho: 'Carga Excessiva de Trabalho',
+            reconhecimento: 'Falta de Reconhecimento e Recompensas',
+            clima_organizacional: 'Clima Organizacional',
+            autonomia: 'Falta Autonomia e Controle sobre o Trabalho',
+            pressao_metas: 'Pressão e Metas Irrealistas',
+            inseguranca: 'Insegurança e Ameaças',
+            conflitos: 'Conflitos Interpessoais e Falta de Comunicação',
+            vida_pessoal: 'Alinhamento entre Vida Pessoal e Profissional'
+        };
+
+
+        function calcGravidade(val) {
+            const v = parseFloat(val) || 0;
+            if (v <= 2.5) return { label: 'Baixa', fill: '00C853', color: '000000' };
+            if (v <= 5.0) return { label: 'Média', fill: 'FFEB3B', color: '000000' };
+            if (v <= 7.5) return { label: 'Alta',  fill: 'D32F2F', color: 'FFFFFF' };
+            return         { label: 'Alta',  fill: '000000', color: 'FFFFFF' };
+        }
+
+        function calcMatriz(gravLabel, prob) {
+            if (gravLabel === 'Alta'  && prob === 'Alta')  return { label: 'Crítico', fill: '000000', color: 'FFFFFF' };
+            if (gravLabel === 'Alta'  && prob === 'Média') return { label: 'Alto',    fill: 'D32F2F', color: 'FFFFFF' };
+            if (gravLabel === 'Alta'  && prob === 'Baixa') return { label: 'Médio',   fill: 'FFEB3B', color: '000000' };
+            if (gravLabel === 'Média' && prob === 'Alta')  return { label: 'Alto',    fill: 'D32F2F', color: 'FFFFFF' };
+            if (gravLabel === 'Média' && prob === 'Média') return { label: 'Médio',   fill: 'FFEB3B', color: '000000' };
+            if (gravLabel === 'Média' && prob === 'Baixa') return { label: 'Baixo',   fill: '00C853', color: '000000' };
+            if (gravLabel === 'Baixa' && prob === 'Alta')  return { label: 'Médio',   fill: 'FFEB3B', color: '000000' };
+            return                                                 { label: 'Baixo',   fill: '00C853', color: '000000' };
+        }
 
         // Helper: gera linhas HTML da tabela de tópicos
         function buildTopicosRows(medias) {
@@ -1653,35 +1714,6 @@
                     if (resp.ok) imageData = await resp.arrayBuffer();
                 } catch(e) { console.warn('Imagem de capa não carregada:', e); }
 
-                // Helper: tabela de tópicos para Word
-                const buildWordTable = (medias) => {
-                    const headerRow = new TableRow({
-                        tableHeader: true,
-                        children: ['Tópico', 'Média', 'Classificação'].map(text =>
-                            new TableCell({
-                                shading: { fill: '1E2C36', type: 'clear', color: '1E2C36' },
-                                children: [new Paragraph({
-                                    children: [new TextRun({ text, bold: true, color: 'FFFFFF', size: 22 })],
-                                    alignment: AlignmentType.CENTER
-                                })]
-                            })
-                        )
-                    });
-
-                    const COR = { baixo: '4CAF50', moderado: 'FACC15', alto: 'EA580C', critico: 'F44336' };
-                    const dataRows = TOPICOS_LISTA.map(t => {
-                        const val = parseFloat(medias[t.key]);
-                        const r = classificarRisco(val);
-                        return new TableRow({ children: [
-                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: t.nome, size: 20 })] })] }),
-                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: val.toFixed(1), bold: true, size: 20 })], alignment: AlignmentType.CENTER })] }),
-                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: r.label, color: COR[r.nivel] || '000000', bold: true, size: 20 })], alignment: AlignmentType.CENTER })] })
-                        ]});
-                    });
-
-                    return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [headerRow, ...dataRows] });
-                };
-
                 // Helpers de parágrafo
                 const titulo = (text, pg) => new Paragraph({
                     children: [new TextRun({ text, bold: true, size: 28, color: '1E2C36' })],
@@ -1744,26 +1776,170 @@
                 );
 
                 // === TEXTOS FIXOS ===
-                const txtIntro = 'A avaliação de riscos psicossociais no ambiente de trabalho tornou-se obrigação legal com as alterações da Norma Regulamentadora nº 1 (NR-1), publicadas em 2024 pelo Ministério do Trabalho e Emprego. As empresas brasileiras passam a incluir os fatores de risco psicossocial no Gerenciamento de Riscos Ocupacionais (GRO) e no Programa de Gerenciamento de Riscos (PGR). O presente relatório apresenta os resultados do Diagnóstico de Riscos Psicossociais (DRPS), instrumento desenvolvido pela GlobalMind para apoiar as organizações no cumprimento das exigências normativas e na promoção de ambientes de trabalho mais saudáveis.';
+                const txtIntro1 = 'A avaliação de riscos psicossociais no ambiente de trabalho é uma prática fundamental para garantir a saúde mental dos colaboradores e a qualidade do ambiente organizacional. O termo "riscos psicossociais" engloba uma série de fatores que podem afetar diretamente o bem-estar psicológico dos trabalhadores, como assédio moral, pressão excessiva, sobrecarga de trabalho, falta de autonomia, isolamento social, e até falta de reconhecimento no trabalho. Esses riscos, se não identificados e tratados de forma eficaz, podem gerar consequências graves, como o burnout, ansiedade, e depressão, além de comprometer a produtividade e aumentar os índices de absenteísmo e rotatividade.';
+                const txtIntro2 = 'A NR 01 (Norma Regulamentadora nº 1) trata especificamente da gestão de riscos psicossociais no ambiente de trabalho, impondo às empresas a necessidade de implementar medidas para identificar, avaliar e mitigar esses riscos. A atualização da norma trouxe um foco maior na prevenção, e as empresas precisam estar em conformidade com essas diretrizes para garantir ambientes de trabalho mais seguros e saudáveis para seus colaboradores.';
+                const txtIntro3 = 'Este relatório visa apresentar a metodologia utilizada para a avaliação dos riscos psicossociais nas empresas, com base em escalas e questionários validados e amplamente utilizados na área de psicologia organizacional. As informações coletadas a partir dessas ferramentas serão analisadas para fornecer um diagnóstico completo sobre os riscos psicossociais, com a classificação de gravidade e probabilidade de ocorrência, e recomendações sobre as ações que a empresa deve adotar.';
+                const txtObj1 = 'O objetivo deste relatório é estruturar e sistematizar a análise dos riscos psicossociais nas empresas, com base na aplicação do Diagnóstico de Riscos Psicossociais (DRPS). O relatório visa identificar e classificar os riscos psicossociais identificados nos 9 tópicos principais: assédio moral, pressão e metas, carga excessiva de trabalho, etc. O foco principal é avaliar a gravidade e probabilidade desses riscos, sugerindo ações corretivas e preventivas que podem ser implementadas para melhorar o ambiente de trabalho.';
+                const txtObj2 = 'O relatório será adaptado conforme as particularidades de cada empresa, incluindo o setor em que atua, a cultura organizacional e as especificidades do ambiente de trabalho.';
+                const txtMet1 = 'A metodologia validada que seguimos tem uma forte base teórica da psicodinâmica do trabalho, que foi fundamentada por estudiosos como Christophe Dejours e outros, no estudo das relações entre o trabalho e a saúde mental dos colaboradores. A psicodinâmica do trabalho se concentra nos aspectos subjetivos do trabalho, como a percepção do trabalhador sobre pressões e recompensas, e como esses fatores influenciam o seu bem-estar psicológico e físico. O modelo da escala de Likert foi utilizada para coletar de forma semelhante as respostas e gerar escores que indicam as diferentes dimensões do risco psicossocial. A metodologia validada é uma adaptação de modelos amplamente aceitos, como a psicodinâmica do trabalho e a Escala ITRA, com ênfase na quantificação dos riscos psicossociais e na utilização da matriz de risco NR 01 para fornecer uma análise clara e precisa dos riscos por setor e tópico dentro da empresa. As classificações obtidas (Baixo, Médio, Alto, Crítico) fornecem uma visão detalhada sobre os aspectos positivos e negativos do ambiente de trabalho, orientando ações corretivas e preventivas.';
+                const txtMet1b = 'Desenvolvedores: Profissionais da equipe da Comunidade Believe de Formação Profissional Ltda. Entre eles: Psicólogos, Técnicos em Segurança do Trabalho, Engenheiros do Trabalho, Advogados e Profissionais da Tecnologia da Informação.';
+                const txtMet2a = 'Coleta de Dados (Questionário): As respostas dos trabalhadores são coletadas por meio de um inventário padronizado, que podem ser administrados de forma anônima e confidencial, o que assegura a privacidade dos dados.';
+                const txtMet2b = 'Cálculo de Gravidade: Após a coleta, as respostas são convertidas em valores numéricos (0 a 4) para análise. Calcula-se a gravidade dos riscos psicossociais, considerando as respostas diretas e invertidas. Para cada pergunta, a gravidade é classificada como Baixa, Média ou Alta com base em intervalos predefinidos. (cálculo simples de média)';
+                const txtMet2c = 'Média por Tópico: A metodologia usa o cálculo de média para determinar a gravidade média e a probabilidade média por tópico. Cada tópico (como Assédio Moral e Sexual, Carga Excessiva de Trabalho, etc.) tem uma média de risco que é calculada a partir das respostas de todas as questões daquele tópico. Essas médias são então classificadas em Baixo, Médio ou Alto risco. A probabilidade é dada a partir de uma avaliação qualitativa feita pelo profissional psicólogo, que em entrevistas ou atos observacionais coleta dados dos setores analisados. Ao fim, o psicólogo correlaciona os dados observados e entrevistados com o fator de dano do inventário de riscos psicossociais.';
+                const txtMet2d = 'Matriz de Risco NR 01: Utilizando a matriz NR 01, combinamos as médias de gravidade e probabilidade para gerar a classificação final do risco para cada setor. A matriz de risco NR 01 classifica o risco em Baixo, Médio, Alto ou Crítico, dependendo dos cruzamentos entre gravidade e probabilidade.';
+                const txtMet3a = 'A metodologia adotada para este diagnóstico baseia-se em uma combinação de avaliação quantitativa e qualitativa, utilizando questionários estruturados e escala de avaliação dos riscos psicossociais, que incluem as perguntas divididas em 9 tópicos principais.';
+                const txtMet3b = 'A escala DRPS foi desenvolvida para a identificação e avaliação dos riscos psicossociais, com classificação de respostas de 0 a 4 (sendo 0 = nunca e 4 = sempre). A pontuação corrigida é calculada automaticamente de acordo com a lógica direta ou invertida, dependendo da natureza da pergunta.';
+                const txtMet3c = 'Escalas e Questionários Utilizados:';
+                const txtMet3d = 'Escala de Gravidade e Probabilidade: Para cada risco psicossocial, a gravidade e a probabilidade de ocorrência são avaliadas e classificadas conforme a escala NR 01. A gravidade é determinada com base na pontuação média dos colaboradores, enquanto a probabilidade considera os critérios de frequência, histórico do risco no setor e os recursos disponíveis para a mitigação do risco.';
+                const txtMet3e = 'Questionários Padrão: Foram utilizados questionários validados, com base em modelos reconhecidos pela OMS, INSS, e também por instrumentos de avaliação psicológica aplicados em organizações. As perguntas abordam riscos psicossociais como assédio, sobrecarga de trabalho, metas, autonomia, entre outros.';
+                const txtMet3f = 'Para a análise qualitativa, são utilizados critérios como: Frequência: Qual a frequência percebida de cada risco no setor? (Baixa, Média, Alta) Histórico: Existe um histórico de ocorrências desse risco no setor? (Sim, Não, Frequente) Recursos disponíveis: Quais recursos a empresa possui para mitigar os riscos? (Adequados, Insuficientes, Não existentes)';
+                const txtMet3g = 'Esses critérios são utilizados para classificar a probabilidade de ocorrência dos riscos, ajudando a identificar quais riscos exigem mais atenção.';
+                const txtMet3h = 'Após a coleta dos dados, as médias de gravidade e probabilidade são calculadas e classificadas em baixo, médio ou alto, seguindo a matriz de risco da NR 01. Com isso, será possível mapear e priorizar os riscos que exigem ação imediata.';
+                const txtAnaliseNota = '(Nesta seção, o psicólogo deve inserir os dados e resultados obtidos a partir da aplicação da avaliação, incluindo a análise da gravidade e probabilidade dos riscos. O espaço aqui deve ser deixado em branco para que cada psicólogo possa inserir as análises específicas para a empresa que está avaliando.)';
+                const txtConc1 = 'A implementação de ações corretivas e preventivas é essencial para minimizar os riscos psicossociais dentro da empresa e promover um ambiente de trabalho mais seguro e saudável. As empresas devem se adequar à NR 01 não apenas para evitar problemas legais, mas também para melhorar a qualidade de vida no trabalho, aumentar a produtividade e reduzir os índices de afastamento.';
+                const txtConc2 = 'A monitorização constante e a adaptação de ações contínuas garantem que a empresa esteja sempre em conformidade com a NR 01 e que os riscos sejam eficazmente mitigados. Recomenda-se que o psicólogo continue acompanhando a evolução da situação e ajustando as intervenções conforme necessário.';
 
-                const txtObjetivo = 'Identificar e classificar os fatores de risco psicossocial presentes no ambiente de trabalho da empresa, fornecendo informações qualificadas para embasar ações de prevenção, intervenção e promoção de saúde mental, em conformidade com os requisitos da NR-1 atualizada e demais normas aplicáveis.';
+                // Helper: tabela de identificação (Tabela 1)
+                const buildIdentificacaoTable = (setorNome) => {
+                    const bdr = { style: 'single', size: 4, color: '000000' };
+                    const borders = { top: bdr, bottom: bdr, left: bdr, right: bdr };
+                    const GRN = '1B5E20'; const WHT = 'FFFFFF'; const BGE = 'F5F5DC';
+                    const M = { top: 50, bottom: 50, left: 100, right: 100 };
+                    const S = { before: 0, after: 0 };
+                    const cL = (text, fill, span) => new TableCell(Object.assign({ borders, margins: M, children: [new Paragraph({ spacing: S, children: [new TextRun({ text, bold: true, color: fill === GRN ? WHT : '000000', size: 18 })] })] }, fill ? { shading: { fill, type: 'clear', color: fill } } : {}, span ? { columnSpan: span } : {}));
+                    const cV = (text, span) => new TableCell(Object.assign({ borders, margins: M, children: [new Paragraph({ spacing: S, children: [new TextRun({ text: text || '', size: 18 })] })] }, span ? { columnSpan: span } : {}));
+                    return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [
+                        new TableRow({ children: [new TableCell({ columnSpan: 4, borders, margins: M, shading: { fill: GRN, type: 'clear', color: GRN }, children: [new Paragraph({ spacing: S, children: [new TextRun({ text: 'DRPS - DIAGNÓSTICO DE RISCOS PSICOSSOCIAIS', bold: true, color: WHT, size: 22 })], alignment: AlignmentType.CENTER })] })] }),
+                        new TableRow({ children: [cL('Psicólogo(a):', BGE), cV(psicologo), cL('CRP:', BGE), cV(crp)] }),
+                        new TableRow({ children: [new TableCell({ columnSpan: 4, borders, margins: M, shading: { fill: GRN, type: 'clear', color: GRN }, children: [new Paragraph({ spacing: S, children: [new TextRun({ text: 'IDENTIFICAÇÃO', bold: true, color: WHT, size: 20 })], alignment: AlignmentType.CENTER })] })] }),
+                        new TableRow({ children: [cL('CNPJ:', BGE), cV(''), cL('Data:', BGE), cV(mesAno)] }),
+                        new TableRow({ children: [cL('Setor:', GRN), cV(setorNome, 3)] }),
+                        new TableRow({ children: [cL('Funções:', GRN), cV('', 3)] }),
+                        new TableRow({ children: [cL('Quantidade de Colaboradores:', GRN), cV(''), cL('Homens:', GRN), cV('')] }),
+                        new TableRow({ children: [cL('Possíveis Agravos à Saúde:', GRN), cV('', 3)] }),
+                        new TableRow({ children: [cL('Medidas de Controle:', GRN), cV('', 3)] })
+                    ]});
+                };
 
-                const txtMetodologia = 'O instrumento DRPS é composto por 90 questões distribuídas em 9 dimensões psicossociais: (1) Assédio, (2) Carga de Trabalho, (3) Reconhecimento, (4) Clima Organizacional, (5) Autonomia, (6) Pressão e Metas, (7) Insegurança, (8) Conflitos Interpessoais e (9) Equilíbrio Vida–Trabalho. As respostas são registradas em escala Likert de 5 pontos (0 = Nunca; 4 = Sempre) e convertidas para uma escala de 0 a 10. Os resultados são classificados em quatro níveis: Baixo (0,0–2,5), Moderado (2,6–5,0), Alto (5,1–7,5) e Crítico (7,6–10,0). A coleta foi realizada on-line, com anonimato e confidencialidade garantidos, em conformidade com a LGPD (Lei nº 13.709/2018).';
-
-                const txtConclusao1 = 'Os resultados obtidos por meio do DRPS evidenciam aspectos relevantes do ambiente psicossocial da organização, permitindo identificar dimensões que requerem atenção prioritária e aquelas que representam fatores de proteção para a saúde mental dos colaboradores.';
-                const txtConclusao2 = 'Recomenda-se que as dimensões classificadas como Alto ou Crítico sejam incluídas no Programa de Gerenciamento de Riscos (PGR) da empresa, com definição de medidas de controle, responsáveis e prazos para implementação, conforme exigido pela NR-1.';
-                const txtConclusao3 = 'A GlobalMind permanece à disposição para apoiar a elaboração do plano de ação, acompanhamento das intervenções e reaplicação periódica do diagnóstico, garantindo a conformidade legal e a melhoria contínua do ambiente de trabalho.';
-
-                // === ANÁLISE POR SETOR ===
-                const setoresContent = [];
-                const setoresEntries = Object.values(window.setoresData || {});
-                if (setoresEntries.length > 1) {
-                    setoresEntries.forEach(({ setor, medias }) => {
-                        setoresContent.push(subtitulo(`Setor: ${setor}`));
-                        setoresContent.push(buildWordTable(medias));
-                        setoresContent.push(branco());
+                // Helper: tabela de classificação de risco (Tabela 2, 5 colunas)
+                const buildRiscoTable = (medias) => {
+                    const M = { top: 50, bottom: 50, left: 100, right: 100 };
+                    const S = { before: 0, after: 0 };
+                    const GRN = '2E7D32';
+                    const hCell = (text, fill, span) => new TableCell(Object.assign({ margins: M, shading: { fill, type: 'clear', color: fill }, children: [new Paragraph({ spacing: S, children: [new TextRun({ text, bold: true, color: 'FFFFFF', size: 18 })], alignment: AlignmentType.CENTER })] }, span ? { columnSpan: span } : {}));
+                    const row1 = new TableRow({ children: [hCell('Classificação de Risco Psicossocial', GRN, 5)] });
+                    const row2 = new TableRow({ children: [hCell('Critério', GRN), hCell('Quantitativo e Qualitativo', GRN, 4)] });
+                    const headerRow = new TableRow({ tableHeader: true, children: ['Fatores de Risco', 'Fonte Geradora do Risco', 'Gravidade (Severidade)', 'Probabilidade de Ocorrência', 'Matriz Risco'].map(text => new TableCell({ margins: M, shading: { fill: GRN, type: 'clear', color: GRN }, children: [new Paragraph({ spacing: S, children: [new TextRun({ text, bold: true, color: 'FFFFFF', size: 17 })], alignment: AlignmentType.CENTER })] })) });
+                    const dataRows = TOPICOS_LISTA.map(t => {
+                        const grav = calcGravidade(parseFloat(medias[t.key]) || 0);
+                        const matriz = calcMatriz(grav.label, 'Média');
+                        return new TableRow({ children: [
+                            new TableCell({ margins: M, children: [new Paragraph({ spacing: S, children: [new TextRun({ text: NOME_TOPICO_COMPLETO[t.key] || t.nome, bold: true, size: 17 })] })] }),
+                            new TableCell({ margins: M, children: [new Paragraph({ spacing: S, children: [new TextRun({ text: FONTE_GERADORA[t.key] || '', size: 16 })] })] }),
+                            new TableCell({ margins: M, shading: { fill: grav.fill, type: 'clear', color: grav.fill }, children: [new Paragraph({ spacing: S, children: [new TextRun({ text: grav.label, bold: true, color: grav.color, size: 17 })], alignment: AlignmentType.CENTER })] }),
+                            new TableCell({ margins: M, shading: { fill: 'FFEB3B', type: 'clear', color: 'FFEB3B' }, children: [new Paragraph({ spacing: S, children: [new TextRun({ text: 'Média', bold: true, color: '000000', size: 17 })], alignment: AlignmentType.CENTER })] }),
+                            new TableCell({ margins: M, shading: { fill: matriz.fill, type: 'clear', color: matriz.fill }, children: [new Paragraph({ spacing: S, children: [new TextRun({ text: matriz.label, bold: true, color: matriz.color, size: 17 })], alignment: AlignmentType.CENTER })] })
+                        ]});
                     });
-                }
+                    return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [row1, row2, headerRow, ...dataRows] });
+                };
+
+                // Helper: renderiza um gráfico pizza appendado no DOM e retorna ArrayBuffer
+                const gerarGraficoPizza = async (labels, dados, cores, titulo) => {
+                    const wrapper = document.createElement('div');
+                    wrapper.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:280px;height:280px;';
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 280; canvas.height = 280;
+                    wrapper.appendChild(canvas);
+                    document.body.appendChild(wrapper);
+                    try {
+                        const chart = new Chart(canvas.getContext('2d'), {
+                            type: 'pie',
+                            data: { labels, datasets: [{ data: dados, backgroundColor: cores }] },
+                            options: { responsive: false, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false }, title: { display: true, text: titulo } } }
+                        });
+                        await new Promise(r => setTimeout(r, 800));
+                        const imgData = canvas.toDataURL('image/png');
+                        chart.destroy();
+                        document.body.removeChild(wrapper);
+                        const base64 = imgData.split(',')[1];
+                        const binary = atob(base64);
+                        const bytes = new Uint8Array(binary.length);
+                        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                        return bytes.buffer;
+                    } catch(e) {
+                        console.warn('Gráfico pizza:', e);
+                        try { document.body.removeChild(wrapper); } catch(_) {}
+                        return null;
+                    }
+                };
+
+                const gerarLegendaImagem = async (itens) => {
+                    const largura = itens.length * 110;
+                    const wrapper = document.createElement('div');
+                    wrapper.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:' + largura + 'px;height:40px;';
+                    const canvas = document.createElement('canvas');
+                    canvas.width = largura; canvas.height = 40;
+                    wrapper.appendChild(canvas);
+                    document.body.appendChild(wrapper);
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, largura, 40);
+                    itens.forEach((item, i) => {
+                        const x = i * 110 + 10;
+                        ctx.fillStyle = item.cor;
+                        ctx.fillRect(x, 12, 16, 16);
+                        ctx.fillStyle = '#1E2C36';
+                        ctx.font = '13px Arial';
+                        ctx.fillText(item.label, x + 22, 25);
+                    });
+                    await new Promise(r => setTimeout(r, 200));
+                    const imgData = canvas.toDataURL('image/png');
+                    document.body.removeChild(wrapper);
+                    const base64 = imgData.split(',')[1];
+                    const binary = atob(base64);
+                    const bytes = new Uint8Array(binary.length);
+                    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                    return bytes.buffer;
+                };
+
+                // Helper: gera 3 gráficos de pizza e retorna ArrayBuffers
+                const buildPizzaCharts = async (mediasSetor, mediasGeral) => {
+                    const matrizCounts = { Baixo: 0, Médio: 0, Alto: 0, Crítico: 0 };
+                    const gravSetor = { Baixa: 0, Média: 0, Alta: 0 };
+                    const gravGeral = { Baixa: 0, Média: 0, Alta: 0 };
+                    TOPICOS_LISTA.forEach(t => {
+                        const gS = calcGravidade(parseFloat(mediasSetor[t.key]) || 0);
+                        const gG = calcGravidade(parseFloat(mediasGeral[t.key]) || 0);
+                        const mz = calcMatriz(gS.label, 'Média');
+                        matrizCounts[mz.label] = (matrizCounts[mz.label] || 0) + 1;
+                        gravSetor[gS.label]++;
+                        gravGeral[gG.label]++;
+                    });
+                    return Promise.all([
+                        gerarGraficoPizza(['Baixo','Médio','Alto','Crítico'], [matrizCounts.Baixo,matrizCounts.Médio,matrizCounts.Alto,matrizCounts.Crítico], ['#00C853','#FFEB3B','#D32F2F','#000000'], 'Matriz de Risco'),
+                        gerarGraficoPizza(['Baixa','Média','Alta'], [gravSetor.Baixa,gravSetor.Média,gravSetor.Alta], ['#00C853','#FFEB3B','#D32F2F'], 'Gravidade Por Setor'),
+                        gerarGraficoPizza(['Baixa','Média','Alta'], [gravGeral.Baixa,gravGeral.Média,gravGeral.Alta], ['#00C853','#FFEB3B','#D32F2F'], 'Gravidade Geral')
+                    ]);
+                };
+
+                // Helper: linha de 3 gráficos lado a lado (tabela sem borda)
+                const buildChartsRow = (imgs) => {
+                    const cells = imgs.map(img => new TableCell({
+                        children: img ? [new Paragraph({ children: [new ImageRun({ data: img, transformation: { width: 180, height: 180 } })], alignment: AlignmentType.CENTER })] : [new Paragraph({ text: '' })],
+                        borders: { top: { style: 'none', size: 0, color: 'auto' }, bottom: { style: 'none', size: 0, color: 'auto' }, left: { style: 'none', size: 0, color: 'auto' }, right: { style: 'none', size: 0, color: 'auto' } }
+                    }));
+                    return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [new TableRow({ children: cells })], borders: { top: { style: 'none', size: 0, color: 'auto' }, bottom: { style: 'none', size: 0, color: 'auto' }, left: { style: 'none', size: 0, color: 'auto' }, right: { style: 'none', size: 0, color: 'auto' }, insideH: { style: 'none', size: 0, color: 'auto' }, insideV: { style: 'none', size: 0, color: 'auto' } } });
+                };
+
+                // Gerar gráficos antes de montar o doc
+                const chartImgsNR1 = await buildPizzaCharts(currentMedias, currentMedias);
+                const imgLegendaNR1 = await gerarLegendaImagem([
+                    { cor: '#00C853', label: 'Baixo / Baixa' },
+                    { cor: '#FFEB3B', label: 'Médio / Média' },
+                    { cor: '#D32F2F', label: 'Alto / Alta' },
+                    { cor: '#000000', label: 'Crítico' }
+                ]);
 
                 // === MONTAR DOCUMENTO ===
                 const doc = new Document({
@@ -1772,30 +1948,47 @@
                             ...capa,
                             // Introdução
                             titulo('1. Introdução', true),
-                            corpo(txtIntro),
+                            corpo(txtIntro1),
+                            corpo(txtIntro2),
+                            corpo(txtIntro3),
                             // Objetivo
                             titulo('2. Objetivo'),
-                            corpo(txtObjetivo),
+                            corpo(txtObj1),
+                            corpo(txtObj2),
                             // Metodologia
                             titulo('3. Metodologia'),
-                            corpo(txtMetodologia),
+                            corpo(txtMet1),
+                            corpo(txtMet1b),
+                            subtitulo('Etapas da Metodologia Validada no Diagnóstico:'),
+                            corpo(txtMet2a),
+                            corpo(txtMet2b),
+                            corpo(txtMet2c),
+                            corpo(txtMet2d),
+                            corpo(txtMet3a),
+                            corpo(txtMet3b),
+                            subtitulo(txtMet3c),
+                            corpo(txtMet3d),
+                            corpo(txtMet3e),
+                            corpo(txtMet3f),
+                            corpo(txtMet3g),
+                            corpo(txtMet3h),
                             // Resultados
-                            titulo('4. Análise de Resultados'),
-                            subtitulo('Análise Geral'),
-                            buildWordTable(currentMedias),
+                            titulo('4. Análises e Resultados'),
+                            new Paragraph({ children: [new TextRun({ text: txtAnaliseNota, size: 22, italics: true })], spacing: { after: 180 }, alignment: AlignmentType.JUSTIFIED }),
+                            buildIdentificacaoTable(''),
                             branco(),
-                            ...setoresContent,
-                            // Observações
-                            titulo('5. Observações do Psicólogo'),
-                            ...Array.from({ length: 10 }, branco),
+                            buildRiscoTable(currentMedias),
+                            branco(),
+                            buildChartsRow(chartImgsNR1),
+                            imgLegendaNR1 ? new Paragraph({ children: [new ImageRun({ data: imgLegendaNR1, transformation: { width: 400, height: 30 } })], alignment: AlignmentType.CENTER, spacing: { before: 80, after: 200 } }) : branco(),
+                            branco(),
                             // Conclusão
-                            titulo('6. Conclusão'),
-                            corpo(txtConclusao1),
-                            corpo(txtConclusao2),
-                            corpo(txtConclusao3),
+                            titulo('5. Conclusão'),
+                            corpo(txtConc1),
+                            corpo(txtConc2),
                             ...Array.from({ length: 5 }, branco),
                             // Assinaturas
-                            titulo('7. Assinaturas'),
+                            titulo('6. Assinaturas'),
                             ...linha('Assinatura do Responsável pela Elaboração'),
                             ...linha('Assinatura do Responsável pela Empresa')
                         ]
@@ -1877,28 +2070,6 @@
                 } catch(e) { console.warn('Chart não capturado para Word do setor:', e); }
 
                 // Helpers de formatação
-                const buildWordTable = (m) => {
-                    const headerRow = new TableRow({
-                        tableHeader: true,
-                        children: ['Tópico', 'Média', 'Classificação'].map(text =>
-                            new TableCell({
-                                shading: { fill: '1E2C36', type: 'clear', color: '1E2C36' },
-                                children: [new Paragraph({ children: [new TextRun({ text, bold: true, color: 'FFFFFF', size: 22 })], alignment: AlignmentType.CENTER })]
-                            })
-                        )
-                    });
-                    const COR = { baixo: '4CAF50', moderado: 'FACC15', alto: 'EA580C', critico: 'F44336' };
-                    const dataRows = TOPICOS_LISTA.map(t => {
-                        const val = parseFloat(m[t.key]);
-                        const r = classificarRisco(val);
-                        return new TableRow({ children: [
-                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: t.nome, size: 20 })] })] }),
-                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: val.toFixed(1), bold: true, size: 20 })], alignment: AlignmentType.CENTER })] }),
-                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: r.label, color: COR[r.nivel] || '000000', bold: true, size: 20 })], alignment: AlignmentType.CENTER })] })
-                        ]});
-                    });
-                    return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [headerRow, ...dataRows] });
-                };
                 const titulo = (text, pg) => new Paragraph({
                     children: [new TextRun({ text, bold: true, size: 28, color: '1E2C36' })],
                     pageBreakBefore: !!pg, spacing: { before: 360, after: 200 }
@@ -1937,42 +2108,216 @@
                 );
 
                 // Textos fixos
-                const txtIntro = 'A avaliação de riscos psicossociais no ambiente de trabalho tornou-se obrigação legal com as alterações da Norma Regulamentadora nº 1 (NR-1), publicadas em 2024 pelo Ministério do Trabalho e Emprego. As empresas brasileiras passam a incluir os fatores de risco psicossocial no Gerenciamento de Riscos Ocupacionais (GRO) e no Programa de Gerenciamento de Riscos (PGR). O presente relatório apresenta os resultados do Diagnóstico de Riscos Psicossociais (DRPS), instrumento desenvolvido pela GlobalMind para apoiar as organizações no cumprimento das exigências normativas e na promoção de ambientes de trabalho mais saudáveis.';
-                const txtObjetivo = 'Identificar e classificar os fatores de risco psicossocial presentes no ambiente de trabalho da empresa, fornecendo informações qualificadas para embasar ações de prevenção, intervenção e promoção de saúde mental, em conformidade com os requisitos da NR-1 atualizada e demais normas aplicáveis.';
-                const txtMetodologia = 'O instrumento DRPS é composto por 90 questões distribuídas em 9 dimensões psicossociais: (1) Assédio, (2) Carga de Trabalho, (3) Reconhecimento, (4) Clima Organizacional, (5) Autonomia, (6) Pressão e Metas, (7) Insegurança, (8) Conflitos Interpessoais e (9) Equilíbrio Vida–Trabalho. As respostas são registradas em escala Likert de 5 pontos (0 = Nunca; 4 = Sempre) e convertidas para uma escala de 0 a 10. Os resultados são classificados em quatro níveis: Baixo (0,0–2,5), Moderado (2,6–5,0), Alto (5,1–7,5) e Crítico (7,6–10,0). A coleta foi realizada on-line, com anonimato e confidencialidade garantidos, em conformidade com a LGPD (Lei nº 13.709/2018).';
-                const txtConclusao1 = 'Os resultados obtidos por meio do DRPS evidenciam aspectos relevantes do ambiente psicossocial da organização, permitindo identificar dimensões que requerem atenção prioritária e aquelas que representam fatores de proteção para a saúde mental dos colaboradores.';
-                const txtConclusao2 = 'Recomenda-se que as dimensões classificadas como Alto ou Crítico sejam incluídas no Programa de Gerenciamento de Riscos (PGR) da empresa, com definição de medidas de controle, responsáveis e prazos para implementação, conforme exigido pela NR-1.';
-                const txtConclusao3 = 'A GlobalMind permanece à disposição para apoiar a elaboração do plano de ação, acompanhamento das intervenções e reaplicação periódica do diagnóstico, garantindo a conformidade legal e a melhoria contínua do ambiente de trabalho.';
+                const txtIntro1 = 'A avaliação de riscos psicossociais no ambiente de trabalho é uma prática fundamental para garantir a saúde mental dos colaboradores e a qualidade do ambiente organizacional. O termo "riscos psicossociais" engloba uma série de fatores que podem afetar diretamente o bem-estar psicológico dos trabalhadores, como assédio moral, pressão excessiva, sobrecarga de trabalho, falta de autonomia, isolamento social, e até falta de reconhecimento no trabalho. Esses riscos, se não identificados e tratados de forma eficaz, podem gerar consequências graves, como o burnout, ansiedade, e depressão, além de comprometer a produtividade e aumentar os índices de absenteísmo e rotatividade.';
+                const txtIntro2 = 'A NR 01 (Norma Regulamentadora nº 1) trata especificamente da gestão de riscos psicossociais no ambiente de trabalho, impondo às empresas a necessidade de implementar medidas para identificar, avaliar e mitigar esses riscos. A atualização da norma trouxe um foco maior na prevenção, e as empresas precisam estar em conformidade com essas diretrizes para garantir ambientes de trabalho mais seguros e saudáveis para seus colaboradores.';
+                const txtIntro3 = 'Este relatório visa apresentar a metodologia utilizada para a avaliação dos riscos psicossociais nas empresas, com base em escalas e questionários validados e amplamente utilizados na área de psicologia organizacional. As informações coletadas a partir dessas ferramentas serão analisadas para fornecer um diagnóstico completo sobre os riscos psicossociais, com a classificação de gravidade e probabilidade de ocorrência, e recomendações sobre as ações que a empresa deve adotar.';
+                const txtObj1 = 'O objetivo deste relatório é estruturar e sistematizar a análise dos riscos psicossociais nas empresas, com base na aplicação do Diagnóstico de Riscos Psicossociais (DRPS). O relatório visa identificar e classificar os riscos psicossociais identificados nos 9 tópicos principais: assédio moral, pressão e metas, carga excessiva de trabalho, etc. O foco principal é avaliar a gravidade e probabilidade desses riscos, sugerindo ações corretivas e preventivas que podem ser implementadas para melhorar o ambiente de trabalho.';
+                const txtObj2 = 'O relatório será adaptado conforme as particularidades de cada empresa, incluindo o setor em que atua, a cultura organizacional e as especificidades do ambiente de trabalho.';
+                const txtMet1 = 'A metodologia validada que seguimos tem uma forte base teórica da psicodinâmica do trabalho, que foi fundamentada por estudiosos como Christophe Dejours e outros, no estudo das relações entre o trabalho e a saúde mental dos colaboradores. A psicodinâmica do trabalho se concentra nos aspectos subjetivos do trabalho, como a percepção do trabalhador sobre pressões e recompensas, e como esses fatores influenciam o seu bem-estar psicológico e físico. O modelo da escala de Likert foi utilizada para coletar de forma semelhante as respostas e gerar escores que indicam as diferentes dimensões do risco psicossocial. A metodologia validada é uma adaptação de modelos amplamente aceitos, como a psicodinâmica do trabalho e a Escala ITRA, com ênfase na quantificação dos riscos psicossociais e na utilização da matriz de risco NR 01 para fornecer uma análise clara e precisa dos riscos por setor e tópico dentro da empresa. As classificações obtidas (Baixo, Médio, Alto, Crítico) fornecem uma visão detalhada sobre os aspectos positivos e negativos do ambiente de trabalho, orientando ações corretivas e preventivas.';
+                const txtMet1b = 'Desenvolvedores: Profissionais da equipe da Comunidade Believe de Formação Profissional Ltda. Entre eles: Psicólogos, Técnicos em Segurança do Trabalho, Engenheiros do Trabalho, Advogados e Profissionais da Tecnologia da Informação.';
+                const txtMet2a = 'Coleta de Dados (Questionário): As respostas dos trabalhadores são coletadas por meio de um inventário padronizado, que podem ser administrados de forma anônima e confidencial, o que assegura a privacidade dos dados.';
+                const txtMet2b = 'Cálculo de Gravidade: Após a coleta, as respostas são convertidas em valores numéricos (0 a 4) para análise. Calcula-se a gravidade dos riscos psicossociais, considerando as respostas diretas e invertidas. Para cada pergunta, a gravidade é classificada como Baixa, Média ou Alta com base em intervalos predefinidos. (cálculo simples de média)';
+                const txtMet2c = 'Média por Tópico: A metodologia usa o cálculo de média para determinar a gravidade média e a probabilidade média por tópico. Cada tópico (como Assédio Moral e Sexual, Carga Excessiva de Trabalho, etc.) tem uma média de risco que é calculada a partir das respostas de todas as questões daquele tópico. Essas médias são então classificadas em Baixo, Médio ou Alto risco. A probabilidade é dada a partir de uma avaliação qualitativa feita pelo profissional psicólogo, que em entrevistas ou atos observacionais coleta dados dos setores analisados. Ao fim, o psicólogo correlaciona os dados observados e entrevistados com o fator de dano do inventário de riscos psicossociais.';
+                const txtMet2d = 'Matriz de Risco NR 01: Utilizando a matriz NR 01, combinamos as médias de gravidade e probabilidade para gerar a classificação final do risco para cada setor. A matriz de risco NR 01 classifica o risco em Baixo, Médio, Alto ou Crítico, dependendo dos cruzamentos entre gravidade e probabilidade.';
+                const txtMet3a = 'A metodologia adotada para este diagnóstico baseia-se em uma combinação de avaliação quantitativa e qualitativa, utilizando questionários estruturados e escala de avaliação dos riscos psicossociais, que incluem as perguntas divididas em 9 tópicos principais.';
+                const txtMet3b = 'A escala DRPS foi desenvolvida para a identificação e avaliação dos riscos psicossociais, com classificação de respostas de 0 a 4 (sendo 0 = nunca e 4 = sempre). A pontuação corrigida é calculada automaticamente de acordo com a lógica direta ou invertida, dependendo da natureza da pergunta.';
+                const txtMet3c = 'Escalas e Questionários Utilizados:';
+                const txtMet3d = 'Escala de Gravidade e Probabilidade: Para cada risco psicossocial, a gravidade e a probabilidade de ocorrência são avaliadas e classificadas conforme a escala NR 01. A gravidade é determinada com base na pontuação média dos colaboradores, enquanto a probabilidade considera os critérios de frequência, histórico do risco no setor e os recursos disponíveis para a mitigação do risco.';
+                const txtMet3e = 'Questionários Padrão: Foram utilizados questionários validados, com base em modelos reconhecidos pela OMS, INSS, e também por instrumentos de avaliação psicológica aplicados em organizações. As perguntas abordam riscos psicossociais como assédio, sobrecarga de trabalho, metas, autonomia, entre outros.';
+                const txtMet3f = 'Para a análise qualitativa, são utilizados critérios como: Frequência: Qual a frequência percebida de cada risco no setor? (Baixa, Média, Alta) Histórico: Existe um histórico de ocorrências desse risco no setor? (Sim, Não, Frequente) Recursos disponíveis: Quais recursos a empresa possui para mitigar os riscos? (Adequados, Insuficientes, Não existentes)';
+                const txtMet3g = 'Esses critérios são utilizados para classificar a probabilidade de ocorrência dos riscos, ajudando a identificar quais riscos exigem mais atenção.';
+                const txtMet3h = 'Após a coleta dos dados, as médias de gravidade e probabilidade são calculadas e classificadas em baixo, médio ou alto, seguindo a matriz de risco da NR 01. Com isso, será possível mapear e priorizar os riscos que exigem ação imediata.';
+                const txtAnaliseNota = '(Nesta seção, o psicólogo deve inserir os dados e resultados obtidos a partir da aplicação da avaliação, incluindo a análise da gravidade e probabilidade dos riscos. O espaço aqui deve ser deixado em branco para que cada psicólogo possa inserir as análises específicas para a empresa que está avaliando.)';
+                const txtConc1 = 'A implementação de ações corretivas e preventivas é essencial para minimizar os riscos psicossociais dentro da empresa e promover um ambiente de trabalho mais seguro e saudável. As empresas devem se adequar à NR 01 não apenas para evitar problemas legais, mas também para melhorar a qualidade de vida no trabalho, aumentar a produtividade e reduzir os índices de afastamento.';
+                const txtConc2 = 'A monitorização constante e a adaptação de ações contínuas garantem que a empresa esteja sempre em conformidade com a NR 01 e que os riscos sejam eficazmente mitigados. Recomenda-se que o psicólogo continue acompanhando a evolução da situação e ajustando as intervenções conforme necessário.';
+
+                // Helper: tabela de identificação (Tabela 1)
+                const buildIdentificacaoTable = (setorNome) => {
+                    const bdr = { style: 'single', size: 4, color: '000000' };
+                    const borders = { top: bdr, bottom: bdr, left: bdr, right: bdr };
+                    const GRN = '1B5E20'; const WHT = 'FFFFFF'; const BGE = 'F5F5DC';
+                    const M = { top: 50, bottom: 50, left: 100, right: 100 };
+                    const S = { before: 0, after: 0 };
+                    const cL = (text, fill, span) => new TableCell(Object.assign({ borders, margins: M, children: [new Paragraph({ spacing: S, children: [new TextRun({ text, bold: true, color: fill === GRN ? WHT : '000000', size: 18 })] })] }, fill ? { shading: { fill, type: 'clear', color: fill } } : {}, span ? { columnSpan: span } : {}));
+                    const cV = (text, span) => new TableCell(Object.assign({ borders, margins: M, children: [new Paragraph({ spacing: S, children: [new TextRun({ text: text || '', size: 18 })] })] }, span ? { columnSpan: span } : {}));
+                    return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [
+                        new TableRow({ children: [new TableCell({ columnSpan: 4, borders, margins: M, shading: { fill: GRN, type: 'clear', color: GRN }, children: [new Paragraph({ spacing: S, children: [new TextRun({ text: 'DRPS - DIAGNÓSTICO DE RISCOS PSICOSSOCIAIS', bold: true, color: WHT, size: 22 })], alignment: AlignmentType.CENTER })] })] }),
+                        new TableRow({ children: [cL('Psicólogo(a):', BGE), cV(psicologo), cL('CRP:', BGE), cV(crp)] }),
+                        new TableRow({ children: [new TableCell({ columnSpan: 4, borders, margins: M, shading: { fill: GRN, type: 'clear', color: GRN }, children: [new Paragraph({ spacing: S, children: [new TextRun({ text: 'IDENTIFICAÇÃO', bold: true, color: WHT, size: 20 })], alignment: AlignmentType.CENTER })] })] }),
+                        new TableRow({ children: [cL('CNPJ:', BGE), cV(''), cL('Data:', BGE), cV(mesAno)] }),
+                        new TableRow({ children: [cL('Setor:', GRN), cV(setorNome, 3)] }),
+                        new TableRow({ children: [cL('Funções:', GRN), cV('', 3)] }),
+                        new TableRow({ children: [cL('Quantidade de Colaboradores:', GRN), cV(''), cL('Homens:', GRN), cV('')] }),
+                        new TableRow({ children: [cL('Possíveis Agravos à Saúde:', GRN), cV('', 3)] }),
+                        new TableRow({ children: [cL('Medidas de Controle:', GRN), cV('', 3)] })
+                    ]});
+                };
+
+                // Helper: tabela de classificação de risco (Tabela 2, 5 colunas)
+                const buildRiscoTable = (m) => {
+                    const row1 = new TableRow({ children: [new TableCell({ columnSpan: 5, shading: { fill: '388E3C', type: 'clear', color: '388E3C' }, children: [new Paragraph({ children: [new TextRun({ text: 'Classificação de Risco Psicossocial', bold: true, color: 'FFFFFF', size: 22 })], alignment: AlignmentType.CENTER })] })] });
+                    const row2 = new TableRow({ children: [
+                        new TableCell({ shading: { fill: '388E3C', type: 'clear', color: '388E3C' }, children: [new Paragraph({ children: [new TextRun({ text: 'Critério', bold: true, color: 'FFFFFF', size: 18 })], alignment: AlignmentType.CENTER })] }),
+                        new TableCell({ columnSpan: 4, shading: { fill: '388E3C', type: 'clear', color: '388E3C' }, children: [new Paragraph({ children: [new TextRun({ text: 'Quantitativo e Qualitativo', bold: true, color: 'FFFFFF', size: 18 })], alignment: AlignmentType.CENTER })] })
+                    ]});
+                    const headerRow = new TableRow({ tableHeader: true, children: ['Fatores de Risco', 'FONTE GERADORA DO RISCO', 'Gravidade (Severidade)', 'Probabilidade de Ocorrência', 'Matriz Risco'].map(text => new TableCell({ shading: { fill: '1B5E20', type: 'clear', color: '1B5E20' }, children: [new Paragraph({ children: [new TextRun({ text, bold: true, color: 'FFFFFF', size: 17 })], alignment: AlignmentType.CENTER })] })) });
+                    const dataRows = TOPICOS_LISTA.map(t => {
+                        const grav = calcGravidade(parseFloat(m[t.key]) || 0);
+                        const prob = 'Média';
+                        const probFill = prob === 'Alta' ? 'F44336' : prob === 'Baixa' ? '4CAF50' : 'FFC107';
+                        const probColor = prob === 'Média' ? '000000' : 'FFFFFF';
+                        const matriz = calcMatriz(grav.label, prob);
+                        return new TableRow({ children: [
+                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: NOME_TOPICO_COMPLETO[t.key] || t.nome, bold: true, size: 17 })] })] }),
+                            new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: FONTE_GERADORA[t.key] || '', size: 16 })] })] }),
+                            new TableCell({ shading: { fill: grav.fill, type: 'clear', color: grav.fill }, children: [new Paragraph({ children: [new TextRun({ text: grav.label, bold: true, color: grav.color, size: 17 })], alignment: AlignmentType.CENTER })] }),
+                            new TableCell({ shading: { fill: probFill, type: 'clear', color: probFill }, children: [new Paragraph({ children: [new TextRun({ text: prob, bold: true, color: probColor, size: 17 })], alignment: AlignmentType.CENTER })] }),
+                            new TableCell({ shading: { fill: matriz.fill, type: 'clear', color: matriz.fill }, children: [new Paragraph({ children: [new TextRun({ text: matriz.label, bold: true, color: matriz.color, size: 17 })], alignment: AlignmentType.CENTER })] })
+                        ]});
+                    });
+                    return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [row1, row2, headerRow, ...dataRows] });
+                };
+
+                const gerarGraficoPizza = async (labels, dados, cores, titulo) => {
+                    const wrapper = document.createElement('div');
+                    wrapper.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:280px;height:280px;';
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 280; canvas.height = 280;
+                    wrapper.appendChild(canvas);
+                    document.body.appendChild(wrapper);
+                    try {
+                        const chart = new Chart(canvas.getContext('2d'), {
+                            type: 'pie',
+                            data: { labels, datasets: [{ data: dados, backgroundColor: cores }] },
+                            options: { responsive: false, maintainAspectRatio: false, animation: false, plugins: { legend: { display: false }, title: { display: true, text: titulo } } }
+                        });
+                        await new Promise(r => setTimeout(r, 800));
+                        const imgData = canvas.toDataURL('image/png');
+                        chart.destroy();
+                        document.body.removeChild(wrapper);
+                        const base64 = imgData.split(',')[1];
+                        const binary = atob(base64);
+                        const bytes = new Uint8Array(binary.length);
+                        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                        return bytes.buffer;
+                    } catch(e) {
+                        console.warn('Gráfico pizza:', e);
+                        try { document.body.removeChild(wrapper); } catch(_) {}
+                        return null;
+                    }
+                };
+
+                const gerarLegendaImagem = async (itens) => {
+                    const largura = itens.length * 110;
+                    const wrapper = document.createElement('div');
+                    wrapper.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:' + largura + 'px;height:40px;';
+                    const canvas = document.createElement('canvas');
+                    canvas.width = largura; canvas.height = 40;
+                    wrapper.appendChild(canvas);
+                    document.body.appendChild(wrapper);
+                    const ctx = canvas.getContext('2d');
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, largura, 40);
+                    itens.forEach((item, i) => {
+                        const x = i * 110 + 10;
+                        ctx.fillStyle = item.cor;
+                        ctx.fillRect(x, 12, 16, 16);
+                        ctx.fillStyle = '#1E2C36';
+                        ctx.font = '13px Arial';
+                        ctx.fillText(item.label, x + 22, 25);
+                    });
+                    await new Promise(r => setTimeout(r, 200));
+                    const imgData = canvas.toDataURL('image/png');
+                    document.body.removeChild(wrapper);
+                    const base64 = imgData.split(',')[1];
+                    const binary = atob(base64);
+                    const bytes = new Uint8Array(binary.length);
+                    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                    return bytes.buffer;
+                };
+
+                const buildPizzaCharts = async (mediasSetor, mediasGeral) => {
+                    const matrizCounts = { Baixo: 0, Médio: 0, Alto: 0, Crítico: 0 };
+                    const gravSetor = { Baixa: 0, Média: 0, Alta: 0 };
+                    const gravGeral = { Baixa: 0, Média: 0, Alta: 0 };
+                    TOPICOS_LISTA.forEach(t => {
+                        const gS = calcGravidade(parseFloat(mediasSetor[t.key]) || 0);
+                        const gG = calcGravidade(parseFloat(mediasGeral[t.key]) || 0);
+                        const mz = calcMatriz(gS.label, 'Média');
+                        matrizCounts[mz.label] = (matrizCounts[mz.label] || 0) + 1;
+                        gravSetor[gS.label]++;
+                        gravGeral[gG.label]++;
+                    });
+                    return Promise.all([
+                        gerarGraficoPizza(['Baixo','Médio','Alto','Crítico'], [matrizCounts.Baixo,matrizCounts.Médio,matrizCounts.Alto,matrizCounts.Crítico], ['#00C853','#FFEB3B','#D32F2F','#000000'], 'Matriz de Risco'),
+                        gerarGraficoPizza(['Baixa','Média','Alta'], [gravSetor.Baixa,gravSetor.Média,gravSetor.Alta], ['#00C853','#FFEB3B','#D32F2F'], 'Gravidade Por Setor'),
+                        gerarGraficoPizza(['Baixa','Média','Alta'], [gravGeral.Baixa,gravGeral.Média,gravGeral.Alta], ['#00C853','#FFEB3B','#D32F2F'], 'Gravidade Geral')
+                    ]);
+                };
+
+                const buildChartsRow = (imgs) => {
+                    const cells = imgs.map(img => new TableCell({
+                        children: img ? [new Paragraph({ children: [new ImageRun({ data: img, transformation: { width: 180, height: 180 } })], alignment: AlignmentType.CENTER })] : [new Paragraph({ text: '' })],
+                        borders: { top: { style: 'none', size: 0, color: 'auto' }, bottom: { style: 'none', size: 0, color: 'auto' }, left: { style: 'none', size: 0, color: 'auto' }, right: { style: 'none', size: 0, color: 'auto' } }
+                    }));
+                    return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [new TableRow({ children: cells })], borders: { top: { style: 'none', size: 0, color: 'auto' }, bottom: { style: 'none', size: 0, color: 'auto' }, left: { style: 'none', size: 0, color: 'auto' }, right: { style: 'none', size: 0, color: 'auto' }, insideH: { style: 'none', size: 0, color: 'auto' }, insideV: { style: 'none', size: 0, color: 'auto' } } });
+                };
+
+                // Gerar gráficos antes de montar o doc
+                const chartImgsSetor = await buildPizzaCharts(medias, currentMedias);
+                const imgLegendaSetor = await gerarLegendaImagem([
+                    { cor: '#00C853', label: 'Baixo / Baixa' },
+                    { cor: '#FFEB3B', label: 'Médio / Média' },
+                    { cor: '#D32F2F', label: 'Alto / Alta' },
+                    { cor: '#000000', label: 'Crítico' }
+                ]);
 
                 // Análise com gráfico embutido
                 const resultadosContent = [
-                    titulo('4. Análise de Resultados'),
-                    subtitulo(`Setor: ${setor} · ${qs.length} respondente${qs.length !== 1 ? 's' : ''}`)
+                    titulo('4. Análises e Resultados'),
+                    new Paragraph({ children: [new TextRun({ text: txtAnaliseNota, size: 22, italics: true })], spacing: { after: 180 }, alignment: AlignmentType.JUSTIFIED }),
+                    buildIdentificacaoTable(setor),
+                    branco(),
+                    buildRiscoTable(medias),
+                    branco(),
+                    buildChartsRow(chartImgsSetor),
+                    imgLegendaSetor ? new Paragraph({ children: [new ImageRun({ data: imgLegendaSetor, transformation: { width: 400, height: 30 } })], alignment: AlignmentType.CENTER, spacing: { before: 80, after: 200 } }) : branco(),
+                    branco()
                 ];
-                if (chartImgData) {
-                    resultadosContent.push(new Paragraph({
-                        children: [new ImageRun({ data: chartImgData, transformation: { width: 260, height: 200 } })],
-                        alignment: AlignmentType.CENTER, spacing: { after: 200 }
-                    }));
-                }
-                resultadosContent.push(buildWordTable(medias), branco());
 
                 const doc = new Document({
                     sections: [{
                         children: [
                             ...capa,
-                            titulo('1. Introdução', true), corpo(txtIntro),
-                            titulo('2. Objetivo'), corpo(txtObjetivo),
-                            titulo('3. Metodologia'), corpo(txtMetodologia),
+                            titulo('1. Introdução', true),
+                            corpo(txtIntro1),
+                            corpo(txtIntro2),
+                            corpo(txtIntro3),
+                            titulo('2. Objetivo'),
+                            corpo(txtObj1),
+                            corpo(txtObj2),
+                            titulo('3. Metodologia'),
+                            corpo(txtMet1),
+                            corpo(txtMet1b),
+                            subtitulo('Etapas da Metodologia Validada no Diagnóstico:'),
+                            corpo(txtMet2a),
+                            corpo(txtMet2b),
+                            corpo(txtMet2c),
+                            corpo(txtMet2d),
+                            corpo(txtMet3a),
+                            corpo(txtMet3b),
+                            subtitulo(txtMet3c),
+                            corpo(txtMet3d),
+                            corpo(txtMet3e),
+                            corpo(txtMet3f),
+                            corpo(txtMet3g),
+                            corpo(txtMet3h),
                             ...resultadosContent,
-                            titulo('5. Observações do Psicólogo'),
-                            ...Array.from({ length: 10 }, branco),
-                            titulo('6. Conclusão'),
-                            corpo(txtConclusao1),
-                            corpo(txtConclusao2),
-                            corpo(txtConclusao3),
+                            titulo('5. Conclusão'),
+                            corpo(txtConc1),
+                            corpo(txtConc2),
                             ...Array.from({ length: 5 }, branco),
-                            titulo('7. Assinaturas'),
+                            titulo('6. Assinaturas'),
                             ...linha('Assinatura do Responsável pela Elaboração'),
                             ...linha('Assinatura do Responsável pela Empresa')
                         ]
